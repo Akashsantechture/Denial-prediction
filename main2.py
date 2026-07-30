@@ -3,14 +3,18 @@ import joblib
 import numpy as np
 import pandas as pd
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel, Field
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.responses import JSONResponse
+from fastapi.exceptions import RequestValidationError
+
+from validators.schemas import ClaimInput, UserClaimInput, PredictionResponse
 
 MODEL = None
 PREPROCESSOR = None
 
-MODEL_PATH = "xgboost_denial_model.joblib"
-PREPROCESSOR_PATH = "preprocessor_pipeline.joblib"
+# MODEL_PATH = "models/xgboost_denial_model.joblib"
+MODEL_PATH = "models/xgboost_denial2.joblib"
+PREPROCESSOR_PATH = "models/preprocessor_pipeline.joblib"
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -30,54 +34,39 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-class ClaimInput(BaseModel):
-    primary_diagnosis_code: str = Field(..., example="E11.22")
-    activity_code: str = Field(..., example="84432")
-    medical_necessity_score: float = Field(0.50, example=0.6813)
-    pa_risk_score: float = Field(0.00, example=0.0124)
-    coverage_score: float = Field(0.50, example=0.5164)
-    clinician_success_score: float = Field(0.50, example=0.6259)
-    facility_success_score: float = Field(0.50, example=0.6482)
-    activity_gross: float = Field(..., example=1200.00)
-    activity_quantity: int = Field(1, example=1)
-    gross_amount: float = Field(..., example=1200.00)
-    net_amount: float = Field(..., example=1000.00)
-    patient_age: int = Field(..., example=45)
-    gender: str = Field("UNKNOWN", example="MALE")
-    nationality: str = Field("UNKNOWN", example="EMIRATI")
-    payer_id: str = Field("UNKNOWN", example="E001")
-    insurance_plan_tier: str = Field("Standard", example="Standard")
-    profession: str = Field("UNKNOWN", example="Internal Medicine")
-    category: str = Field("UNKNOWN", example="Pulmonology")
-    facility_type_id: str = Field("UNKNOWN", example="Hospital")
-    billing_lag_days: int = Field(0, example=2)
-    length_of_stay: int = Field(0, example=0)
-    encounter_type: str = Field("OP", example="OP")
-
-class UserClaimInput(BaseModel):
-    primary_diagnosis_code: str = Field(..., example="I10")
-    activity_code: str = Field(..., example="99213")
-    activity_gross: float = Field(..., example=250.00)
-    activity_quantity: int = Field(1, example=1)
-    gross_amount: float = Field(..., example=250.00)
-    net_amount: float = Field(..., example=250.00)
-    patient_age: int = Field(..., example=52)
-    gender: str = Field("MALE", example="MALE")
-    nationality: str = Field("EMIRATI", example="EMIRATI")
-    payer_id: str = Field("E001", example="E001")
-    insurance_plan_tier: str = Field("Standard", example="Standard")
-    profession: str = Field("Internal Medicine", example="Internal Medicine")
-    category: str = Field("Internal Medicine", example="Internal Medicine")
-    facility_type_id: str = Field("Clinic", example="Clinic")
-    billing_lag_days: int = Field(1, example=1)
-    length_of_stay: int = Field(0, example=0)
-    encounter_type: str = Field("OP", example="OP")
-
-class PredictionResponse(BaseModel):
-    denial_probability_pct: float
-    is_high_risk: bool
-    risk_level: str
-    action_recommendation: str
+# Custom exception handler for Pydantic validation errors
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    """
+    Intercepts Pydantic validation errors and returns a clean, structured response.
+    """
+    errors = []
+    for error in exc.errors():
+        field_path = " → ".join(str(loc) for loc in error["loc"] if loc != "body")
+        
+        # Extract the human-readable message
+        msg = error.get("msg", "Invalid value")
+        
+        # If it's a ValueError from our custom validators, extract the clean message
+        if error["type"] == "value_error" and "ctx" in error:
+            ctx_error = error["ctx"].get("error")
+            if ctx_error:
+                msg = str(ctx_error)
+        
+        errors.append({
+            "field": field_path,
+            "issue": msg,
+            "provided_value": error.get("input")
+        })
+    
+    return JSONResponse(
+        status_code=422,
+        content={
+            "status": "validation_error",
+            "message": "Request failed schema validation. Please correct the following fields before resubmitting.",
+            "errors": errors
+        }
+    )
 
 def run_pipeline_inference(data_dict: dict) -> PredictionResponse:
     df_input = pd.DataFrame([data_dict])
