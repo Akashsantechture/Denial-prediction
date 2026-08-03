@@ -14,9 +14,7 @@ MODEL = None
 PREPROCESSOR = None
 
 MODEL_PATH = "models/xgboost_denial2.joblib"
-# MODEL_PATH = "models/xgboost_denial_model.joblib"
-# MODEL_PATH = "models/lightgbm_denial_model2.joblib"
-PREPROCESSOR_PATH = "models/preprocessor_pipeline.joblib"
+PREPROCESSOR_PATH = "models/lightgbm_denial_model2.joblib"
 
 MED_NECESSITY_LOOKUP = {}
 PA_RISK_LOOKUP = {}
@@ -56,9 +54,9 @@ def load_lookups():
         for _, row in df_fac.iterrows():
             FACILITY_LOOKUP[str(row.iloc[0]).strip()] = float(row.iloc[1])
             
-        print(" All lookups loaded successfully!")
+        print("✅ All lookups loaded successfully!")
     except Exception as e:
-        print(f" Warning: Could not load all lookups. Error: {e}")
+        print(f"⚠️ Warning: Could not load all lookups. Error: {e}")
 
 
 @asynccontextmanager
@@ -69,7 +67,7 @@ async def lifespan(app: FastAPI):
     
     PREPROCESSOR = joblib.load(PREPROCESSOR_PATH)
     MODEL = joblib.load(MODEL_PATH)
-    print("✅ Preprocessor and XGBoost Model loaded successfully!")
+    print(" Preprocessor and Lightgbm Model loaded successfully!")
     
     # Load the CSV dictionaries into memory before accepting requests
     load_lookups()
@@ -136,7 +134,7 @@ def run_pipeline_inference(data_dict: dict) -> PredictionResponse:
     prob_pct = round(prob * 100, 2)
 
     # --- RECALIBRATED RISK THRESHOLDS ---
-    if prob_pct >= 47.0:
+    if prob_pct >= 45.0:
         risk_level = "HIGH"
         is_high_risk = True
         action = "Flagged for manual review. Check medical necessity documentation and prior authorization requirements."

@@ -369,3 +369,95 @@ LEFT JOIN clinician_stats cls
        
 LEFT JOIN facility_stats fas
        ON COALESCE(ca.facility_license, ca.facility_name) = fas.facility_id;
+
+
+
+-------------------------------data retrival for test data from db
+
+--------------------approved filter 
+
+SELECT json_build_object(
+    'primary_diagnosis_code', diagnosis_code,
+    'activity_code', activity_code,
+    'activity_gross', activity_gross,
+    'activity_quantity', activity_quantity,
+    'gross_amount', claim_gross,
+    'net_amount', claim_net,
+    'patient_age', patient_age,
+    'gender', UPPER(gender), -- Converts "Male" to "MALE" to match schema
+    'nationality', nationality,
+    'payer_id', payer_id,
+    'insurance_plan_tier', COALESCE(payer_classification, 'Standard'), -- Fallback if null
+    'profession', clinician_profession,
+    'category', clinician_category,
+    'facility_type_id', facility_type,
+    'billing_lag_days', GREATEST(0, EXTRACT(DAY FROM (date_submitted::timestamp - datestamp::timestamp))), -- Calculates days
+    'length_of_stay', length_of_stay,
+    'encounter_type', encounter_type
+) AS api_payload
+FROM 
+    public.claim_activity
+WHERE 
+    -- 1. Target Variable: Approved claims (using 'f' based on your sample data)
+    activity_denied = 'f' 
+    
+    -- 2. Completeness: Ensure no missing critical codes or dates
+    AND diagnosis_code IS NOT NULL 
+    AND date_submitted IS NOT NULL 
+    AND datestamp IS NOT NULL
+    
+    -- 3. Financial Validity: Gross and quantity must be positive
+    AND activity_gross > 0 
+    AND activity_quantity > 0 
+    
+    -- 4. Route Isolation: Exclude reworked/resubmitted claims
+    AND claim_route NOT IN ('Resubmission', 'Re-submission')
+    
+ORDER BY 
+    RANDOM()
+LIMIT 10;
+
+
+
+------------------------denied positive
+
+SELECT json_build_object(
+    'primary_diagnosis_code', diagnosis_code,
+    'activity_code', activity_code,
+    'activity_gross', activity_gross,
+    'activity_quantity', activity_quantity,
+    'gross_amount', claim_gross,
+    'net_amount', claim_net,
+    'patient_age', patient_age,
+    'gender', UPPER(gender), 
+    'nationality', nationality,
+    'payer_id', payer_id,
+    'insurance_plan_tier', COALESCE(payer_classification, 'Standard'), 
+    'profession', clinician_profession,
+    'category', clinician_category,
+    'facility_type_id', facility_type,
+    'billing_lag_days', GREATEST(0, EXTRACT(DAY FROM (date_submitted::timestamp - datestamp::timestamp))),
+    'length_of_stay', length_of_stay,
+    'encounter_type', encounter_type
+) AS api_payload
+FROM 
+    public.claim_activity
+WHERE 
+    -- 1. Target Variable: Denied claims ('t' based on your provided schema)
+    activity_denied = 't' 
+    
+    -- 2. Completeness: Ensure no missing critical codes or dates
+    AND diagnosis_code IS NOT NULL 
+    AND date_submitted IS NOT NULL 
+    AND datestamp IS NOT NULL
+    
+    -- 3. Financial Validity: Gross and quantity must be positive
+    AND activity_gross > 0 
+    AND activity_quantity > 0 
+    
+    -- 4. Route Isolation: Exclude reworked/resubmitted claims
+    AND claim_route NOT IN ('Resubmission', 'Re-submission')
+    
+ORDER BY 
+    RANDOM()
+LIMIT 10;
