@@ -6,9 +6,10 @@ from sqlalchemy import create_engine
 engine = create_engine('postgresql://postgres:2004@localhost:5432/Denial-prediction')
 
 print("Fetching data and converting to Parquet...")
-df = pd.read_sql("SELECT * FROM public.denialclaims_features;", engine)
+# df = pd.read_sql("SELECT * FROM public.denialclaims_features;", engine)
+df = pd.read_sql("SELECT * FROM public.denialpredictionbeta;", engine)
 print("eurrent working directory",os.getcwd())
 
 # 2. Save locally as compressed Parquet
-df.to_parquet("denialclaims_features.parquet", index=False)
+df.to_parquet("denialpredictionbeta.parquet", index=False)
 print("Done! Check your working folder for 'denialclaim_features.parquet'.")

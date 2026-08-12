@@ -1,0 +1,771 @@
+================================================================================
+  ClaimAI — Frontend Architecture Document
+  Project: Denial Prediction | Version: 1.5 | Prepared by: Santechture
+================================================================================
+
+
+────────────────────────────────────────────────────────────────────────────────
+SECTION 1 — OVERVIEW
+────────────────────────────────────────────────────────────────────────────────
+
+ClaimAI is a standalone HTML/CSS/JS single-page application (SPA) that runs
+entirely in the browser. It connects to a FastAPI backend (genericmain.py) via
+fetch() API calls for claim risk prediction. No framework (React, Vue, etc.) is
+used — the frontend is pure vanilla JS with Plotly.js for all charts.
+
+Entry point : frontend3/index.html
+Run command : uvicorn genericmain:app --reload  →  visit http://127.0.0.1:8000
+Serving     : FastAPI StaticFiles mount serves frontend3/ at the root path "/"
+
+
+────────────────────────────────────────────────────────────────────────────────
+SECTION 2 — FILE & FOLDER STRUCTURE
+────────────────────────────────────────────────────────────────────────────────
+
+frontend3/
+│
+├── index.html                ← Single HTML shell. Contains all tab panels,
+│                               the claim form, and the AI chat drawer.
+│                               All JS modules are loaded at the bottom in
+│                               strict dependency order.
+│
+├── assets/
+│   ├── Logo + Slogan.png     ← Santechture brand logo (top-left of nav bar)
+│   ├── overview.png          ← Custom icon for the Overview nav tab
+│   ├── shapanalysis.png      ← Custom icon for the SHAP Analysis nav tab
+│   ├── icddrilldown.png      ← Custom icon for the ICD Drill-Down nav tab
+│   ├── interactions.png      ← Custom icon for the Interactions nav tab
+│   └── bot.png               ← Custom icon for the AI Analyst button & drawer
+│
+├── css/
+│   ├── base.css              ← CSS custom properties (variables), reset,
+│   │                           typography, scrollbar, utility classes.
+│   │                           Edit this file to change colours, fonts,
+│   │                           spacing scale globally.
+│   │
+│   ├── layout.css            ← Page shell layout: app-shell (flex row),
+│   │                           top nav bar, sticky header, verdict banner,
+│   │                           tab strip (hidden bridge), tab panels,
+│   │                           content area, spinner overlay, placeholder boxes.
+│   │
+│   └── components.css        ← All reusable UI components:
+│                               form, field groups, input/select styles,
+│                               KPI metric cards, info cards, data tables,
+│                               SHAP pill badges, filter bar, AI chat drawer,
+│                               action banner, expander (accordion), validation
+│                               error block, JSON textarea.
+│
+└── js/                       ← Load order in index.html is critical:
+    │                           api → shap → charts → icd → interactions
+    │                           → chat → app
+    │
+    ├── api.js                ← HTTP layer. All fetch() calls live here.
+    │                           Exports global API object.
+    │
+    ├── shap.js               ← SHAP estimation engine. Pure computation,
+    │                           no DOM access. Exports global SHAP object.
+    │
+    ├── charts.js             ← All Plotly.js figure renderers. Each function
+    │                           takes plain data + a DOM element id and renders
+    │                           the chart. Exports global Charts object.
+    │
+    ├── icd.js                ← ICD reference data + table/heatmap builders.
+    │                           Exports global ICD object.
+    │
+    ├── interactions.js       ← Interaction pairs data + ICD×CPT heatmap
+    │                           builders. Exports global Interactions object.
+    │
+    ├── chat.js               ← AI chat engine (currently rule-based).
+    │                           Exports global Chat object.
+    │
+    └── app.js                ← Main controller. Wires everything together:
+                                tab routing, form submit, health check,
+                                result dispatch, DOM helpers.
+
+
+────────────────────────────────────────────────────────────────────────────────
+SECTION 3 — COMPONENT BREAKDOWN
+────────────────────────────────────────────────────────────────────────────────
+
+3.1  TOP NAVIGATION BAR  (index.html — <nav class="top-nav">)
+─────────────────────────────────────────────────────────────
+What     : Sticky bar at the top of every page view.
+Contains :
+  - Santechture logo PNG (left-most, links to #)
+  - Vertical divider
+  - "ClaimAI · Denial Prediction" product label
+  - 4 tab buttons with custom PNG icons:
+      Overview | SHAP Analysis | ICD Drill-Down | Interactions
+  - Flex spacer (pushes right-side items to edge)
+  - Backend health indicator badge (green/amber/red dot + text)
+  - "AI Analyst" button (opens/closes chat drawer)
+How      : Tab buttons fire click events handled by inline <script> in
+           index.html that sync top-nav state and delegate to the hidden
+           legacy .tab-btn elements, which app.js listens to.
+Config   : Icon size controlled by CSS variable --nav-icon-size in <style>.
+           Change once → all 4 tab icons resize together.
+
+
+3.2  VERDICT BANNER  (index.html — #verdict-banner)
+────────────────────────────────────────────────────
+What     : Full-width coloured bar between the nav and the content area.
+           Shows "DENIED — 78% probability" / "REVIEW" / "APPROVED".
+When     : Hidden on load. Shown by app.js updateVerdict() after a successful
+           API response. Cleared on new submission or API error.
+Classes  : .verdict-banner.high / .medium / .low (CSS colour swap)
+
+
+3.3  CLAIM FORM  (index.html — inside #tab-overview)
+─────────────────────────────────────────────────────
+What     : 3-column data entry form. Lives ONLY inside the Overview tab panel
+           so it is hidden when other tabs are active.
+Contains :
+  - Input mode toggle: "⚙️ Field Form" | "{ } JSON Input"
+  - Validation error block (hidden until a 422 response arrives)
+  - Field Form panel (3 columns):
+      Col 1 — Clinical & Patient: ICD code, diagnosis type, CPT code,
+               patient age, gender, nationality, encounter type, LOS
+      Col 2 — Financial: activity gross, activity quantity, claim gross,
+               claim net, billing lag days
+      Col 3 — Provider & Insurance: payer ID, plan tier, clinician
+               profession, clinician category, facility type
+  - JSON panel: monospace textarea, pre-populated from field values on
+    first switch to JSON mode, parse-error display, hint text
+  - "Evaluate Claim Risk" submit button
+How      : app.js collectPayload() reads all field IDs. JSON mode is
+           detected via window.__jsonModeActive() patched from inline script.
+
+
+3.4  TAB PANELS  (index.html — .tab-panel)
+───────────────────────────────────────────
+Only one panel is visible at a time (display:block / display:none toggled
+by app.js initTabs()). The hidden legacy .tab-strip is kept in the DOM
+solely as the event target that app.js uses internally.
+
+  TAB 1 — OVERVIEW  (#tab-overview)
+  ───────────────────────────────────
+  Contains (post-submission):
+  - Denial Probability Gauge (Plotly indicator)        → Charts.gauge()
+  - Risk badge (HIGH / MEDIUM / LOW coloured pill)
+  - Patient & Claim info table                         → _setTableRows()
+  - Model info card (static: algorithm, AUC, latency)
+  - Denial Reason Distribution bar chart               → Charts.denialReasonBar()
+  - Action Recommendation banner (colour by risk)      → action-banner div
+
+  Before submission: placeholder box with icon + prompt text.
+
+  TAB 2 — SHAP ANALYSIS  (#tab-shap)
+  ────────────────────────────────────
+  Contains (post-submission):
+  - 4 KPI cards:
+      Denial Probability % | Net SHAP Log-Odds | High-Impact Flag count
+      | Revised Risk if top flag fixed               → _setKPI()
+  - SHAP Waterfall chart (horizontal)                  → Charts.waterfall()
+  - Feature Value vs SHAP Value scatter                → Charts.featureScatter()
+  - Claim Amount SHAP Dependence scatter               → Charts.dependence()
+  - "How to read these charts" accordion expander
+
+  Before submission: placeholder box.
+
+  TAB 3 — ICD DRILL-DOWN  (#tab-icd)
+  ────────────────────────────────────
+  Always visible (static reference data, no submission needed).
+  Contains:
+  - Filter dropdown (ICD group) + Sort dropdown        → ICD.populateGroupFilter()
+  - Denial Rate × Encounter Type heatmap               → ICD.renderHeatmap()
+  - ICD Code Granular SHAP table (sortable, filterable)→ ICD.renderTable()
+    Columns: # | ICD Code | Description | ICD Group | Claims |
+             Deny Rate | Mean SHAP (pill) | Model Prob
+  Active claim's ICD group row is highlighted amber.
+
+  TAB 4 — INTERACTIONS  (#tab-interactions)
+  ───────────────────────────────────────────
+  Always visible (static reference data).
+  Contains:
+  - Top Interaction Pairs table (16 rows from SHAP report)
+    Active claim's ICD group row highlighted amber.    → Interactions.renderPairsTable()
+  - ICD × CPT Mean SHAP Interaction heatmap            → Interactions.renderSHAPHeatmap()
+  - ICD × CPT Denial Rate heatmap (actual %)           → Interactions.renderDenialHeatmap()
+
+
+3.5  AI CHAT DRAWER  (#chat-drawer)
+─────────────────────────────────────
+What     : Slide-in panel from the right edge. Width 340px. Position fixed,
+           top starts at 56px (below nav bar).
+Contains :
+  - Header: bot.png icon + "AI Claims Analyst" title + ✕ close button
+  - Sub-header: "Powered by XGBoost + SHAP · Context-aware"
+  - #chat-messages: scrollable bubble list (assistant + user bubbles)
+  - #chat-idle: placeholder shown when no claim is active
+  - Input row: text input + send button (➤)
+Behaviour:
+  - Disabled until a claim is successfully evaluated
+  - On successful result: Chat.init() fires, chat activates, greeting appears
+  - On new submission: Chat.clear() resets history
+  - Enter key or send button fires Chat.send()
+  - Drawer opens/closes via "AI Analyst" nav button toggle
+
+
+────────────────────────────────────────────────────────────────────────────────
+SECTION 4 — JAVASCRIPT MODULE BREAKDOWN
+────────────────────────────────────────────────────────────────────────────────
+
+MODULE: api.js
+──────────────
+Responsibility : All HTTP communication. Zero DOM access. Zero UI logic.
+Exports        : global API object
+Functions:
+  API.predict(payload)
+    - POST /predict_user_claim with JSON body
+    - AbortController timeout: 10 seconds
+    - Returns one of three shapes:
+        { ok:true, denial_probability_pct, is_high_risk, risk_level,
+          action_recommendation }
+        { ok:false, kind:'validation', message, errors:[{field,issue,provided_value}] }
+        { ok:false, kind:'connection'|'timeout'|'http', detail }
+
+  API.health()
+    - GET /health with 3-second timeout
+    - Returns { status, model_loaded } or fallback on error
+
+  API.PREDICT_URL  — exposed for the health endpoint display in nav
+
+
+MODULE: shap.js
+───────────────
+Responsibility : SHAP value estimation. Pure maths, no DOM, no API calls.
+Exports        : global SHAP object
+Constants:
+  SHAP.BASE_LOG_ODDS = 0.42  (base denial rate in training data, log-odds)
+
+Functions:
+  SHAP.finalLogOdds(prob_pct)
+    - Converts denial_probability_pct to log-odds: log(p / (1-p))
+
+  SHAP.estimate(payload, result)
+    - Derives approximate per-feature SHAP contributions
+    - Uses v1.5 gain percentages as weights (activity_gross_log 17.53%,
+      cpt_category 16.98%, activity_code 14.19%, claim_net_log 11.44%, ...)
+    - Applies heuristic signals: ICD-CPT mismatch, billing lag, LOS,
+      nationality, patient age
+    - Rescales so contributions sum exactly to (finalLogOdds - BASE_LOG_ODDS)
+      → waterfall chart always closes at the true predicted probability
+    - Returns Array<{name:string, value:number}> sorted by |value| desc
+
+NOTE: These are frontend approximations. Exact SHAP requires the model
+      artifact (joblib file) which is not loaded in the browser.
+
+
+MODULE: charts.js
+─────────────────
+Responsibility : All Plotly.js rendering. Receives plain data, writes to DOM.
+Dependency     : Plotly 2.32.0 (loaded via CDN in index.html)
+Exports        : global Charts object
+Shared config  : BASE_LAYOUT (transparent background, Inter font, margins)
+                 PLOTLY_CFG  (responsive:true, displayModeBar:false)
+                 COLORS      (high/medium/low/accent/dark/muted hex values)
+
+Functions:
+  Charts.gauge(elId, prob_pct)
+    - Plotly Indicator gauge, 0-100%
+    - Colour bands: 0-35 green, 35-50 amber, 50-100 red (rgba fills)
+    - Delta reference: 42% (base denial rate)
+
+  Charts.waterfall(elId, contributions, baseLogOdds, finalLogOdds)
+    - Horizontal Plotly waterfall
+    - measure array: absolute → relative×N → total
+    - Red bars = denial push, green = approval push, grey = base/final
+
+  Charts.featureScatter(elId, contributions)
+    - Plotly scatter, x=SHAP value, y=feature name
+    - Colour scale: blue (low) → red (high) based on normalised |value|
+
+  Charts.dependence(elId, claimNet)
+    - Simulates 60 nearby claim amounts around the actual value
+    - Two traces: similar claims (scatter) + this claim (diamond marker)
+    - Colour = ICD-CPT mismatch proxy (random seed = deterministic shape)
+
+  Charts.denialReasonBar(elId)
+    - Static horizontal bar: No Prior Auth 38%, ICD-CPT Mismatch 24%,
+      High Claim Value 16%, Short Billing Lag 11%, OON 7%, LOS Outlier 4%
+    - Top bar highlighted red, rest grey
+
+  Charts.heatmap(elId, zData, xLabels, yLabels, title, fmt)
+    - Generic Plotly heatmap reused by ICD and Interactions tabs
+    - Colour scale: light blue → dark blue (#EFF6FF → #1E40AF)
+    - fmt: '.1f' appends %, '.2f' is plain decimal
+
+
+MODULE: icd.js
+──────────────
+Responsibility : ICD reference data store + ICD tab DOM builders.
+Exports        : global ICD object
+Static data:
+  PREFIX_MAP     — ICD-10 first letter → group name (26 entries, A-Z)
+  DENIAL_RATES   — 15 ICD groups × 3 encounter types (OP/IP/EM) denial %
+  SHAP_ROWS      — 14 representative ICD codes with deny rate, mean SHAP,
+                   model probability (sourced from v1.5 test set)
+
+Functions:
+  ICD.groupFromCode(diagnosisCode)
+    - Extracts first letter, looks up PREFIX_MAP, returns group string
+
+  ICD.renderTable(activeGroup, sortKey, filterGroup)
+    - Builds HTML rows for #icd-table-body
+    - sortKey: 'meanShap' | 'denyRate' | 'claims' (all descending)
+    - filterGroup: 'All' or a specific ICD group name
+    - Active group rows get class 'active-row' (amber highlight)
+
+  ICD.renderHeatmap(filterGroup)
+    - Builds z-matrix from DENIAL_RATES, calls Charts.heatmap()
+    - Filters to single row if filterGroup != 'All'
+
+  ICD.populateGroupFilter(selectId)
+    - Fills the <select> dropdown with sorted group names + 'All'
+
+
+MODULE: interactions.js
+───────────────────────
+Responsibility : Interaction pairs data + Interactions tab DOM builders.
+Exports        : global Interactions object
+Static data:
+  PAIRS      — 16 ICD×CPT combinations from v1.5 SHAP Interaction Report
+               Fields: icd, cpt, claims, icdImpact%, cptImpact%, combined%
+  ICD_GROUPS — 15 ICD group names (matrix row labels)
+  CPT_GROUPS — 7 CPT group names (matrix column labels)
+
+Functions:
+  Interactions.cptGroupFromCode(activityCode)
+    - Parses CPT integer ranges: 100-1999 Anesthesia, 10004-69990 Surgery,
+      70010-79999 Radiology, 80047-89398 Pathology_Laboratory,
+      99202-99499 Evaluation_Management, 90281-99607 Medicine
+    - Alpha codes → HCPCS_Supplies
+
+  Interactions.renderPairsTable(activeIcd, activeCpt)
+    - Builds HTML rows for #pairs-table-body
+    - Active ICD group row gets 'active-row' amber highlight
+
+  Interactions.renderSHAPHeatmap()
+    - Builds 15×7 matrix from PAIRS 'combined' field
+    - Calls Charts.heatmap() → #interactions-shap-heatmap
+
+  Interactions.renderDenialHeatmap()
+    - Same matrix, different chart element #interactions-denial-heatmap
+    - Uses 'combined' as proxy for observed denial rate
+
+
+MODULE: chat.js
+───────────────
+Responsibility : AI chat engine. Manages state, DOM, and response generation.
+Exports        : global Chat object
+Internal state : _payload, _result, _contributions (set by Chat.init())
+
+DOM targets:
+  #chat-messages   — bubble container
+  #chat-input      — text input
+  #chat-send-btn   — send button
+  #chat-idle       — placeholder shown when inactive
+
+Functions:
+  Chat.init(payload, result, contributions)
+    - Stores claim context
+    - Enables input and send button
+    - Clears old messages
+    - Appends greeting bubble with denial probability + top 3 SHAP drivers
+
+  Chat.send(userMessage)
+    - Appends user bubble
+    - Calls _generate() for rule-based response (120ms delay for UX)
+    - Appends assistant bubble
+
+  Chat.clear()
+    - Resets all state
+    - Clears bubble list
+    - Disables input and send button
+    - Shows #chat-idle placeholder
+
+Response rules in _generate() — keyword regex matching (first match wins):
+  why|reason|driver|cause|top|main  → Top SHAP driver explanation
+  icd|diagnos|dx|code               → ICD category analysis
+  los|length.of.stay|stay           → LOS SHAP signal
+  billing|lag|submission|delay      → Billing lag impact
+  amount|claim|net|gross|aed        → Claim amount / financial analysis
+  fix|resolv|appeal|action|recommend→ Remediation steps + revised risk
+  risk|score|probabilit             → Risk band explanation
+  interact|combination|pair         → ICD×CPT interaction summary
+  nationalit|nation|country         → Nationality signal
+  model|algorithm|xgboost|auc       → Model performance stats
+  (default)                         → Summary + suggested questions
+
+Text rendering: _md() converts **bold** and `code` markdown to safe HTML.
+All user content is HTML-escaped before rendering to prevent XSS.
+
+
+MODULE: app.js
+──────────────
+Responsibility : Main controller. Bootstraps everything on DOMContentLoaded.
+Pattern        : IIFE (immediately invoked function expression) — no globals.
+Internal state : _lastPayload, _lastResult (module-scoped, persist across tabs)
+
+Boot sequence (DOMContentLoaded):
+  1. initTabs()         — wires .tab-btn click → panel show/hide
+  2. checkHealth()      — GET /health → updates #health-badge
+  3. initChat()         — wires send button + Enter key
+  4. initICDControls()  — populates ICD filter dropdown, wires change events,
+                          renders initial ICD and Interactions tables/heatmaps
+  5. initExpanders()    — wires accordion toggles
+  6. Form submit        — addEventListener on #claim-form
+
+Form submit flow:
+  1. hideValidationErrors()
+  2. showSpinner(true)
+  3. Chat.clear()
+  4. Collect payload (form fields OR JSON textarea via window.__jsonModeActive)
+  5. await API.predict(payload)
+  6. showSpinner(false)
+  7a. ok:true  → store _lastPayload/_lastResult, updateVerdict(), show content
+                divs, renderOverview(), renderSHAPTab(), switch to Overview tab,
+                Chat.init(), pre-render ICD + Interactions
+  7b. 422      → showValidationErrors(), clear state
+  7c. error    → alert(), clear state
+
+Tab switch lazy rendering:
+  - ICD tab switch     → renderICDTab()   (re-renders with active group)
+  - Interactions switch → renderInteractionsTab() (re-renders with active groups)
+  - Overview + SHAP are pre-rendered on submit, not re-rendered on tab switch
+
+
+────────────────────────────────────────────────────────────────────────────────
+SECTION 5 — DATA FLOW DIAGRAM
+────────────────────────────────────────────────────────────────────────────────
+
+  User fills form (Field Form or JSON mode)
+            │
+            ▼
+  app.js  handleSubmit()
+            │
+            ▼
+  api.js  API.predict(payload)
+            │
+     ┌──────┴──────────────┐
+     │ POST /predict_user  │  ◄──── genericmain.py (FastAPI + XGBoost v1.5)
+     │ _claim              │
+     └──────┬──────────────┘
+            │
+     ┌──────┴────────────────────────────────────────────────┐
+     │  ok: true                                             │
+     │  { denial_probability_pct, risk_level,                │
+     │    is_high_risk, action_recommendation }              │
+     └──────┬────────────────────────────────────────────────┘
+            │
+     ┌──────▼──────────────────────────────────────────────────┐
+     │  shap.js  SHAP.estimate(payload, result)                 │
+     │  → contributions [{name, value}] × 11 features           │
+     └──────┬──────────────────────────────────────────────────┘
+            │
+     ┌──────▼──────────┬──────────────┬──────────────┬─────────┐
+     │  charts.js      │  app.js      │  chat.js     │ icd.js  │
+     │  gauge()        │  _setKPI()   │  Chat.init() │ render  │
+     │  waterfall()    │  _setTable   │  (greeting)  │ Table() │
+     │  featureScatter │  Rows()      │              │ render  │
+     │  dependence()   │  verdict     │              │ Heatmap │
+     │  denialReason   │  banner      │              │         │
+     │  Bar()          │  action      │              │         │
+     │  heatmap() ×4   │  banner      │              │         │
+     └─────────────────┴──────────────┴──────────────┴─────────┘
+            │
+     ┌──────▼────────────────┐
+     │  DOM updated          │
+     │  User sees results    │
+     │  across 4 tabs +      │
+     │  chat drawer          │
+     └───────────────────────┘
+
+
+────────────────────────────────────────────────────────────────────────────────
+SECTION 6 — CSS ARCHITECTURE
+────────────────────────────────────────────────────────────────────────────────
+
+All styles are split across three files loaded in order:
+  base.css → layout.css → components.css
+
+base.css defines the design token system via CSS custom properties on :root.
+To retheme the entire app, only these variables need to change:
+
+  Colour system:
+    --color-bg, --color-surface, --color-surface-alt
+    --color-border, --color-border-light
+    --color-text-primary, --color-text-secondary, --color-text-muted
+    --color-high / --color-high-bg / --color-high-border   (red)
+    --color-medium / --color-medium-bg / --color-medium-border (amber)
+    --color-low / --color-low-bg / --color-low-border      (green)
+    --color-accent, --color-accent-dark                    (blue)
+
+  Spacing / shape:
+    --radius-sm, --radius-md, --radius-lg
+    --shadow-sm, --shadow-md
+    --sidebar-width (legacy, not used in frontend3)
+    --transition
+
+  Nav icon resize (in index.html <style> block):
+    --nav-icon-size: 20px   ← change this ONE variable to resize all tab icons
+
+layout.css handles the macro structure: app-shell flex container, top nav,
+verdict banner, content area padding, tab routing, spinner overlay,
+placeholder boxes, responsive breakpoints.
+
+components.css handles micro components: each UI widget is a self-contained
+block — form fields, KPI cards, info cards, chart containers, data tables,
+SHAP pills, filter bar, chat drawer bubbles, action banners, expanders.
+
+
+────────────────────────────────────────────────────────────────────────────────
+SECTION 7 — RAG MICROSERVICE FOR AI CHAT BOT
+           (Planned upgrade — configuration guide)
+────────────────────────────────────────────────────────────────────────────────
+
+CURRENT STATE
+─────────────
+The AI chat (chat.js) uses a rule-based keyword engine. Responses are
+deterministic and derived from the v1.5 SHAP Interaction Report data
+hardcoded in the JS files. It requires no external service and has ~0ms
+latency, but it cannot answer freeform questions or reason over new documents.
+
+PLANNED UPGRADE: RAG (Retrieval-Augmented Generation) MICROSERVICE
+───────────────────────────────────────────────────────────────────
+Replace the rule engine with a lightweight Python microservice that:
+  1. Embeds a knowledge base (SHAP reports, clinical coding guidelines,
+     UAE insurance payer rules, prior auth policies) into a vector store.
+  2. On each user message, retrieves the most relevant document chunks.
+  3. Sends retrieved context + claim payload + user question to an LLM.
+  4. Returns a grounded, citation-backed response to the frontend.
+
+The frontend (chat.js) only needs ONE function changed: _generate() is
+replaced with an async fetch() call to the RAG microservice endpoint.
+Everything else — Chat.init(), Chat.send(), Chat.clear(), the drawer UI —
+stays identical.
+
+
+MICROSERVICE ARCHITECTURE
+──────────────────────────
+
+  frontend3/chat.js
+        │
+        │  POST /chat  { query, claim_context, history }
+        ▼
+  RAG Microservice  (Python — separate process, e.g. port 8001)
+        │
+        ├── Embedding model  (sentence-transformers or OpenAI embeddings)
+        │
+        ├── Vector store     (ChromaDB local  OR  FAISS  OR  Qdrant)
+        │        │
+        │        └── Knowledge base documents:
+        │              - SHAP Interaction Report v1.5 (PDF → chunks)
+        │              - ICD-10 clinical coding reference
+        │              - UAE HAAD/DHA payer denial reason codes
+        │              - Prior auth guidelines by payer
+        │              - Internal denial appeal templates
+        │
+        ├── Retriever        top-k similarity search (k=4 recommended)
+        │
+        └── LLM              OpenAI GPT-4o  OR  Ollama (local Llama 3)
+                 │
+                 └── Returns: { answer, sources[] }
+
+
+STEP-BY-STEP CONFIGURATION
+────────────────────────────
+
+STEP 1 — Create the microservice folder
+  mkdir rag_service
+  rag_service/
+    ├── main.py          ← FastAPI app
+    ├── ingest.py        ← document loader + vector store builder
+    ├── retriever.py     ← embedding + search logic
+    ├── requirements.txt
+    └── docs/            ← drop your PDF/TXT knowledge base files here
+
+STEP 2 — Install dependencies
+  pip install fastapi uvicorn chromadb sentence-transformers
+             langchain langchain-community openai pypdf
+
+  For local LLM (no API key needed):
+    pip install ollama
+    ollama pull llama3   (downloads ~4GB model)
+
+STEP 3 — Build the vector store (ingest.py)
+  Run once, or whenever documents change.
+
+  from langchain_community.document_loaders import PyPDFDirectoryLoader
+  from langchain.text_splitter import RecursiveCharacterTextSplitter
+  from langchain_community.vectorstores import Chroma
+  from langchain_community.embeddings import HuggingFaceEmbeddings
+
+  loader   = PyPDFDirectoryLoader("docs/")
+  docs     = loader.load()
+  splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
+  chunks   = splitter.split_documents(docs)
+  embedder = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+  db       = Chroma.from_documents(chunks, embedder, persist_directory="chroma_db")
+  db.persist()
+  print(f"Ingested {len(chunks)} chunks into chroma_db/")
+
+  Run: python rag_service/ingest.py
+
+STEP 4 — Build the FastAPI microservice (main.py)
+  from fastapi import FastAPI
+  from fastapi.middleware.cors import CORSMiddleware
+  from pydantic import BaseModel
+  from langchain_community.vectorstores import Chroma
+  from langchain_community.embeddings import HuggingFaceEmbeddings
+  from langchain_community.llms import Ollama          # or OpenAI
+
+  app = FastAPI(title="ClaimAI RAG Service")
+  app.add_middleware(CORSMiddleware, allow_origins=["*"],
+                     allow_methods=["*"], allow_headers=["*"])
+
+  embedder = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+  db       = Chroma(persist_directory="chroma_db", embedding_function=embedder)
+  llm      = Ollama(model="llama3")       # swap for OpenAI("gpt-4o")
+
+  class ChatRequest(BaseModel):
+      query:         str
+      claim_context: str   # serialised claim + result summary
+      history:       list  # list of {"role": "user"|"assistant", "content": str}
+
+  @app.post("/chat")
+  def chat(req: ChatRequest):
+      # 1. Retrieve relevant chunks
+      docs = db.similarity_search(req.query, k=4)
+      context = "\n\n".join(d.page_content for d in docs)
+
+      # 2. Build prompt
+      prompt = f"""You are ClaimAI, an expert in UAE healthcare claims denial
+  prediction. Answer based ONLY on the provided context and claim data.
+
+  CLAIM CONTEXT:
+  {req.claim_context}
+
+  RETRIEVED KNOWLEDGE:
+  {context}
+
+  QUESTION: {req.query}
+  ANSWER:"""
+
+      # 3. Call LLM
+      answer = llm(prompt)
+      sources = [d.metadata.get("source","") for d in docs]
+      return {"answer": answer, "sources": sources}
+
+  Run: uvicorn rag_service.main:app --port 8001 --reload
+
+STEP 5 — Update frontend3/js/chat.js
+  Replace the _generate() function body with a single fetch() call.
+  The change is confined to exactly ONE function (~8 lines):
+
+  async function _generate(msg) {
+      const response = await fetch('http://127.0.0.1:8001/chat', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+              query:         msg,
+              claim_context: _buildContext(),   // serialise _payload + _result
+              history:       _history.slice(-6) // last 3 turns
+          })
+      });
+      const data = await response.json();
+      return data.answer;
+  }
+
+  Everything else in chat.js stays unchanged. Chat.send() already calls
+  _generate() asynchronously so the await works without further changes.
+
+  Add _buildContext() helper above _generate():
+  function _buildContext() {
+      if (!_payload || !_result) return '';
+      return JSON.stringify({
+          diagnosis_code: _payload.diagnosis_code,
+          activity_code:  _payload.activity_code,
+          encounter_type: _payload.encounter_type,
+          claim_net:      _payload.claim_net,
+          denial_pct:     _result.denial_probability_pct,
+          risk_level:     _result.risk_level,
+          top_shap:       _contributions.slice(0,3)
+      }, null, 2);
+  }
+
+STEP 6 — Handle loading state in the chat bubble
+  In Chat.send(), show a "Thinking…" bubble while awaiting the RAG response:
+
+  async function send(userMessage) {
+      if (!userMessage.trim() || !_result) return;
+      _appendBubble('user', _wrap(userMessage));
+
+      // Thinking indicator
+      const thinking = document.createElement('div');
+      thinking.className = 'chat-bubble assistant';
+      thinking.innerHTML = '<em style="color:#94A3B8">Thinking…</em>';
+      _messagesEl().appendChild(thinking);
+
+      const response = await _generate(userMessage);
+      thinking.remove();
+      _appendBubble('assistant', _wrap(response));
+  }
+
+STEP 7 — Knowledge base documents to add (drop in rag_service/docs/)
+  Priority documents for accurate denial prediction context:
+    - docs/version-1.5.pdf        (SHAP Interaction Report — already in repo)
+    - docs/version-1.0.pdf        (previous model report — already in repo)
+    - UAE_HAAD_denial_codes.pdf   (payer denial reason code reference)
+    - prior_auth_guidelines.pdf   (payer-specific prior auth requirements)
+    - ICD10_coding_guidelines.txt (clinical coding reference)
+    - appeal_letter_templates.txt (standard denial appeal templates)
+  Re-run ingest.py after adding new documents.
+
+STEP 8 — Run both services together
+  Terminal 1:  uvicorn genericmain:app --reload          (port 8000)
+  Terminal 2:  uvicorn rag_service.main:app --port 8001  (port 8001)
+  Browser:     http://127.0.0.1:8000
+
+
+UPGRADE PATH SUMMARY
+─────────────────────
+  Phase 1 (current)  : Rule-based engine in chat.js — no dependencies
+  Phase 2 (this doc) : RAG microservice on port 8001 — local Ollama/Llama3
+  Phase 3 (future)   : Swap Ollama for OpenAI GPT-4o for higher quality answers
+                        Add streaming (Server-Sent Events) for faster perceived response
+                        Add citation display in chat bubbles (show source document name)
+                        Add conversation memory (Redis or SQLite session store)
+
+
+────────────────────────────────────────────────────────────────────────────────
+SECTION 8 — QUICK REFERENCE: WHERE TO CHANGE THINGS
+────────────────────────────────────────────────────────────────────────────────
+
+  CHANGE                          WHERE
+  ──────────────────────────────────────────────────────────────────────────────
+  API backend URL                 js/api.js   const BASE_URL
+  Request timeout                 js/api.js   const TIMEOUT_MS
+  Risk thresholds (35/50%)        js/charts.js gauge() steps ranges
+                                  js/shap.js  riskClass logic in app.js
+  Base denial rate (42%)          js/shap.js  BASE_LOG_ODDS
+  All chart colours               js/charts.js COLORS object
+  Nav icon size                   index.html  <style> --nav-icon-size
+  Logo image                      index.html  <img src="assets/Logo + Slogan.png">
+  Tab icons                       index.html  <img src="assets/xxx.png">
+  Form default values             index.html  value="..." on each input
+  Form field options              index.html  <option> elements in <select>
+  ICD reference data              js/icd.js   SHAP_ROWS + DENIAL_RATES
+  Interaction pairs data          js/interactions.js PAIRS array
+  Chat response rules             js/chat.js  _generate() function
+  Add a new chat rule             js/chat.js  add regex + return block in _generate()
+  Upgrade chat to RAG             js/chat.js  replace _generate() body (Section 7)
+  Global colour theme             css/base.css :root variables
+  Component-level styles          css/components.css
+  Page layout / nav bar           css/layout.css
+  ──────────────────────────────────────────────────────────────────────────────
+
+
+================================================================================
+  END OF DOCUMENT
+================================================================================

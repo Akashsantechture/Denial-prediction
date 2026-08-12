@@ -461,3 +461,173 @@ WHERE
 ORDER BY 
     RANDOM()
 LIMIT 10;
+
+
+
+
+----------------------------------------------------denialmodel1.5-----------------------------
+
+CREATE TABLE public."denialclaims1.5" AS
+WITH PayerRiskTiers AS (
+    -- CTE 1: Calculate the Payer Tiers dynamically without exposing the Payer ID
+    SELECT 
+        payer_id,
+        CASE 
+            WHEN ROUND(SUM(CASE WHEN activity_denied = 't' THEN 1.0 ELSE 0.0 END) / COUNT(*) * 100, 2) >= 25.00 THEN 'Tier 1 (Strict)'
+            WHEN ROUND(SUM(CASE WHEN activity_denied = 't' THEN 1.0 ELSE 0.0 END) / COUNT(*) * 100, 2) >= 10.00 THEN 'Tier 2 (Standard)'
+            ELSE 'Tier 3 (Lenient)'
+        END AS payer_risk_tier
+    FROM 
+        public.claim_activity
+    GROUP BY 
+        payer_id
+),
+ClaimComplexity AS (
+    -- CTE 2: Calculate how many lines (activities) are on each individual claim
+    SELECT 
+        haad_claim_id,
+        COUNT(activity_code) AS claim_line_count
+    FROM 
+        public.claim_activity
+    GROUP BY 
+        haad_claim_id
+)
+
+SELECT 
+    -- 0. Target Variable
+    ca.activity_denied,
+
+    -- 1. Generalized Dimensions (NO IDs included)
+    prt.payer_risk_tier,
+    ca.encounter_type,
+
+    -- 2. Clinical Consistency Behaviors
+    CASE 
+        -- Maternity/Pregnancy codes billed for a Male
+        WHEN (ca.diagnosis_code LIKE 'O%' OR ca.activity_code BETWEEN '59000' AND '59899') AND UPPER(ca.gender) = 'MALE' THEN 0
+        -- Prostate/Male Genital codes billed for a Female
+        WHEN (ca.activity_code BETWEEN '54000' AND '55899') AND UPPER(ca.gender) = 'FEMALE' THEN 0
+        ELSE 1
+    END AS gender_appropriate_flag,
+    
+    CASE 
+        -- Maternity codes for patients under 12 or over 60
+        WHEN ca.diagnosis_code LIKE 'O%' AND (ca.patient_age < 12 OR ca.patient_age > 60) THEN 0
+        ELSE 1
+    END AS age_appropriate_flag,
+    
+    CASE 
+        -- Respiratory ICD (J-codes) matching Respiratory CPT (30xxx - 32xxx)
+        WHEN ca.diagnosis_code LIKE 'J%' AND ca.activity_code BETWEEN '30000' AND '32999' THEN 1
+        -- Cardiovascular ICD (I-codes) matching Cardiovascular CPT (33xxx - 37xxx)
+        WHEN ca.diagnosis_code LIKE 'I%' AND ca.activity_code BETWEEN '33000' AND '37799' THEN 1
+        -- Routine checks (Z-codes) are universally acceptable
+        WHEN ca.diagnosis_code LIKE 'Z%' THEN 1
+        ELSE 0 
+    END AS icd_cpt_chapter_match,
+
+    -- 3. Financial Behaviors
+    ROUND(CAST(ca.activity_gross / NULLIF(ca.activity_quantity, 0) AS numeric), 2) AS unit_cost,
+    
+    ROUND(CAST((ca.claim_gross - ca.claim_net) / NULLIF(ca.claim_gross, 0) AS numeric), 4) AS discount_ratio,
+    
+    CASE 
+        WHEN ca.encounter_type = 'IP' THEN ROUND(CAST(ca.claim_gross / NULLIF(ca.length_of_stay, 0) AS numeric), 2)
+        ELSE 0 
+    END AS ip_stay_to_cost_ratio,
+
+    -- 4. Operational Behaviors (Excluding Weekend logic as requested)
+    cc.claim_line_count,
+    
+    CASE 
+        WHEN GREATEST(0, EXTRACT(DAY FROM (ca.date_submitted::timestamp - ca.datestamp::timestamp))) = 0 THEN 'Same Day'
+        WHEN GREATEST(0, EXTRACT(DAY FROM (ca.date_submitted::timestamp - ca.datestamp::timestamp))) BETWEEN 1 AND 3 THEN 'Standard'
+        WHEN GREATEST(0, EXTRACT(DAY FROM (ca.date_submitted::timestamp - ca.datestamp::timestamp))) BETWEEN 4 AND 14 THEN 'Delayed'
+        ELSE 'Extreme'
+    END AS lag_day_severity
+
+FROM 
+    public.claim_activity ca
+LEFT JOIN 
+    PayerRiskTiers prt ON ca.payer_id = prt.payer_id
+LEFT JOIN 
+    ClaimComplexity cc ON ca.haad_claim_id = cc.haad_claim_id
+WHERE 
+    -- Base cleanup to ensure valid data rows
+    ca.activity_gross > 0 
+    AND ca.activity_quantity > 0 
+    AND ca.claim_route NOT IN ('Resubmission', 'Re-submission')
+    AND ca.diagnosis_code IS NOT NULL;
+
+
+-------------------------------------------------------------------version1.5 beta-----------------------------------------------------------------------------------
+
+
+
+CREATE TABLE public."denialprediction1.5beta" AS
+WITH CostThreshold AS (
+    -- CTE: Dynamically calculate the 90th percentile for the high_cost_flag
+    SELECT 
+        PERCENTILE_CONT(0.90) WITHIN GROUP (ORDER BY activity_gross) AS threshold_90
+    FROM public.claim_activity
+    WHERE activity_gross > 0
+)
+
+SELECT 
+    -- 0. TARGET (Binary Not/f -> 1/0)
+    CASE WHEN ca.activity_denied = 't' THEN 1 ELSE 0 END AS activity_denied,
+
+    -- 1. CLINICAL (Categorical & Numeric Raw)
+    ca.diagnosis_code,
+    ca.diagnosis_type,
+    ca.activity_code,
+    ca.activity_quantity,
+
+    -- 2. PATIENT (Numeric & Categorical)
+    ca.patient_age,
+    ca.gender,
+    ca.nationality,
+
+    -- 3. FINANCIAL (Raw)
+    ca.activity_gross,
+    ca.claim_gross,
+    ca.claim_net,
+
+    -- 4. FINANCIAL (Engineered Formulas)
+    ROUND(CAST(ca.activity_gross / NULLIF(ca.activity_quantity, 0) AS numeric), 2) AS unit_cost,
+    ROUND(CAST((ca.claim_gross - ca.claim_net) / NULLIF(ca.claim_gross, 0) AS numeric), 4) AS discount_ratio,
+    
+    -- log1p logic: LN(value + 1). Wrapped in GREATEST(0, x) to prevent negative log errors
+    ROUND(CAST(LN(GREATEST(0, ca.activity_gross) + 1) AS numeric), 4) AS activity_gross_log,
+    ROUND(CAST(LN(GREATEST(0, ca.claim_gross) + 1) AS numeric), 4) AS claim_gross_log,
+    ROUND(CAST(LN(GREATEST(0, ca.claim_net) + 1) AS numeric), 4) AS claim_net_log,
+    ROUND(CAST(LN(GREATEST(0, (ca.activity_gross / NULLIF(ca.activity_quantity, 0))) + 1) AS numeric), 4) AS unit_cost_log,
+    
+    -- high_cost_flag using 90th percentile from CTE
+    CASE WHEN ca.activity_gross > ct.threshold_90 THEN 1 ELSE 0 END AS high_cost_flag,
+    
+    -- ip_stay_cost_ratio using max(length_of_stay, 1) mapped as GREATEST
+    CASE WHEN ca.encounter_type = 'IP' THEN ROUND(CAST(ca.claim_gross / GREATEST(ca.length_of_stay, 1) AS numeric), 2) ELSE 0 END AS ip_stay_cost_ratio,
+
+    -- 5. OPERATIONAL
+    ca.encounter_type,
+    ca.length_of_stay,
+    GREATEST(0, EXTRACT(DAY FROM (ca.date_submitted::timestamp - ca.datestamp::timestamp))) AS billing_lag_days,
+
+    -- 6. PROVIDER
+    ca.clinician_profession,
+    ca.clinician_category,
+    ca.facility_type,
+
+    -- 7. INSURANCE
+    'Insurance' AS insurance_plan_tier
+
+FROM 
+    public.claim_activity ca
+CROSS JOIN 
+    CostThreshold ct
+WHERE 
+    ca.activity_gross > 0 
+    AND ca.activity_quantity > 0 
+    AND ca.claim_route NOT IN ('Resubmission', 'Re-submission')
+    AND ca.diagnosis_code IS NOT NULL;
