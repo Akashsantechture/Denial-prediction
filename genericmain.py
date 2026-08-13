@@ -14,6 +14,7 @@ from validators.schemas import UserClaimInput, PredictionResponse
 # --- GLOBAL ARTIFACTS ---
 MODEL = None
 MODEL_PATH = "models/behavioral_xgboost_v1.5.joblib"
+# MODEL_PATH = "models/behavioral_xgboost_model2_individual_cats.joblib"
 
 # # The exact features expected by the new v1.5 XGBoost model
 # CATEGORICAL_FEATURES = [

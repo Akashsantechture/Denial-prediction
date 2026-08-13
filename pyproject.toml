@@ -17,6 +17,7 @@ dependencies = [
     "pydantic>=2.13.4",
     "requests>=2.34.2",
     "scikit-learn==1.6.1",
+    "shap>=0.51.0",
     "sqlalchemy>=2.0.51",
     "streamlit>=1.59.1",
     "uvicorn>=0.52.0",
