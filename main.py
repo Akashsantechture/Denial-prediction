@@ -19,14 +19,14 @@ MODEL_PATH = "models/xgboost_denial2.joblib"
 PREPROCESSOR_PATH = "models/preprocessor_pipeline.joblib"
 
 MED_NECESSITY_LOOKUP = {}
-PA_RISK_LOOKUP = {}
+PA_risk_LOOKUP = {}
 COVERAGE_LOOKUP = {}
 CLINICIAN_LOOKUP = {}
 FACILITY_LOOKUP = {}
 
 def load_lookups():
     """Loads CSVs from the validators folder into Python dictionaries using positional indexing."""
-    global MED_NECESSITY_LOOKUP, PA_RISK_LOOKUP, COVERAGE_LOOKUP, CLINICIAN_LOOKUP, FACILITY_LOOKUP
+    global MED_NECESSITY_LOOKUP, PA_risk_LOOKUP, COVERAGE_LOOKUP, CLINICIAN_LOOKUP, FACILITY_LOOKUP
     
     print("Loading CSV lookups into memory...")
     
@@ -36,10 +36,10 @@ def load_lookups():
         for _, row in df_med.iterrows():
             MED_NECESSITY_LOOKUP[(str(row.iloc[0]).strip(), str(row.iloc[1]).strip())] = float(row.iloc[2])
 
-        # 2. PA Risk Score (Matches: pa_risk_score.csv)
+        # 2. PA risk Score (Matches: pa_risk_score.csv)
         df_pa = pd.read_csv("validators/pa_risk_score.csv", on_bad_lines='skip').dropna()
         for _, row in df_pa.iterrows():
-            PA_RISK_LOOKUP[(str(row.iloc[0]).strip(), str(row.iloc[1]).strip(), str(row.iloc[2]).strip())] = float(row.iloc[3])
+            PA_risk_LOOKUP[(str(row.iloc[0]).strip(), str(row.iloc[1]).strip(), str(row.iloc[2]).strip())] = float(row.iloc[3])
 
         # 3. Coverage Score (Matches: coverage_sucess_score.csv)
         df_cov = pd.read_csv("validators/coverage_sucess_score.csv", on_bad_lines='skip').dropna()
@@ -135,7 +135,7 @@ def run_pipeline_inference(data_dict: dict) -> PredictionResponse:
     prob = float(MODEL.predict_proba(X_transformed)[0, 1])
     prob_pct = round(prob * 100, 2)
 
-    # --- RECALIBRATED RISK THRESHOLDS ---
+    # --- RECALIBRATED risk THRESHOLDS ---
     if prob_pct >= 47.0:
         risk_level = "HIGH"
         is_high_risk = True
@@ -172,7 +172,7 @@ def predict_user_claim_risk(claim: UserClaimInput):
         
         # Fetch the historical scores from memory, falling back to safe defaults if the combo is brand new
         data_dict["medical_necessity_score"] = MED_NECESSITY_LOOKUP.get((diag, cpt), 0.70)
-        data_dict["pa_risk_score"] = PA_RISK_LOOKUP.get((payer, diag, cpt), 0.10)
+        data_dict["pa_risk_score"] = PA_risk_LOOKUP.get((payer, diag, cpt), 0.10)
         data_dict["coverage_score"] = COVERAGE_LOOKUP.get((payer, cpt), 0.70)
         data_dict["clinician_success_score"] = CLINICIAN_LOOKUP.get(clinician, 0.75)
         data_dict["facility_success_score"] = FACILITY_LOOKUP.get(facility, 0.75)

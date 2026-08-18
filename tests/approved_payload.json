@@ -199,6 +199,26 @@
       "billing_lag_days": 23,
       "length_of_stay": 0,
       "encounter_type": "OP"
+    },
+    {
+      "diagnosis_code": "D55.2",
+      "diagnosis_type": "Principal",
+      "activity_code": "85025",
+      "activity_quantity": 1.0,
+      "activity_gross": 133.0,
+      "claim_gross": 1830.0,
+      "claim_net": 1830.0,
+      "patient_age": 61,
+      "gender": "MALE",
+      "nationality": "EMIRATI",
+      "payer_id": "INS001",
+      "insurance_plan_tier": "Insurance",
+      "clinician_profession": "INTERNAL MEDICINE",
+      "clinician_category": "Gastroenterology",
+      "facility_type": "Hospital",
+      "billing_lag_days": 8,
+      "length_of_stay": 0,
+      "encounter_type": "OP"
     }
   ]
 }

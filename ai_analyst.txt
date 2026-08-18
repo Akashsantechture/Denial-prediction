@@ -1,0 +1,416 @@
+================================================================================
+  ClaimAI — AI Analyst: How It Works
+  Project: Denial Prediction | Version: 1.5 | Prepared by: Santechture
+================================================================================
+
+
+────────────────────────────────────────────────────────────────────────────────
+SECTION 1 — WHAT IS THE AI ANALYST?
+────────────────────────────────────────────────────────────────────────────────
+
+The AI Analyst is a context-aware chat panel embedded in the ClaimAI frontend
+(frontend/). It appears in a slide-in drawer on the right side of the screen,
+activated by the "AI Analyst" button in the top navigation bar.
+
+It answers natural language questions about the current claim — why it was
+flagged, what the top risk drivers are, what can be fixed, how the model
+performed, and more.
+
+It is NOT a general-purpose chatbot. It has no internet access, no LLM,
+and no knowledge of anything outside the current claim. Every response it
+gives is derived entirely from:
+
+  1. The claim payload you submitted (ICD code, CPT code, claim amount, etc.)
+  2. The real SHAP explanation returned by model2main.py (TreeExplainer values)
+  3. The model's performance metrics (ROC-AUC, accuracy — hardcoded constants)
+
+This makes it deterministic, auditable, and fast. The same claim submitted
+twice will always produce the same responses.
+
+
+────────────────────────────────────────────────────────────────────────────────
+SECTION 2 — DATA FLOW: HOW THE ANALYST GETS ITS INSIGHTS
+────────────────────────────────────────────────────────────────────────────────
+
+The full data flow from model to chat response:
+
+  User submits claim form
+          │
+          ▼
+  api.js  POST /predict_user_claim
+          │
+          ▼
+  model2main.py (FastAPI)
+    ├── XGBoost model → denial_probability_pct, risk_level
+    └── SHAP TreeExplainer → explanation object
+          │
+          ▼
+  API response JSON
+    {
+      denial_probability_pct: 73.2,
+      risk_level: "HIGH",
+      action_recommendation: "...",
+      explanation: {
+        base_value: -0.284,          ← model's average log-odds across training data
+        final_model_value: 0.993,    ← base + sum(all SHAP values) for this claim
+        model_output_space: "raw_margin_log_odds",
+        top_drivers: [...],          ← features with positive SHAP (push toward denial)
+        supporting_factors: [...],   ← features with negative SHAP (push toward approval)
+        all_features: [...],         ← every feature, sorted by |SHAP| descending
+        interactions: [...]          ← pairwise SHAP interaction values
+      }
+    }
+          │
+          ▼
+  api.js passes explanation UNTOUCHED to the result object
+          │
+          ▼
+  shap.js  SHAP.fromApiResult(result)
+    Reads result.explanation.all_features
+    Maps each feature to: { name, value, direction, impactLevel, shareP,
+                            rawValue, explanation }
+    Sorts by |value| descending
+    Returns contributions array
+          │
+          ▼
+  app.js  handleSubmit()
+    Calls Chat.init(payload, result, contributions)
+          │
+          ▼
+  chat.js  stores _payload, _result, _contributions in module state
+    These three objects are the ONLY data source for every response.
+
+
+────────────────────────────────────────────────────────────────────────────────
+SECTION 3 — WHAT THE ANALYST KNOWS ABOUT THE CLAIM
+────────────────────────────────────────────────────────────────────────────────
+
+When Chat.init() is called, the analyst has access to:
+
+FROM THE PAYLOAD (what the user submitted):
+  _payload.diagnosis_code          ICD-10 code (e.g. "I10")
+  _payload.activity_code           CPT code (e.g. "99213")
+  _payload.encounter_type          OP / IP / EM
+  _payload.length_of_stay          Days (0 for outpatient)
+  _payload.billing_lag_days        Days between service and submission
+  _payload.claim_net               Net payable amount in AED
+  _payload.claim_gross             Gross billed amount in AED
+  _payload.patient_age             Integer
+  _payload.gender                  MALE / FEMALE / UNKNOWN
+  _payload.nationality             EMIRATI / INDIAN / OTHERS
+
+FROM THE API RESULT:
+  _result.denial_probability_pct   e.g. 73.2  (the model's output probability)
+  _result.risk_level               HIGH / MEDIUM / LOW
+  _result.action_recommendation    Text from model2main.py risk classification
+
+FROM SHAP (via contributions array):
+  _contributions[0]                Top driver — { name, value, direction, ... }
+  _contributions[1..N]             All other features sorted by |SHAP| desc
+
+  SHAP.baseLogOdds(_result)        Real base_value from TreeExplainer
+  SHAP.finalLogOdds(_result)       Real final_model_value from TreeExplainer
+
+The analyst computes:
+  netShap = finalLogOdds - baseLogOdds
+    → how much the model shifted from its average for this specific claim
+
+  revisedProbability = 1 / (1 + exp(-(finalLogOdds - |top_shap|)))
+    → estimated probability if the top denial driver were resolved
+
+
+────────────────────────────────────────────────────────────────────────────────
+SECTION 4 — HOW RESPONSES ARE GENERATED
+────────────────────────────────────────────────────────────────────────────────
+
+The analyst uses a RULE-BASED RESPONSE ENGINE — not an LLM. It works as
+follows:
+
+  1. User types a message and presses Enter or the send button.
+
+  2. chat.js Chat.send(userMessage) is called.
+
+  3. The message is passed to _generate(msg).
+
+  4. _generate() converts the message to lowercase and tests it against
+     a series of regex rules in ORDER. The FIRST matching rule wins.
+
+  5. The matching rule builds a response string using live values from
+     _payload, _result, _contributions, and SHAP helpers.
+
+  6. After a 120ms artificial delay (for natural conversational feel),
+     the response is rendered as an HTML bubble in the chat drawer.
+
+No LLM call is made. The response is assembled entirely from JavaScript
+string interpolation of real model data.
+
+
+RULE TABLE (evaluated top to bottom, first match wins)
+────────────────────────────────────────────────────────
+
+  TRIGGER KEYWORDS              WHAT THE RESPONSE CONTAINS
+  ──────────────────────────────────────────────────────────────────────────
+  why, reason, driver,          Top SHAP driver name + SHAP value + net
+  cause, top, main              log-odds shift from base. States the ICD×CPT
+                                pairing that led to this prediction.
+
+  icd, diagnos, dx, code        SHAP contribution of the ICD-related feature.
+                                Points user to ICD Drill-Down tab for history.
+
+  los, length of stay, stay     Looks up "stay" in _contributions to find real
+                                SHAP value for LOS. States whether 0–5 days is
+                                near-zero or extended stay is flagged.
+
+  billing, lag, submission,     Billing lag days → states direction (short lag
+  delay                         increases risk / long lag reduces it).
+
+  amount, claim, net, gross,    Claim net AED → log-transforms it → states
+  cost, financial, aed          whether log value is above/below risk threshold.
+
+  fix, resolv, appeal, action,  Calculates revised probability if top driver
+  recommend, improv, reduc      is resolved. Lists 3 remediation steps specific
+                                to this claim's ICD, CPT, and encounter type.
+
+  risk, score, probabilit,      States denial %, risk band, distance from 42%
+  percent, high, medium, low    baseline, net SHAP shift in log-odds.
+
+  interact, combination,        States ICD×CPT interaction pattern. Points to
+  pair, together                Interactions tab for the full heatmap.
+
+  nationalit, nation, country,  States nationality from payload. Describes
+  emirati, indian, expat        its SHAP gain and direction.
+
+  model, algorithm, xgboost,    Returns model performance metrics:
+  auc, accuracy, performance    ROC-AUC 0.8466, accuracy 76%, top features.
+
+  (no match — default)          Summary: denial %, risk level, top driver,
+                                suggested follow-up questions.
+  ──────────────────────────────────────────────────────────────────────────
+
+
+────────────────────────────────────────────────────────────────────────────────
+SECTION 5 — THE GREETING MESSAGE
+────────────────────────────────────────────────────────────────────────────────
+
+When a successful prediction comes back, Chat.init() fires automatically
+and renders a greeting bubble without any user input. The greeting:
+
+  1. States explicitly: "actual model SHAP values" (not estimated)
+  2. Shows denial_probability_pct and risk_level
+  3. Shows net SHAP shift (finalLogOdds - baseLogOdds) from the real base
+  4. Lists the top 3 SHAP drivers with their values and direction arrows
+  5. Ends with "What would you like to explore?"
+
+Example greeting (for a HIGH risk claim):
+
+  "I've analysed this claim using the actual model SHAP values.
+   The model predicts 73.2% denial probability (HIGH risk).
+   Net SHAP shift: +1.277 from base -0.284.
+
+   Top drivers:
+   Activity Gross Amount (+0.612, ↑ denial),
+   CPT Category (+0.389, ↑ denial),
+   Billing Lag (+0.187, ↑ denial).
+
+   What would you like to explore?"
+
+All values in the greeting are real numbers from the API — not hardcoded.
+
+
+────────────────────────────────────────────────────────────────────────────────
+SECTION 6 — LIFECYCLE: ACTIVATE, USE, RESET
+────────────────────────────────────────────────────────────────────────────────
+
+STATE: INACTIVE (on page load)
+  - Chat input is disabled
+  - Send button is disabled
+  - #chat-idle placeholder is visible: "Submit a claim to activate…"
+  - _payload, _result, _contributions are all null
+
+STATE: ACTIVE (after successful prediction)
+  Triggered by: app.js → Chat.init(payload, result, contributions)
+  - _payload, _result, _contributions are set
+  - Input and send button are enabled
+  - #chat-idle is hidden
+  - Greeting bubble is rendered
+
+STATE: RESET (on new form submission)
+  Triggered by: app.js → Chat.clear() before every API call
+  - All state variables set back to null
+  - Chat bubble list is cleared
+  - Input and button disabled again
+  - #chat-idle reappears
+  - After the new result comes back, Chat.init() fires again with fresh data
+
+
+────────────────────────────────────────────────────────────────────────────────
+SECTION 7 — HOW TEXT IS RENDERED (MARKDOWN MINI-PARSER)
+────────────────────────────────────────────────────────────────────────────────
+
+Response strings are written with a minimal markdown-like syntax which is
+converted to HTML by the _md() function in chat.js before being inserted
+into the DOM.
+
+  Syntax          Renders as
+  ─────────────────────────────────
+  **text**        <strong>text</strong>
+  `code`          <code>code</code>
+  \n\n            </p><p>  (new paragraph)
+  \n- item        </p><ul><li>item  (list item)
+  \n              <br>  (line break)
+
+All user input is HTML-escaped (&, <, >) before rendering to prevent XSS.
+The escaping happens at the start of _md() before any other transformation.
+
+
+────────────────────────────────────────────────────────────────────────────────
+SECTION 8 — WHAT THE ANALYST CANNOT DO
+────────────────────────────────────────────────────────────────────────────────
+
+  ✗  It cannot answer questions about OTHER claims (only the current one)
+  ✗  It cannot access payer policy documents or clinical guidelines
+  ✗  It cannot explain WHY the model was trained on certain patterns
+  ✗  It cannot guarantee any specific outcome upon resubmission
+  ✗  It cannot remember conversations across page reloads
+  ✗  It cannot learn or improve from user feedback
+  ✗  It does not call any external API (no OpenAI, no Anthropic, nothing)
+  ✗  It cannot answer questions unrelated to the claim (weather, news, etc.)
+
+For any of the above, the RAG microservice upgrade (documented in
+architechture.txt Section 7) would replace _generate() with a fetch()
+call to a vector-search + LLM pipeline, while keeping the entire rest of
+the chat system unchanged.
+
+
+────────────────────────────────────────────────────────────────────────────────
+SECTION 9 — HOW TO EXTEND THE RULE ENGINE
+────────────────────────────────────────────────────────────────────────────────
+
+To add a new response topic, add a new if-block inside _generate() in
+chat.js. Pattern to follow:
+
+  // Rule: [topic description]
+  if (/\b(keyword1|keyword2|keyword3)\b/.test(m)) {
+    return `Your response here using ${_payload.some_field} and
+            ${_contributions[0].value.toFixed(3)} etc.`;
+  }
+
+Rules
+─────
+1. Add the new if-block BEFORE the default fallback (last block).
+2. Use \b word boundary in the regex to avoid partial matches.
+3. Always reference _payload, _result, _contributions — never hardcode
+   claim-specific values.
+4. Keep responses under ~200 words for readability in the chat drawer.
+5. Use **bold** for key numbers, `backticks` for codes and feature names.
+
+Example — adding a "facility" rule:
+
+  if (/\b(facility|hospital|clinic|setting)\b/.test(m)) {
+    const facilityShap = _contributions.find(
+      c => c.name.toLowerCase().includes('facility')
+    )?.value ?? 0;
+    return `Facility type is **${_payload.facility_type}**.
+            Its SHAP contribution for this claim: **${facilityShap >= 0 ? '+' : ''}${facilityShap.toFixed(4)}**.
+            ${facilityShap > 0
+              ? 'This facility type is associated with higher denial risk in the model.'
+              : 'This facility type has little effect on denial risk for this claim.'
+            }`;
+  }
+
+
+────────────────────────────────────────────────────────────────────────────────
+SECTION 10 — FILE REFERENCE
+────────────────────────────────────────────────────────────────────────────────
+
+  File                    Responsibility
+  ──────────────────────────────────────────────────────────────────────────
+  frontend/js/chat.js    Entire AI Analyst: state, DOM, response engine,
+                          greeting, lifecycle (init/send/clear)
+
+  frontend/js/shap.js    SHAP bridge: reads result.explanation from API,
+                          converts to contributions array used by chat.js
+
+  frontend/js/api.js     HTTP layer: passes explanation object through
+                          untouched from model2main.py response
+
+  model2main.py           Source of all real SHAP values: TreeExplainer,
+                          _build_explanation(), _build_feature_explanations()
+                          — this is where the insights actually originate
+
+  frontend/index.html    Chat drawer HTML: #chat-messages, #chat-input,
+                          #chat-send-btn, #chat-idle, #chat-drawer
+  ──────────────────────────────────────────────────────────────────────────
+
+
+================================================================================
+  END OF DOCUMENT
+================================================================================
+
+
+                         ┌─────────────────────┐
+                         │      Frontend       │
+                         │  RCM Analyst UI     │
+                         └──────────┬──────────┘
+                                    │
+                                    ▼
+                         ┌─────────────────────┐
+                         │    API Gateway      │
+                         │ Auth / Rate Limit   │
+                         └──────────┬──────────┘
+                                    │
+                   ┌────────────────┴────────────────┐
+                   │                                 │
+                   ▼                                 ▼
+        ┌────────────────────┐             ┌────────────────────┐
+        │ Prediction Service │             │   AI Analyst       │
+        │      :8000         │             │      :8060         │
+        └─────────┬──────────┘             └──────────┬─────────┘
+                  │                                   │
+                  ▼                                   ▼
+        ┌────────────────────┐              ┌────────────────────┐
+        │ Feature Engineering│              │ Evidence Builder  │
+        └─────────┬──────────┘              └──────────┬─────────┘
+                  │                                    │
+                  ▼                                    ▼
+        ┌────────────────────┐              ┌────────────────────┐
+        │ XGBoost Model      │              │ Session Store      │
+        │ Model Registry     │              │ Redis              │
+        └─────────┬──────────┘              └────────────────────┘
+                  │
+           ┌──────┴──────┐
+           ▼             ▼
+         SHAP        Interactions
+           │             │
+           └──────┬──────┘
+                  ▼
+          Claim Intelligence
+                  │
+                  ▼
+        ┌────────────────────┐
+        │ Gemini / Vertex AI │
+        │ LLM Reasoning      │
+        └─────────┬──────────┘
+                  │
+                  ▼
+           Guardrail Layer
+                  │
+                  ▼
+          Analyst Response
+
+
+        ─────────── Supporting Infrastructure ──────────
+
+        PostgreSQL ─── Audit / Sessions / Metadata
+
+        Redis ──────── Session / Cache / Rate limiting
+
+        Object Store ─ Model artifacts / reports
+
+        Monitoring ── Logs / Metrics / Traces
+
+        Model Registry ─ Versions / Experiments
+
+        Secrets Manager ─ Credentials
+
+        CI/CD ─────── Testing / Deployment

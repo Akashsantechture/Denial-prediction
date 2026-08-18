@@ -72,7 +72,7 @@ for i in range(len(records)):
             results.append({
                 "Claim #": i + 1,
                 "Actual Result": actual_status,
-                "Predicted Risk": pred_risk,
+                "Predicted risk": pred_risk,
                 "Probability": f"{pred_prob}%",
                 "Validation": match_status
             })
@@ -82,7 +82,7 @@ for i in range(len(records)):
             results.append({
                 "Claim #": i + 1,
                 "Actual Result": actual_status,
-                "Predicted Risk": f"ERR: {res.status_code}",
+                "Predicted risk": f"ERR: {res.status_code}",
                 "Probability": "N/A",
                 "Validation": "⚠️ FAILED"
             })

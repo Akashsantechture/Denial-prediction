@@ -176,7 +176,7 @@ def run_pipeline_inference(data_dict: dict) -> PredictionResponse:
     prob = float(MODEL.predict_proba(X_inference)[0, 1])
     prob_pct = round(prob * 100, 2)
 
-    # --- RECALIBRATED RISK THRESHOLDS ---
+    # --- RECALIBRATED risk THRESHOLDS ---
     if prob_pct >= 50.0:
         risk_level = "HIGH"
         is_high_risk = True
@@ -217,4 +217,4 @@ def health():
     }
 
 # Serve the HTML/CSS/JS frontend — must be mounted LAST (after all API routes)
-app.mount("/", StaticFiles(directory="frontend3", html=True), name="frontend")
+app.mount("/", StaticFiles(directory="frontend", html=True), name="frontend")

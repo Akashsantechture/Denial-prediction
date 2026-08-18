@@ -13,16 +13,16 @@ entirely in the browser. It connects to a FastAPI backend (genericmain.py) via
 fetch() API calls for claim risk prediction. No framework (React, Vue, etc.) is
 used — the frontend is pure vanilla JS with Plotly.js for all charts.
 
-Entry point : frontend3/index.html
+Entry point : frontend/index.html
 Run command : uvicorn genericmain:app --reload  →  visit http://127.0.0.1:8000
-Serving     : FastAPI StaticFiles mount serves frontend3/ at the root path "/"
+Serving     : FastAPI StaticFiles mount serves frontend/ at the root path "/"
 
 
 ────────────────────────────────────────────────────────────────────────────────
 SECTION 2 — FILE & FOLDER STRUCTURE
 ────────────────────────────────────────────────────────────────────────────────
 
-frontend3/
+frontend/
 │
 ├── index.html                ← Single HTML shell. Contains all tab panels,
 │                               the claim form, and the AI chat drawer.
@@ -131,7 +131,7 @@ Contains :
                profession, clinician category, facility type
   - JSON panel: monospace textarea, pre-populated from field values on
     first switch to JSON mode, parse-error display, hint text
-  - "Evaluate Claim Risk" submit button
+  - "Evaluate Claim risk" submit button
 How      : app.js collectPayload() reads all field IDs. JSON mode is
            detected via window.__jsonModeActive() patched from inline script.
 
@@ -146,7 +146,7 @@ solely as the event target that app.js uses internally.
   ───────────────────────────────────
   Contains (post-submission):
   - Denial Probability Gauge (Plotly indicator)        → Charts.gauge()
-  - Risk badge (HIGH / MEDIUM / LOW coloured pill)
+  - risk badge (HIGH / MEDIUM / LOW coloured pill)
   - Patient & Claim info table                         → _setTableRows()
   - Model info card (static: algorithm, AUC, latency)
   - Denial Reason Distribution bar chart               → Charts.denialReasonBar()
@@ -159,7 +159,7 @@ solely as the event target that app.js uses internally.
   Contains (post-submission):
   - 4 KPI cards:
       Denial Probability % | Net SHAP Log-Odds | High-Impact Flag count
-      | Revised Risk if top flag fixed               → _setKPI()
+      | Revised risk if top flag fixed               → _setKPI()
   - SHAP Waterfall chart (horizontal)                  → Charts.waterfall()
   - Feature Value vs SHAP Value scatter                → Charts.featureScatter()
   - Claim Amount SHAP Dependence scatter               → Charts.dependence()
@@ -391,7 +391,7 @@ Response rules in _generate() — keyword regex matching (first match wins):
   billing|lag|submission|delay      → Billing lag impact
   amount|claim|net|gross|aed        → Claim amount / financial analysis
   fix|resolv|appeal|action|recommend→ Remediation steps + revised risk
-  risk|score|probabilit             → Risk band explanation
+  risk|score|probabilit             → risk band explanation
   interact|combination|pair         → ICD×CPT interaction summary
   nationalit|nation|country         → Nationality signal
   model|algorithm|xgboost|auc       → Model performance stats
@@ -504,7 +504,7 @@ To retheme the entire app, only these variables need to change:
   Spacing / shape:
     --radius-sm, --radius-md, --radius-lg
     --shadow-sm, --shadow-md
-    --sidebar-width (legacy, not used in frontend3)
+    --sidebar-width (legacy, not used in frontend)
     --transition
 
   Nav icon resize (in index.html <style> block):
@@ -549,7 +549,7 @@ stays identical.
 MICROSERVICE ARCHITECTURE
 ──────────────────────────
 
-  frontend3/chat.js
+  frontend/chat.js
         │
         │  POST /chat  { query, claim_context, history }
         ▼
@@ -659,7 +659,7 @@ STEP 4 — Build the FastAPI microservice (main.py)
 
   Run: uvicorn rag_service.main:app --port 8001 --reload
 
-STEP 5 — Update frontend3/js/chat.js
+STEP 5 — Update frontend/js/chat.js
   Replace the _generate() function body with a single fetch() call.
   The change is confined to exactly ONE function (~8 lines):
 
@@ -746,7 +746,7 @@ SECTION 8 — QUICK REFERENCE: WHERE TO CHANGE THINGS
   ──────────────────────────────────────────────────────────────────────────────
   API backend URL                 js/api.js   const BASE_URL
   Request timeout                 js/api.js   const TIMEOUT_MS
-  Risk thresholds (35/50%)        js/charts.js gauge() steps ranges
+  risk thresholds (35/50%)        js/charts.js gauge() steps ranges
                                   js/shap.js  riskClass logic in app.js
   Base denial rate (42%)          js/shap.js  BASE_LOG_ODDS
   All chart colours               js/charts.js COLORS object

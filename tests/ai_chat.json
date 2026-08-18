@@ -1,0 +1,117 @@
+[
+{
+  "claim_intelligence": {
+    "denial_probability_pct": 83,
+    "is_high_risk": true,
+    "risk_level": "HIGH",
+    "action_recommendation": "Flagged for manual review. High predicted denial risk.",
+    "explanation": {
+      "base_value": 0.000095,
+      "final_model_value": 1.585405,
+      "model_output_space": "raw_margin_log_odds",
+      "top_drivers": [
+        {
+          "feature": "claim_gross_log",
+          "display_name": "Claim Gross Amount",
+          "raw_value": 5.5254529391317835,
+          "shap_value": 1.63695,
+          "absolute_shap": 1.63695,
+          "direction": "increases_denial_risk",
+          "impact_level": "HIGH",
+          "contribution_share_pct": 67.16,
+          "explanation": "The claim gross amount contributed increasing the predicted denial risk to the model prediction."
+        },
+        {
+          "feature": "activity_gross_log",
+          "display_name": "Activity Gross Amount",
+          "raw_value": 5.5254529391317835,
+          "shap_value": 0.205635,
+          "absolute_shap": 0.205635,
+          "direction": "increases_denial_risk",
+          "impact_level": "HIGH",
+          "contribution_share_pct": 8.44,
+          "explanation": "The activity gross amount contributed increasing the predicted denial risk to the model prediction."
+        },
+        {
+          "feature": "clinician_profession",
+          "display_name": "Clinician Profession",
+          "raw_value": "Internal Medicine",
+          "shap_value": 0.068969,
+          "absolute_shap": 0.068969,
+          "direction": "increases_denial_risk",
+          "impact_level": "HIGH",
+          "contribution_share_pct": 2.83,
+          "explanation": "The clinician profession contributed increasing the predicted denial risk to the model prediction."
+        }
+      ],
+      "supporting_factors": [
+        {
+          "feature": "cpt_category",
+          "display_name": "CPT Category",
+          "raw_value": "Evaluation_Management",
+          "shap_value": -0.165356,
+          "absolute_shap": 0.165356,
+          "direction": "reduces_denial_risk",
+          "impact_level": "HIGH",
+          "contribution_share_pct": 6.78,
+          "explanation": "The CPT category contributed reducing the predicted denial risk to the model prediction."
+        },
+        {
+          "feature": "activity_code",
+          "display_name": "Activity / CPT Code",
+          "raw_value": "99213",
+          "shap_value": -0.064046,
+          "absolute_shap": 0.064046,
+          "direction": "reduces_denial_risk",
+          "impact_level": "MODERATE",
+          "contribution_share_pct": 2.63,
+          "explanation": "The submitted activity/CPT code contributed reducing the predicted denial risk to the model prediction."
+        },
+        {
+          "feature": "diagnosis_code",
+          "display_name": "Diagnosis Code",
+          "raw_value": "I10",
+          "shap_value": -0.038576,
+          "absolute_shap": 0.038576,
+          "direction": "reduces_denial_risk",
+          "impact_level": "MODERATE",
+          "contribution_share_pct": 1.58,
+          "explanation": "The diagnosis code contributed reducing the predicted denial risk to the model prediction."
+        }
+      ],
+      "interactions": [
+        {
+          "feature_1": "claim_gross_log",
+          "feature_1_display_name": "Claim Gross Amount",
+          "feature_2": "claim_net_log",
+          "feature_2_display_name": "Net Claim Amount",
+          "interaction_value": 0.214921,
+          "absolute_interaction": 0.214921,
+          "direction": "increases_denial_risk",
+          "explanation": "The combined interaction between Claim Gross Amount and Net Claim Amount pushes the model prediction toward higher denial risk."
+        },
+        {
+          "feature_1": "activity_code",
+          "feature_1_display_name": "Activity / CPT Code",
+          "feature_2": "cpt_category",
+          "feature_2_display_name": "CPT Category",
+          "interaction_value": 0.103051,
+          "absolute_interaction": 0.103051,
+          "direction": "increases_denial_risk",
+          "explanation": "The combined interaction between Activity / CPT Code and CPT Category pushes the model prediction toward higher denial risk."
+        }
+      ]
+    }
+  }
+},
+
+
+
+
+
+
+{
+  "session_id": "PASTE_THE_SESSION_ID_HERE",
+  "message": "Why is this claim high risk?"
+}
+]

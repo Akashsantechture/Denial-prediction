@@ -63,3 +63,11 @@ logs/
 .env
 .env.*
 *.env
+
+
+# --- GCP / Credentials & Secrets ---
+credential.json
+*credential*.json
+*credentials*.json
+*-key.json
+*service-account*.json

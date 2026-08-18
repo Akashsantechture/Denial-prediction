@@ -30,7 +30,7 @@ SELECT
     COALESCE(NULLIF(ca.claim_route, ''), 'Direct') AS network,		
     COALESCE(NULLIF(ca.payer_classification, ''), 'Standard') AS plan_type,		
     		
-    -- 6. Prior Authorization Risk Proxy Features		
+    -- 6. Prior Authorization risk Proxy Features		
     CASE WHEN ca.activity_denial_code = 'AUTH-001' THEN 0 ELSE 1 END AS prior_auth_approved_flag,		
     CASE WHEN ca.activity_denial_code = 'AUTH-001' THEN 1 ELSE 0 END AS prior_auth_needed,		
     		
@@ -81,7 +81,7 @@ WITH med_necessity_stats AS (
     GROUP BY diagnosis_code, activity_code				
 ),				
 				
--- 2. PA Risk Score				
+-- 2. PA risk Score				
 pa_risk_stats AS (				
     SELECT 				
         payer_id,				
@@ -243,7 +243,7 @@ med_necessity_stats AS (
     GROUP BY diagnosis_code, activity_code
 ),
 
--- 2. PA Risk Score
+-- 2. PA risk Score
 pa_risk_stats AS (
     SELECT
         payer_id,
@@ -468,7 +468,7 @@ LIMIT 10;
 ----------------------------------------------------denialmodel1.5-----------------------------
 
 CREATE TABLE public."denialclaims1.5" AS
-WITH PayerRiskTiers AS (
+WITH PayerriskTiers AS (
     -- CTE 1: Calculate the Payer Tiers dynamically without exposing the Payer ID
     SELECT 
         payer_id,
@@ -549,7 +549,7 @@ SELECT
 FROM 
     public.claim_activity ca
 LEFT JOIN 
-    PayerRiskTiers prt ON ca.payer_id = prt.payer_id
+    PayerriskTiers prt ON ca.payer_id = prt.payer_id
 LEFT JOIN 
     ClaimComplexity cc ON ca.haad_claim_id = cc.haad_claim_id
 WHERE 

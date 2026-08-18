@@ -86,7 +86,7 @@ def run_pipeline_inference(data_dict: dict) -> PredictionResponse:
     prob = float(MODEL.predict_proba(X_transformed)[0, 1])
     prob_pct = round(prob * 100, 2)
 
-    # --- RECALIBRATED RISK THRESHOLDS ---
+    # --- RECALIBRATED risk THRESHOLDS ---
     if prob_pct >= 60.0:
         risk_level = "HIGH"
         is_high_risk = True
