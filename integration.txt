@@ -1,0 +1,686 @@
+================================================================================
+  ClaimAI — Integration Reference
+  Services: Denial Prediction API + AI Analyst Microservice
+  Prepared by: Santechture
+================================================================================
+
+
+────────────────────────────────────────────────────────────────────────────────
+1. SYSTEM OVERVIEW
+────────────────────────────────────────────────────────────────────────────────
+
+ClaimAI consists of three runtime components:
+
+  ┌─────────────────────────────────────────────────────────────────────────┐
+  │  BROWSER (SPA)           http://127.0.0.1:8000                          │
+  │  frontend/index.html                                                     │
+  │  Vanilla JS + Plotly.js                                                  │
+  │  Served as static files by the Prediction API                           │
+  └──────────────┬──────────────────────────────┬───────────────────────────┘
+                 │ POST /predict_user_claim      │ POST /analyst/session
+                 │ GET  /health                  │ POST /analyst/chat
+                 ▼                               │ DELETE /analyst/session/:id
+  ┌──────────────────────────────┐               ▼
+  │  PREDICTION API              │  ┌────────────────────────────────────┐
+  │  model2main.py            │  │  AI ANALYST MICROSERVICE           │
+  │  FastAPI + XGBoost v1.5      │  │  ai_analyst/main.py                │
+  │  Port 8000                   │  │  FastAPI + Gemini (Vertex AI)      │
+  │                              │  │  Port 8060                         │
+  │  Also serves frontend/       │  │                                    │
+  │  as StaticFiles mount        │  │  Depends on:                       │
+  └──────────────────────────────┘  │   - PostgreSQL (sessions + msgs)   │
+                                     │   - Google Cloud Vertex AI         │
+                                     └────────────────────────────────────┘
+
+Both backend services are independent processes (or Docker containers).
+The frontend talks to both directly from the browser via fetch().
+Neither service calls the other — the browser is the orchestrator.
+
+
+────────────────────────────────────────────────────────────────────────────────
+2. SERVICE RESPONSIBILITIES
+────────────────────────────────────────────────────────────────────────────────
+
+  SERVICE                 RESPONSIBILITY
+  ──────────────────────────────────────────────────────────────────────────
+  Prediction API          Accepts a raw claim JSON, runs the XGBoost v1.5
+  (port 8000)             inference pipeline (model2main.py), returns denial
+                          probability, risk level, SHAP feature contributions
+                          computed by TreeExplainer, and SHAP feature
+                          interactions.
+                          Also serves the frontend SPA as static files.
+
+  AI Analyst              Accepts the full claim intelligence (claim facts
+  Microservice            + prediction result + SHAP values) and creates a
+  (port 8060)             persistent conversational session backed by
+                          PostgreSQL.  On each chat turn it sends the claim
+                          intelligence, conversation history, and the user
+                          message to Gemini (Vertex AI) and returns a
+                          grounded natural-language explanation.
+
+  Frontend SPA            Collects the claim form, calls both backends,
+  (browser)               renders Plotly charts, and drives the AI chat
+                          drawer.  Falls back to a local rule-based engine
+                          if the AI Analyst is unreachable.
+  ──────────────────────────────────────────────────────────────────────────
+
+
+────────────────────────────────────────────────────────────────────────────────
+3. FULL REQUEST FLOW (STEP BY STEP)
+────────────────────────────────────────────────────────────────────────────────
+
+STEP 1 — User submits claim form
+  app.js  handleSubmit()
+    → collectPayload() (or JSON textarea)
+    → showSpinner(true)
+    → Chat.clear()                 ← deletes previous analyst session
+
+STEP 2 — Prediction API call
+  api.js  API.predict(payload)
+    → POST http://127.0.0.1:8000/predict_user_claim
+       Body: { diagnosis_code, activity_code, claim_net, ... }
+
+  model2main.py pipeline:
+    1. Pydantic validation (UserClaimInput)
+    2. add_categorical_features()   → icd_category, cpt_category
+    3. engineer_features()          → *_log transforms, high_cost_flag
+    4. build_model_dataframe()      → exact 19-feature DataFrame
+    5. XGBoost predict_proba()      → denial probability
+    6. SHAP TreeExplainer           → per-feature contributions
+    7. Risk classification          → HIGH / MEDIUM / LOW
+    8. PredictionResponse           → returned to browser
+
+  Browser receives:
+    {
+      denial_probability_pct,  is_high_risk,  risk_level,
+      action_recommendation,
+      explanation: {
+        base_value, final_model_value,
+        top_drivers:        [{ feature, shap_value, direction, ... }],
+        supporting_factors: [...],
+        all_features:       [...],
+        interactions:       [{ feature_1, feature_2, interaction_value, ... }]
+      }
+    }
+
+STEP 3 — Charts and tabs rendered
+  app.js dispatches result to:
+    Charts.gauge()              → denial probability gauge
+    Charts.denialReasonBar()    → SHAP factor distribution (Overview tab)
+    Charts.waterfall()          → SHAP waterfall (SHAP tab)
+    Charts.featureScatter()     → feature value vs SHAP scatter
+    Charts.dependence()         → claim amount dependence chart
+    ICD.renderTable/Heatmap()   → ICD Drill-Down tab
+    Interactions.renderPairs/
+      SHAPHeatmap/DenialHeatmap → Interactions tab
+
+STEP 4 — AI Analyst session created (non-blocking, runs after greeting)
+  chat.js  Chat.init(payload, result, contributions)
+    1. Greeting bubble rendered immediately from local SHAP data (no network wait)
+    2. _initLLMSession() fires asynchronously:
+         → _buildClaimIntelligence(payload, result, contributions)
+           Constructs:
+             {
+               claim:   { all raw claim fields },
+               prediction: { probability, risk_level, action },
+               shap_explanation: result.explanation,   ← full API SHAP object
+               top_shap_contributions: [               ← top 10 from shap.js
+                 { feature, shap_value, direction }, ...
+               ]
+             }
+         → AnalystAPI.createSession(claimIntelligence)
+           POST http://127.0.0.1:8060/analyst/session
+           Body: { claim_intelligence: { ... } }
+
+  AI Analyst receives session request:
+    analyst_service.py  create_session()
+      → session_manager.create_session()
+          Writes two PostgreSQL rows atomically:
+            analyst_sessions          (session_id, status, timestamps)
+            analyst_claim_intelligence (session_id, evidence JSON)
+      → Returns session_id (UUID)
+
+  Browser receives { session_id }
+    _sessionId stored in chat.js
+    _mode set to 'LLM'
+    Mode badge updated to "✦ Gemini AI"
+
+  If the microservice is unreachable or returns an error:
+    _mode stays 'RULE_BASED'
+    Mode badge shows "⚡ Rule-based"
+    All subsequent chat turns use the local rule engine — no further
+    network calls to port 8060
+
+STEP 5 — User sends a chat message
+  chat.js  Chat.send(userMessage)
+    1. User bubble appended
+    2. "Thinking…" placeholder bubble appended
+    3. _generateResponse(userMessage) called:
+
+       IF _mode === 'LLM':
+         AnalystAPI.chat(_sessionId, userMessage)
+           POST http://127.0.0.1:8060/analyst/chat
+           Body: { session_id, message }
+
+         AI Analyst receives chat request:
+           analyst_service.py  chat()
+             1. session_manager.get_claim_intelligence(session_id)
+                  Reads evidence JSON from PostgreSQL
+             2. session_manager.add_message(session_id, role='user', content)
+                  Writes user message to analyst_messages table
+             3. session_manager.get_messages(session_id)
+                  Retrieves full conversation history (ordered by created_at)
+             4. llm_reasoner.generate_response(
+                    claim_intelligence,
+                    conversation,
+                    user_message
+                )
+                  Builds structured prompt containing:
+                    - SYSTEM_PROMPT (strict evidence-grounding rules)
+                    - CLAIM INTELLIGENCE JSON block
+                    - CONVERSATION HISTORY JSON block
+                    - CURRENT USER QUESTION
+                  Calls Gemini via Vertex AI:
+                    client.models.generate_content(
+                        model='gemini-2.5-flash',
+                        temperature=0.1
+                    )
+             5. session_manager.add_message(session_id, role='assistant', content)
+                  Writes Gemini answer to analyst_messages table
+             6. Returns answer string
+
+         Browser receives { session_id, answer }
+         Thinking placeholder replaced with Gemini answer
+
+       IF _mode === 'RULE_BASED' (or LLM call failed):
+         _generateRuleBased(userMessage) runs locally
+         Keyword regex matching produces a deterministic answer
+         Thinking placeholder replaced with rule-based answer
+         If failure was unexpected (was in LLM mode):
+           "⚡ Local response — AI Analyst temporarily unavailable." notice appended
+
+STEP 6 — Session cleanup
+  When user submits a new claim or page is unloaded:
+    Chat.clear()
+      → AnalystAPI.deleteSession(_sessionId)   (fire-and-forget)
+        DELETE http://127.0.0.1:8060/analyst/session/{session_id}
+
+      AI Analyst CASCADE-deletes:
+        analyst_sessions row
+        → analyst_messages rows       (CASCADE)
+        → analyst_claim_intelligence  (CASCADE)
+
+
+────────────────────────────────────────────────────────────────────────────────
+4. DATA FLOW DIAGRAM
+────────────────────────────────────────────────────────────────────────────────
+
+  Browser (SPA)
+  ─────────────
+  [Claim Form]
+       │
+       │  POST /predict_user_claim
+       ▼
+  ┌────────────────────────────────────────────┐
+  │  PREDICTION API  (port 8000)               │
+  │  model2main.py                          │
+  │                                            │
+  │  Pydantic → categorical → engineering      │
+  │  → 19-feature DataFrame → XGBoost          │
+  │  → SHAP TreeExplainer                      │
+  │  → PredictionResponse                      │
+  └────────────────────┬───────────────────────┘
+                       │  { denial_pct, risk_level, explanation }
+                       ▼
+  Browser renders charts (Plotly) + SHAP tabs
+                       │
+                       │  POST /analyst/session
+                       │  { claim_intelligence: { claim, prediction, shap } }
+                       ▼
+  ┌────────────────────────────────────────────┐
+  │  AI ANALYST MICROSERVICE  (port 8060)      │
+  │  ai_analyst/main.py                        │
+  │                                            │
+  │  SessionManager                            │
+  │    ├── PostgreSQL: analyst_sessions        │
+  │    ├── PostgreSQL: analyst_claim_intel     │
+  │    └── PostgreSQL: analyst_messages        │
+  │                                            │
+  │  LLMReasoner                               │
+  │    └── Vertex AI Gemini 2.5 Flash          │
+  └────────────────────┬───────────────────────┘
+                       │  { session_id }
+                       ▼
+  Browser stores session_id, sets mode = LLM
+                       │
+  [User types message] │
+                       │  POST /analyst/chat
+                       │  { session_id, message }
+                       ▼
+  AI Analyst:
+    get_claim_intelligence + get_messages
+    → build Gemini prompt
+    → Vertex AI call
+    → store assistant message
+    → return { answer }
+                       │
+                       ▼
+  Browser replaces "Thinking…" bubble with Gemini answer
+
+  If any step to port 8060 fails:
+    _generateRuleBased() runs locally in browser
+    No further calls to port 8060 for that message
+
+
+────────────────────────────────────────────────────────────────────────────────
+5. FALLBACK BEHAVIOUR
+────────────────────────────────────────────────────────────────────────────────
+
+The rule-based engine in chat.js is a complete fallback — it does not
+degrade gracefully, it is fully feature-complete for standard questions.
+
+  SCENARIO                              BEHAVIOUR
+  ──────────────────────────────────────────────────────────────────────────
+  Port 8060 unreachable on startup      _mode = RULE_BASED from the start.
+                                        Badge shows "⚡ Rule-based".
+                                        User sees no error — answers are
+                                        instant from the local engine.
+
+  Session creation returns HTTP error   Same as above — falls back cleanly.
+
+  Individual chat call fails            That single message falls back to
+                                        rule-based.  _mode stays LLM so
+                                        the next message tries Gemini again.
+                                        A subtle notice is appended:
+                                        "⚡ Local response — AI Analyst
+                                        temporarily unavailable."
+
+  Gemini quota / 500 from Vertex AI     analyst_service raises RuntimeError.
+                                        FastAPI returns HTTP 500.
+                                        AnalystAPI.chat() returns
+                                        { ok:false, detail }.
+                                        chat.js falls back for that turn.
+
+  Gemini timeout (>30 s)                AbortController fires.
+                                        AnalystAPI.chat() returns
+                                        { ok:false, detail:'timed out' }.
+                                        Rule-based answer used for that turn.
+  ──────────────────────────────────────────────────────────────────────────
+
+
+────────────────────────────────────────────────────────────────────────────────
+6. API CONTRACTS
+────────────────────────────────────────────────────────────────────────────────
+
+6.1  PREDICTION API — POST /predict_user_claim
+──────────────────────────────────────────────
+Request body (UserClaimInput):
+  {
+    "diagnosis_code":       "Z00.00",
+    "diagnosis_type":       "Primary",
+    "activity_code":        "99213",
+    "activity_gross":       850.00,
+    "activity_quantity":    1,
+    "claim_gross":          850.00,
+    "claim_net":            680.00,
+    "patient_age":          45,
+    "gender":               "male",
+    "nationality":          "EMIRATI",
+    "payer_id":             "DAMAN",
+    "insurance_plan_tier":  "Enhanced",
+    "clinician_profession": "Physician",
+    "clinician_category":   "General Practitioner",
+    "facility_type":        "Clinic",
+    "billing_lag_days":     2,
+    "length_of_stay":       0,
+    "encounter_type":       "OP"
+  }
+
+Response (200, PredictionResponse):
+  {
+    "denial_probability_pct":  82.4,
+    "is_high_risk":            true,
+    "risk_level":              "HIGH",
+    "action_recommendation":   "Flagged for manual review. High predicted denial likelihood.",
+    "explanation": {
+      "base_value":           0.000095,
+      "final_model_value":    0.824,
+      "model_output_space":   "raw_margin_log_odds",
+      "top_drivers": [
+        {
+          "feature":               "claim_gross_log",
+          "display_name":          "Claim Gross Amount",
+          "shap_value":            0.623,
+          "absolute_shap":         0.623,
+          "direction":             "increases_denial",
+          "impact_level":          "HIGH",
+          "contribution_share_pct": 67.16,
+          "raw_value":             850.00,
+          "explanation":           "The claim gross amount pushed toward higher denial likelihood."
+        },
+        ...
+      ],
+      "supporting_factors": [ ... ],
+      "all_features":        [ ... ],
+      "interactions":        [
+        {
+          "feature_1":             "icd_category",
+          "feature_1_display_name": "ICD Category",
+          "feature_2":             "cpt_category",
+          "feature_2_display_name": "CPT Category",
+          "interaction_value":     0.183,
+          "direction":             "increases_denial",
+          "explanation":           "..."
+        },
+        ...
+      ]
+    }
+  }
+
+Response (422, validation error):
+  {
+    "status":  "validation_error",
+    "message": "Request failed schema validation.",
+    "errors":  [{ "field": "...", "issue": "...", "provided_value": "..." }]
+  }
+
+
+6.2  AI ANALYST — POST /analyst/session
+─────────────────────────────────────────
+Request body (AnalystSessionRequest):
+  {
+    "claim_intelligence": {
+      "claim":       { ... all claim fields ... },
+      "prediction":  { "denial_probability_pct", "risk_level", "is_high_risk",
+                       "action_recommendation" },
+      "shap_explanation":        { ... full explanation object from prediction API ... },
+      "top_shap_contributions":  [
+        { "feature": "claim_gross_log", "shap_value": 0.623,
+          "direction": "increases_denial_likelihood" },
+        ...
+      ]
+    }
+  }
+
+Response (200, AnalystSessionResponse):
+  {
+    "session_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+    "message":    "Analyst session created successfully."
+  }
+
+
+6.3  AI ANALYST — POST /analyst/chat
+──────────────────────────────────────
+Request body (AnalystChatRequest):
+  {
+    "session_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+    "message":    "Why is this claim flagged as high likelihood?"
+  }
+
+Response (200, AnalystChatResponse):
+  {
+    "session_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+    "answer":     "Based on the supplied claim intelligence, the model's
+                   primary driver is the claim gross amount (SHAP +0.623),
+                   which accounts for 67% of the denial likelihood signal..."
+  }
+
+Response (404): session not found
+Response (500): Gemini / LLM error
+
+
+6.4  AI ANALYST — DELETE /analyst/session/{session_id}
+────────────────────────────────────────────────────────
+Response (200):
+  { "status": "success", "message": "Session deleted.", "session_id": "..." }
+
+Response (404): session not found
+Cascade: deletes analyst_messages + analyst_claim_intelligence automatically.
+
+
+────────────────────────────────────────────────────────────────────────────────
+7. POSTGRESQL SCHEMA
+────────────────────────────────────────────────────────────────────────────────
+
+Tables created by ai_analyst/db/models.py on first startup (init_db()):
+
+  analyst_sessions
+  ─────────────────
+  session_id     VARCHAR(36)   PK
+  model_version  VARCHAR(100)  nullable
+  llm_model      VARCHAR(150)  nullable
+  status         VARCHAR(30)   'active' | 'completed' | 'deleted' | 'error'
+  created_at     TIMESTAMPTZ
+  updated_at     TIMESTAMPTZ
+
+  analyst_claim_intelligence
+  ───────────────────────────
+  session_id  VARCHAR(36)   PK, FK → analyst_sessions(CASCADE)
+  evidence    JSON          full claim intelligence blob
+  created_at  TIMESTAMPTZ
+  updated_at  TIMESTAMPTZ
+
+  analyst_messages
+  ──────────────────
+  id          VARCHAR(36)   PK (UUID)
+  session_id  VARCHAR(36)   FK → analyst_sessions(CASCADE), indexed
+  role        VARCHAR(30)   'user' | 'assistant' | 'system'
+  content     TEXT
+  created_at  TIMESTAMPTZ
+
+  analyst_request_logs
+  ──────────────────────
+  request_id      VARCHAR(36)   PK (UUID)
+  session_id      VARCHAR(36)   nullable, indexed
+  endpoint        VARCHAR(150)
+  status          VARCHAR(30)   'success' | 'error' | 'timeout'
+  latency_ms      INTEGER       nullable
+  llm_model       VARCHAR(150)  nullable
+  error_message   TEXT          nullable
+  metadata_json   JSON          nullable (non-PHI metadata only)
+  created_at      TIMESTAMPTZ
+
+Cascade policy: deleting an analyst_sessions row automatically removes all
+associated analyst_messages and analyst_claim_intelligence rows.
+
+
+────────────────────────────────────────────────────────────────────────────────
+8. ENVIRONMENT VARIABLES
+────────────────────────────────────────────────────────────────────────────────
+
+8.1  Prediction API  (.env in project root)
+───────────────────────────────────────────
+  No required env vars for basic operation — the model path is hardcoded
+  as models/behavioral_xgboost_model2_individual_cats.joblib.
+
+  Optional:
+    DATABASE_URL    postgresql+psycopg2://user:pass@host:5432/dbname
+                    (only if adding DB features to the prediction API)
+
+8.2  AI Analyst Microservice  (ai_analyst/.env)
+────────────────────────────────────────────────
+  REQUIRED:
+    DATABASE_URL               postgresql+psycopg2://postgres:2004@localhost:5432/Denial-prediction
+    GOOGLE_CLOUD_PROJECT       your-gcp-project-id
+    GOOGLE_APPLICATION_CREDENTIALS  /path/to/credentials.json
+
+  OPTIONAL (have defaults):
+    GOOGLE_CLOUD_LOCATION      us-central1
+    GEMINI_MODEL               gemini-2.5-flash
+
+  For Docker:
+    GOOGLE_APPLICATION_CREDENTIALS=/app/credentials.json
+    (credentials.json is COPY'd into the analyst image at /app/credentials.json)
+    In production, use a mounted secret or Workload Identity instead.
+
+
+────────────────────────────────────────────────────────────────────────────────
+9. RUNNING LOCALLY (WITHOUT DOCKER)
+────────────────────────────────────────────────────────────────────────────────
+
+Prerequisites:
+  - Python 3.11+
+  - PostgreSQL running locally (default: localhost:5432)
+  - Google Cloud credentials configured (gcloud auth application-default login
+    OR credentials.json in project root)
+
+Terminal 1 — Prediction API:
+  uvicorn model2main:app --reload --port 8000
+
+Terminal 2 — AI Analyst Microservice:
+  uvicorn ai_analyst.main:app --reload --port 8060
+
+Browser:
+  http://127.0.0.1:8000
+
+
+────────────────────────────────────────────────────────────────────────────────
+10. RUNNING WITH DOCKER
+────────────────────────────────────────────────────────────────────────────────
+
+10.1  Build images (run from project root)
+───────────────────────────────────────────
+  # Prediction API
+  docker build -t denial-prediction-api .
+
+  # AI Analyst Microservice
+  docker build -t denial-analyst -f ai_analyst/Dockerfile .
+
+10.2  Run containers
+─────────────────────
+  # Prediction API (serves frontend + XGBoost inference)
+  docker run -d \
+    --name prediction-api \
+    -p 8000:8000 \
+    denial-prediction-api
+
+  # AI Analyst Microservice
+  docker run -d \
+    --name analyst \
+    -p 8060:8060 \
+    --env DATABASE_URL="postgresql+psycopg2://postgres:2004@host.docker.internal:5432/Denial-prediction" \
+    --env GOOGLE_CLOUD_PROJECT="your-gcp-project-id" \
+    --env GOOGLE_APPLICATION_CREDENTIALS="/app/credentials.json" \
+    denial-analyst
+
+  Note: host.docker.internal resolves to the host machine on Docker Desktop
+  (Windows/macOS).  On Linux use --network host or a Docker network.
+
+10.3  docker-compose (recommended for local development)
+──────────────────────────────────────────────────────────
+  Create docker-compose.yml in the project root:
+
+  ┌──────────────────────────────────────────────────────────────────────┐
+  │  version: "3.9"                                                      │
+  │                                                                      │
+  │  services:                                                           │
+  │                                                                      │
+  │    prediction-api:                                                   │
+  │      build:                                                          │
+  │        context: .                                                    │
+  │        dockerfile: Dockerfile                                        │
+  │      ports:                                                          │
+  │        - "8000:8000"                                                 │
+  │      env_file: .env                                                  │
+  │      restart: unless-stopped                                         │
+  │                                                                      │
+  │    analyst:                                                          │
+  │      build:                                                          │
+  │        context: .                                                    │
+  │        dockerfile: ai_analyst/Dockerfile                             │
+  │      ports:                                                          │
+  │        - "8060:8060"                                                 │
+  │      env_file: ai_analyst/.env                                       │
+  │      environment:                                                    │
+  │        - GOOGLE_APPLICATION_CREDENTIALS=/app/credentials.json       │
+  │      restart: unless-stopped                                         │
+  │      depends_on:                                                     │
+  │        - postgres                                                    │
+  │                                                                      │
+  │    postgres:                                                         │
+  │      image: postgres:16-alpine                                       │
+  │      environment:                                                    │
+  │        POSTGRES_USER: postgres                                       │
+  │        POSTGRES_PASSWORD: 2004                                       │
+  │        POSTGRES_DB: Denial-prediction                                │
+  │      ports:                                                          │
+  │        - "5432:5432"                                                 │
+  │      volumes:                                                        │
+  │        - pgdata:/var/lib/postgresql/data                             │
+  │                                                                      │
+  │  volumes:                                                            │
+  │    pgdata:                                                           │
+  └──────────────────────────────────────────────────────────────────────┘
+
+  Then run:
+    docker compose up --build
+
+
+────────────────────────────────────────────────────────────────────────────────
+11. FILE CHANGES INTRODUCED BY THIS INTEGRATION
+────────────────────────────────────────────────────────────────────────────────
+
+  FILE                              CHANGE
+  ─────────────────────────────────────────────────────────────────────────
+  frontend/js/api.js                Added AnalystAPI global object at bottom
+                                    of file.  Contains: createSession(),
+                                    chat(), deleteSession(), health().
+                                    Points to http://127.0.0.1:8060.
+                                    All methods return {ok, ...} — never throw.
+
+  frontend/js/chat.js               Fully rewritten.  Now async.
+                                    On Chat.init(): greeting shown immediately
+                                    from local data; _initLLMSession() fires
+                                    async to create port 8060 session.
+                                    On Chat.send(): tries AnalystAPI.chat()
+                                    first; falls back to _generateRuleBased()
+                                    if call fails.
+                                    _mode tracks 'LLM' | 'RULE_BASED' | 'INACTIVE'.
+                                    Chat.clear() fires deleteSession().
+
+  frontend/index.html               Added <span id="chat-mode-badge"> to chat
+                                    drawer header to show current engine mode.
+
+  frontend/css/components.css       Added styles for:
+                                    .chat-mode-badge.llm  (blue pill)
+                                    .chat-mode-badge.rule (amber pill)
+                                    .chat-bubble.thinking (animated)
+                                    .chat-fallback-notice (subtle footer)
+
+  Dockerfile                        NEW — builds the Prediction API image.
+                                    python:3.11-slim, libgomp1, XGBoost, SHAP.
+                                    Copies model2main.py, preprocessing/,
+                                    validators/, models/, frontend/.
+                                    CMD: uvicorn model2main:app --port 8000.
+
+  ai_analyst/Dockerfile             NEW — builds the AI Analyst image.
+                                    python:3.11-slim, libpq-dev, psycopg2,
+                                    google-auth, google-genai.
+                                    Copies ai_analyst/ package + credentials.json.
+                                    Sets GOOGLE_APPLICATION_CREDENTIALS.
+                                    CMD: uvicorn ai_analyst.main:app --port 8060.
+  ─────────────────────────────────────────────────────────────────────────
+
+
+────────────────────────────────────────────────────────────────────────────────
+12. QUICK REFERENCE — PORTS AND URLS
+────────────────────────────────────────────────────────────────────────────────
+
+  COMPONENT                   URL
+  ──────────────────────────────────────────────────────────────────────────
+  Frontend SPA                http://127.0.0.1:8000
+  Prediction API health       http://127.0.0.1:8000/health
+  Prediction API docs         http://127.0.0.1:8000/docs
+  Prediction endpoint         http://127.0.0.1:8000/predict_user_claim
+  AI Analyst health           http://127.0.0.1:8060/health
+  AI Analyst docs             http://127.0.0.1:8060/docs
+  Create session              http://127.0.0.1:8060/analyst/session   (POST)
+  Chat                        http://127.0.0.1:8060/analyst/chat      (POST)
+  Delete session              http://127.0.0.1:8060/analyst/session/{id} (DELETE)
+  PostgreSQL (analyst only)   postgresql://localhost:5432/Denial-prediction
+  ──────────────────────────────────────────────────────────────────────────
+
+
+================================================================================
+  END OF DOCUMENT
+================================================================================

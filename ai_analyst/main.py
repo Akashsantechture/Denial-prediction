@@ -1,6 +1,7 @@
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 
 from .schemas import (
     AnalystSessionRequest,
@@ -55,7 +56,6 @@ async def lifespan(app: FastAPI):
 
         raise
 
-
     try:
 
         llm_reasoner = LLMReasoner()
@@ -91,6 +91,22 @@ app = FastAPI(
     ),
     version="1.0.0",
     lifespan=lifespan,
+)
+
+
+# ============================================================
+# CORS
+# Must be registered before any route definitions so that
+# OPTIONS preflight requests from the browser (port 8000 → 8060)
+# are handled and return 200 instead of 405.
+# ============================================================
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=False,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 

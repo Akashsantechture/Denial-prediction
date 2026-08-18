@@ -65,7 +65,7 @@ const API = (() => {
       }
       return {
         ok: false, kind: 'connection',
-        detail: `Cannot reach the backend at ${PREDICT_URL}. Ensure model2main.py is running: uvicorn model2main:app --reload`,
+        detail: `Cannot reach the backend at ${PREDICT_URL}. Ensure model2main.py is running: uvicorn model2main:app --reload --port 8000`,
       };
     }
 
@@ -108,4 +108,120 @@ const API = (() => {
   }
 
   return { predict, health, PREDICT_URL };
+})();
+
+/**
+ * AnalystAPI
+ * ----------
+ * HTTP layer for the AI Analyst microservice running on port 8060.
+ *
+ * Endpoints
+ * ---------
+ *   POST /analyst/session  { claim_intelligence }
+ *     → { session_id, message }
+ *
+ *   POST /analyst/chat     { session_id, message }
+ *     → { session_id, answer }
+ *
+ *   DELETE /analyst/session/:id
+ *
+ * Both methods return a plain result object so callers can detect failure
+ * without catching exceptions:
+ *   SessionResult { ok:true,  session_id }
+ *   ChatResult    { ok:true,  answer }
+ *   Failure       { ok:false, detail }
+ */
+const AnalystAPI = (() => {
+  const BASE_URL   = 'http://127.0.0.1:8060';
+  const SESSION_URL = `${BASE_URL}/analyst/session`;
+  const CHAT_URL    = `${BASE_URL}/analyst/chat`;
+  const TIMEOUT_MS  = 30_000;   // Gemini can take a few seconds
+
+  async function _fetchTimeout(url, options = {}) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
+    try {
+      return await fetch(url, { ...options, signal: controller.signal });
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+
+  /**
+   * Create a new analyst session.
+   * claim_intelligence should be the full prediction API result object
+   * combined with the submitted claim payload.
+   */
+  async function createSession(claimIntelligence) {
+    try {
+      const response = await _fetchTimeout(SESSION_URL, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ claim_intelligence: claimIntelligence }),
+      });
+      if (response.status === 200) {
+        const data = await response.json();
+        return { ok: true, session_id: data.session_id };
+      }
+      const body = await response.json().catch(() => ({}));
+      return { ok: false, detail: body.detail ?? `HTTP ${response.status}` };
+    } catch (err) {
+      if (err.name === 'AbortError') {
+        return { ok: false, detail: 'Analyst session request timed out.' };
+      }
+      return { ok: false, detail: `Cannot reach AI Analyst at ${BASE_URL}. Is it running?` };
+    }
+  }
+
+  /**
+   * Send a chat message to an existing session.
+   * Returns { ok:true, answer } or { ok:false, detail }.
+   */
+  async function chat(sessionId, message) {
+    try {
+      const response = await _fetchTimeout(CHAT_URL, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ session_id: sessionId, message }),
+      });
+      if (response.status === 200) {
+        const data = await response.json();
+        return { ok: true, answer: data.answer };
+      }
+      const body = await response.json().catch(() => ({}));
+      return { ok: false, detail: body.detail ?? `HTTP ${response.status}` };
+    } catch (err) {
+      if (err.name === 'AbortError') {
+        return { ok: false, detail: 'Analyst response timed out.' };
+      }
+      return { ok: false, detail: `Cannot reach AI Analyst at ${BASE_URL}.` };
+    }
+  }
+
+  /**
+   * Delete a session when the user submits a new claim.
+   * Fire-and-forget — failures are silently ignored.
+   */
+  async function deleteSession(sessionId) {
+    if (!sessionId) return;
+    try {
+      await fetch(`${BASE_URL}/analyst/session/${sessionId}`, { method: 'DELETE' });
+    } catch (_) { /* silently ignore */ }
+  }
+
+  /**
+   * Health-check the analyst microservice.
+   * Returns { status, llm_loaded } or a fallback on error.
+   */
+  async function health() {
+    try {
+      const response = await _fetchTimeout(`${BASE_URL}/health`);
+      if (response.status === 200) return response.json();
+      return { status: 'unhealthy', llm_loaded: false };
+    } catch (_) {
+      return { status: 'unreachable', llm_loaded: false };
+    }
+  }
+
+  return { createSession, chat, deleteSession, health, BASE_URL };
 })();

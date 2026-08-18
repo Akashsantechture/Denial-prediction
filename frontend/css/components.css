@@ -421,6 +421,44 @@
 .chat-send-btn:hover { background: var(--color-accent-dark); }
 .chat-send-btn:disabled { opacity: .5; cursor: not-allowed; }
 
+
+/* ============================================================
+   Chat mode badge — shows "✦ Gemini AI" or "⚡ Rule-based"
+   ============================================================ */
+.chat-mode-badge {
+  display: inline-block;
+  font-size: .65rem;
+  font-weight: 600;
+  padding: .15rem .45rem;
+  border-radius: 99px;
+  letter-spacing: .02em;
+  white-space: nowrap;
+}
+.chat-mode-badge.llm {
+  background: #EFF6FF;
+  color: #1D4ED8;
+  border: 1px solid #BFDBFE;
+}
+.chat-mode-badge.rule {
+  background: #FFF7ED;
+  color: #C2410C;
+  border: 1px solid #FED7AA;
+}
+
+/* Thinking animation inside chat bubbles */
+.chat-bubble.thinking { opacity: .7; font-style: italic; }
+.thinking-dots em { animation: blink 1.2s infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+/* Fallback notice appended when LLM was expected but rule-based ran */
+.chat-fallback-notice {
+  margin-top: .5rem;
+  font-size: .68rem;
+  color: var(--color-text-muted);
+  border-top: 1px solid var(--color-border-light);
+  padding-top: .35rem;
+}
+
 /* ============================================================
    SHAP explanation expander
    ============================================================ */

@@ -736,8 +736,9 @@
     </div>
     <button class="chat-close-btn" id="chat-close-btn" title="Close">✕</button>
   </div>
-  <div style="padding:.4rem 1rem;border-bottom:1px solid var(--color-border-light);">
+  <div style="padding:.4rem 1rem .35rem;border-bottom:1px solid var(--color-border-light);display:flex;align-items:center;justify-content:space-between;gap:.5rem;">
     <div style="font-size:.7rem;color:var(--color-text-muted);">Powered by XGBoost + SHAP · Context-aware</div>
+    <span id="chat-mode-badge" class="chat-mode-badge"></span>
   </div>
   <div id="chat-messages" class="chat-messages" style="max-height:none;flex:1;"></div>
   <div id="chat-idle" class="chat-idle">Submit a claim to activate the AI Claims Analyst.</div>
