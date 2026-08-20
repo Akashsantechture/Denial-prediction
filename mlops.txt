@@ -1,0 +1,66 @@
+                     DENIAL PREDICTION PLATFORM
+                              │
+        ┌─────────────────────┼─────────────────────┐
+        │                     │                     │
+        ▼                     ▼                     ▼
+   Data Pipeline        Training Pipeline      Inference API
+        │                     │                     │
+        ▼                     ▼                     ▼
+ Data Validation         MLflow              FastAPI
+        │                     │                     │
+        ▼                     ▼                     ▼
+ Feature Engineering     Registry             Redis
+        │                     │                     │
+        └──────────────┬──────┘                     │
+                       ▼                            ▼
+                 Versioned Model              Predictions
+                       │                            │
+                       ▼                            ▼
+                  Docker Image                Prediction Logs
+                       │                            │
+                       └──────────────┬─────────────┘
+                                      ▼
+                                Monitoring
+                                      │
+                    ┌─────────────────┼────────────────┐
+                    ▼                 ▼                ▼
+                 Metrics            Drift          Performance
+                    │                 │                │
+                    └─────────────────┼────────────────┘
+                                      ▼
+                               Retraining Trigger
+                                      │
+                                      ▼
+                              Training Pipeline
+
+
+
+Model: XGBClassifier
+Classes: [0, 1]
+Features: 19
+Categorical: True
+Device: CUDA
+XGBoost: 3.2.0
+
+diagnosis_code
+diagnosis_type
+activity_code
+gender
+nationality
+encounter_type
+clinician_profession
+clinician_category
+facility_type
+icd_category
+cpt_category
+activity_quantity
+patient_age
+activity_gross_log
+claim_gross_log
+claim_net_log
+high_cost_flag
+length_of_stay
+billing_lag_days
+
+
+models:/m-3d9f2287a247422792b135f851710f00

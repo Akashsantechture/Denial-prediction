@@ -1,0 +1,32 @@
+{
+  "feature_count": 19,
+  "features": [
+    "diagnosis_code",
+    "diagnosis_type",
+    "activity_code",
+    "gender",
+    "nationality",
+    "encounter_type",
+    "clinician_profession",
+    "clinician_category",
+    "facility_type",
+    "icd_category",
+    "cpt_category",
+    "activity_quantity",
+    "patient_age",
+    "activity_gross_log",
+    "claim_gross_log",
+    "claim_net_log",
+    "high_cost_flag",
+    "length_of_stay",
+    "billing_lag_days"
+  ],
+  "classes": [
+    0,
+    1
+  ],
+  "n_features_in": 19,
+  "device": "cuda",
+  "enable_categorical": true,
+  "xgboost_version": "3.2.0"
+}

@@ -10,7 +10,6 @@ dependencies = [
     "google-genai>=2.18.1",
     "joblib>=1.5.3",
     "lightgbm>=4.7.0",
-    "mlflow>=1.27.0",
     "numpy>=2.4.6",
     "openai>=3.0.0",
     "pandas>=3.0.5",

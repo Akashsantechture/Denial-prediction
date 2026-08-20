@@ -94,7 +94,7 @@ const Chat = (() => {
     const el = _modeEl();
     if (!el) return;
     if (_mode === 'LLM') {
-      el.textContent  = '✦ Gemini AI';
+      el.textContent  = '✦ LLM connected ';
       el.className    = 'chat-mode-badge llm';
       el.title        = 'Responses powered by Gemini via the AI Analyst microservice';
     } else if (_mode === 'RULE_BASED') {
