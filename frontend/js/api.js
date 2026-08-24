@@ -1,142 +1,107 @@
 /**
  * js/api.js
  * ---------
- * HTTP layer for model2main.py FastAPI backend.
+ * HTTP layer for predictionapi.py (FastAPI + XGBoost, port 8000).
  *
- * KEY CHANGE: The API now returns real SHAP values inside result.explanation.
- * The full explanation object is passed through UNTOUCHED so shap.js and
- * charts.js can use actual TreeExplainer values — no frontend estimation.
+ * Endpoint
+ * --------
+ *   POST /predict
  *
- * Result shapes
- * -------------
- *   PredictionSuccess {
- *     ok: true,
- *     denial_probability_pct, is_high_risk, risk_level, action_recommendation,
- *     explanation: {
- *       base_value,            — real SHAP base value (log-odds)
- *       final_model_value,     — base + sum(shap_values)
- *       model_output_space,    — "raw_margin_log_odds"
- *       top_drivers:        [{ feature, display_name, shap_value, absolute_shap,
- *                              direction, impact_level, contribution_share_pct,
- *                              raw_value, explanation }],
- *       supporting_factors: [ ...same shape... ],
- *       all_features:       [ ...same shape... ],
- *       interactions:       [{ feature_1, feature_1_display_name,
- *                              feature_2, feature_2_display_name,
- *                              interaction_value, direction, explanation }]
- *     }
+ * Request shape — ClaimRequest
+ * ----------------------------
+ *   {
+ *     claim_id:             string,
+ *     patient_age:          int,
+ *     gender:               string,
+ *     nationality:          string,
+ *     encounter_type:       string,
+ *     length_of_stay:       int,
+ *     claim_gross:          float,
+ *     claim_net:            float,
+ *     billing_lag_days:     int,
+ *     clinician_profession: string,
+ *     clinician_category:   string,
+ *     facility_type:        string,
+ *     payer_classification: string,
+ *     diagnosis_code:       string,
+ *     icd_category:         string,   ← derived from diagnosis_code prefix
+ *     activities: [{
+ *       activity_code:   string,
+ *       activity_quantity: float,
+ *       activity_gross:  float,
+ *       cpt_category:    string,      ← entered by user
+ *     }]
  *   }
- *   ValidationFailure { ok: false, kind: 'validation', message, errors }
- *   ApiError          { ok: false, kind: 'connection'|'timeout'|'http', detail }
+ *
+ * Response shape — PredictSuccess
+ * --------------------------------
+ *   {
+ *     ok: true,
+ *     claim_id:      string,
+ *     claim_summary: {
+ *       claim_denial_probability:     float,   0–1
+ *       claim_denial_probability_pct: float,   0–100
+ *       claim_risk_level:             "HIGH"|"MEDIUM"|"LOW"
+ *       highest_activity_risk:        float,
+ *       average_activity_risk:        float,
+ *       activity_count:               int,
+ *     },
+ *     predictions: [{
+ *       activity_code:      string,
+ *       cpt_category:       string,
+ *       denial_probability: float,    0–1
+ *       predicted_denial:   bool,
+ *       top_drivers: [{
+ *         feature:    string,
+ *         shap_value: float,
+ *         impact:     "increase_risk"|"decrease_risk"
+ *       }],
+ *       recommendation: string,
+ *     }]
+ *   }
+ *
+ * Error shapes
+ * ------------
+ *   ApiError  { ok: false, kind: 'connection'|'timeout'|'http'|'server', detail }
  */
 
 const API = (() => {
   const BASE_URL    = 'http://127.0.0.1:8000';
-  const PREDICT_URL = `${BASE_URL}/predict_user_claim`;
+  const PREDICT_URL = `${BASE_URL}/predict`;
   const HEALTH_URL  = `${BASE_URL}/health`;
-  // Increased to 20s — SHAP TreeExplainer is slow on the first call
-  const TIMEOUT_MS  = 20_000;
+  const TIMEOUT_MS  = 25_000;
 
-  async function fetchWithTimeout(url, options = {}) {
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
-    try {
-      const response = await fetch(url, { ...options, signal: controller.signal });
-      return response;
-    } finally {
-      clearTimeout(timer);
-    }
+  // ── ICD category derivation ──────────────────────────────────────────
+  // Maps the first letter of an ICD-10 code to a broad clinical category.
+  // This avoids sending a blank icd_category to the API.
+  const ICD_CATEGORY_MAP = {
+    A: 'Infectious', B: 'Infectious',
+    C: 'Neoplasms',  D: 'Neoplasms',
+    E: 'Endocrine',
+    F: 'Mental',
+    G: 'Neurological',
+    H: 'Sensory',
+    I: 'Circulatory',
+    J: 'Respiratory',
+    K: 'Digestive',
+    L: 'Skin',
+    M: 'Musculoskeletal',
+    N: 'Genitourinary',
+    O: 'Obstetric',
+    P: 'Perinatal',
+    Q: 'Congenital',
+    R: 'Symptoms',
+    S: 'Injury', T: 'Injury',
+    V: 'External', W: 'External', X: 'External', Y: 'External',
+    Z: 'Health Status',
+  };
+
+  function deriveIcdCategory(diagnosisCode) {
+    if (!diagnosisCode) return 'Other';
+    return ICD_CATEGORY_MAP[diagnosisCode[0].toUpperCase()] ?? 'Other';
   }
 
-  async function predict(payload) {
-    let response;
-    try {
-      response = await fetchWithTimeout(PREDICT_URL, {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify(payload),
-      });
-    } catch (err) {
-      if (err.name === 'AbortError') {
-        return {
-          ok: false, kind: 'timeout',
-          detail: `Request timed out after ${TIMEOUT_MS / 1000}s. SHAP calculation can be slow on first run — please retry.`,
-        };
-      }
-      return {
-        ok: false, kind: 'connection',
-        detail: `Cannot reach the backend at ${PREDICT_URL}. Ensure model2main.py is running: uvicorn model2main:app --reload --port 8000`,
-      };
-    }
-
-    if (response.status === 200) {
-      const data = await response.json();
-      return {
-        ok:                     true,
-        denial_probability_pct: parseFloat(data.denial_probability_pct),
-        is_high_risk:           Boolean(data.is_high_risk),
-        risk_level:             String(data.risk_level),
-        action_recommendation:  String(data.action_recommendation),
-        // Pass full SHAP explanation straight through — no transformation
-        explanation:            data.explanation ?? null,
-      };
-    }
-
-    if (response.status === 422) {
-      const body = await response.json();
-      return {
-        ok: false, kind: 'validation',
-        message: body.message || 'One or more fields failed validation.',
-        errors:  body.errors  || [],
-      };
-    }
-
-    return {
-      ok: false, kind: 'http',
-      detail: `Unexpected HTTP ${response.status} from the API. Check the backend logs.`,
-    };
-  }
-
-  async function health() {
-    try {
-      const response = await fetchWithTimeout(HEALTH_URL);
-      if (response.status === 200) return response.json();
-      return { status: 'unhealthy', model_loaded: false };
-    } catch (_) {
-      return { status: 'unreachable', model_loaded: false };
-    }
-  }
-
-  return { predict, health, PREDICT_URL };
-})();
-
-/**
- * AnalystAPI
- * ----------
- * HTTP layer for the AI Analyst microservice running on port 8060.
- *
- * Endpoints
- * ---------
- *   POST /analyst/session  { claim_intelligence }
- *     → { session_id, message }
- *
- *   POST /analyst/chat     { session_id, message }
- *     → { session_id, answer }
- *
- *   DELETE /analyst/session/:id
- *
- * Both methods return a plain result object so callers can detect failure
- * without catching exceptions:
- *   SessionResult { ok:true,  session_id }
- *   ChatResult    { ok:true,  answer }
- *   Failure       { ok:false, detail }
- */
-const AnalystAPI = (() => {
-  const BASE_URL   = 'http://127.0.0.1:8060';
-  const SESSION_URL = `${BASE_URL}/analyst/session`;
-  const CHAT_URL    = `${BASE_URL}/analyst/chat`;
-  const TIMEOUT_MS  = 30_000;   // Gemini can take a few seconds
-
+  // ── Fetch with timeout ───────────────────────────────────────────────
   async function _fetchTimeout(url, options = {}) {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
@@ -148,10 +113,114 @@ const AnalystAPI = (() => {
   }
 
   /**
-   * Create a new analyst session.
-   * claim_intelligence should be the full prediction API result object
-   * combined with the submitted claim payload.
+   * Send a claim to POST /predict.
+   *
+   * @param {Object} payload  — flat claim object collected from the form
+   *                            Must include an `activities` array.
+   * @returns PredictSuccess | ApiError
    */
+  async function predict(payload) {
+    // Build ClaimRequest — map flat form fields to API schema
+    const claimRequest = {
+      claim_id:             payload.claim_id || `CLM-${Date.now()}`,
+      patient_age:          payload.patient_age,
+      gender:               payload.gender,
+      nationality:          payload.nationality,
+      encounter_type:       payload.encounter_type,
+      length_of_stay:       payload.length_of_stay,
+      claim_gross:          payload.claim_gross,
+      claim_net:            payload.claim_net,
+      billing_lag_days:     payload.billing_lag_days,
+      clinician_profession: payload.clinician_profession,
+      clinician_category:   payload.clinician_category,
+      facility_type:        payload.facility_type,
+      payer_classification: payload.payer_classification || payload.payer_id || 'UNKNOWN',
+      diagnosis_code:       payload.diagnosis_code,
+      icd_category:         payload.icd_category || deriveIcdCategory(payload.diagnosis_code),
+      activities:           payload.activities || [],
+    };
+
+    let response;
+    try {
+      response = await _fetchTimeout(PREDICT_URL, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify(claimRequest),
+      });
+    } catch (err) {
+      if (err.name === 'AbortError') {
+        return {
+          ok: false, kind: 'timeout',
+          detail: `Request timed out after ${TIMEOUT_MS / 1000}s. SHAP calculation can be slow on first run — please retry.`,
+        };
+      }
+      return {
+        ok: false, kind: 'connection',
+        detail: `Cannot reach the backend at ${PREDICT_URL}. Make sure predictionapi.py is running: uvicorn predictionapi:app --reload --port 8000`,
+      };
+    }
+
+    if (response.status === 200) {
+      const data = await response.json();
+      return {
+        ok:            true,
+        claim_id:      data.claim_id,
+        claim_summary: data.claim_summary,
+        predictions:   data.predictions ?? [],
+      };
+    }
+
+    if (response.status === 422) {
+      const body = await response.json().catch(() => ({}));
+      return {
+        ok: false, kind: 'validation',
+        message: body.message || body.detail || 'One or more fields failed validation.',
+        errors:  body.errors  || [],
+      };
+    }
+
+    const body = await response.json().catch(() => ({}));
+    return {
+      ok: false, kind: 'http',
+      detail: body.detail || `Unexpected HTTP ${response.status} from the API.`,
+    };
+  }
+
+  async function health() {
+    try {
+      const response = await _fetchTimeout(HEALTH_URL);
+      if (response.status === 200) return response.json();
+      return { status: 'unhealthy', model_loaded: false };
+    } catch (_) {
+      return { status: 'unreachable', model_loaded: false };
+    }
+  }
+
+  return { predict, health, deriveIcdCategory, PREDICT_URL, BASE_URL };
+})();
+
+
+/**
+ * AnalystAPI
+ * ----------
+ * HTTP layer for the AI Analyst microservice (port 8060).
+ */
+const AnalystAPI = (() => {
+  const BASE_URL    = 'http://127.0.0.1:8060';
+  const SESSION_URL = `${BASE_URL}/analyst/session`;
+  const CHAT_URL    = `${BASE_URL}/analyst/chat`;
+  const TIMEOUT_MS  = 30_000;
+
+  async function _fetchTimeout(url, options = {}) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
+    try {
+      return await fetch(url, { ...options, signal: controller.signal });
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+
   async function createSession(claimIntelligence) {
     try {
       const response = await _fetchTimeout(SESSION_URL, {
@@ -166,17 +235,11 @@ const AnalystAPI = (() => {
       const body = await response.json().catch(() => ({}));
       return { ok: false, detail: body.detail ?? `HTTP ${response.status}` };
     } catch (err) {
-      if (err.name === 'AbortError') {
-        return { ok: false, detail: 'Analyst session request timed out.' };
-      }
-      return { ok: false, detail: `Cannot reach AI Analyst at ${BASE_URL}. Is it running?` };
+      if (err.name === 'AbortError') return { ok: false, detail: 'Session request timed out.' };
+      return { ok: false, detail: `Cannot reach AI Analyst at ${BASE_URL}.` };
     }
   }
 
-  /**
-   * Send a chat message to an existing session.
-   * Returns { ok:true, answer } or { ok:false, detail }.
-   */
   async function chat(sessionId, message) {
     try {
       const response = await _fetchTimeout(CHAT_URL, {
@@ -191,32 +254,22 @@ const AnalystAPI = (() => {
       const body = await response.json().catch(() => ({}));
       return { ok: false, detail: body.detail ?? `HTTP ${response.status}` };
     } catch (err) {
-      if (err.name === 'AbortError') {
-        return { ok: false, detail: 'Analyst response timed out.' };
-      }
+      if (err.name === 'AbortError') return { ok: false, detail: 'Analyst response timed out.' };
       return { ok: false, detail: `Cannot reach AI Analyst at ${BASE_URL}.` };
     }
   }
 
-  /**
-   * Delete a session when the user submits a new claim.
-   * Fire-and-forget — failures are silently ignored.
-   */
   async function deleteSession(sessionId) {
     if (!sessionId) return;
     try {
       await fetch(`${BASE_URL}/analyst/session/${sessionId}`, { method: 'DELETE' });
-    } catch (_) { /* silently ignore */ }
+    } catch (_) { /* fire-and-forget */ }
   }
 
-  /**
-   * Health-check the analyst microservice.
-   * Returns { status, llm_loaded } or a fallback on error.
-   */
   async function health() {
     try {
-      const response = await _fetchTimeout(`${BASE_URL}/health`);
-      if (response.status === 200) return response.json();
+      const r = await _fetchTimeout(`${BASE_URL}/health`);
+      if (r.status === 200) return r.json();
       return { status: 'unhealthy', llm_loaded: false };
     } catch (_) {
       return { status: 'unreachable', llm_loaded: false };

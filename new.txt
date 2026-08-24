@@ -1,0 +1,167 @@
+================================================================================
+             CLAIMAI — SYSTEM ARCHITECTURE & MLOPS REFERENCE DOCUMENT
+================================================================================
+Project: Denial Prediction | Version: 2.0 | Prepared for Santechture
+================================================================================
+
+This document outlines the system architecture, integration flows, and MLOps 
+lifecycle feasibility for the ClaimAI Denial Prediction platform.
+
+────────────────────────────────────────────────────────────────────────────────
+SECTION 1 — SYSTEM ARCHITECTURE
+────────────────────────────────────────────────────────────────────────────────
+
+ClaimAI is designed as an interactive double-service platform. The browser SPA
+acts as the client orchestrator, communicating with two separate backend APIs.
+
+1.1 ARCHITECTURE DIAGRAM
+────────────────────────
+
+                              ┌─────────────────┐
+                              │   Browser SPA   │
+                              │ (Vanilla JS UI) │
+                              └─┬─────────────┬─┘
+                                │             │
+         POST /predict_user_claim│             │POST /analyst/session
+         (Port 8000)            │             │POST /analyst/chat (Port 8060)
+                                ▼             ▼
+     ┌───────────────────────────┐           ┌───────────────────────────┐
+     │      Prediction API       │           │    AI Analyst Service     │
+     │      (model2main.py)      │           │    (ai_analyst/main.py)   │
+     └──────────────┬────────────┘           └──────────────┬────────────┘
+                    │                                       │
+          ┌─────────┴─────────┐                   ┌─────────┴─────────┐
+          │  XGBoost Model 2  │                   │   LLM Reasoner    │
+          │  SHAP Explainer   │                   │ (Gemini 2.5 Flash)│
+          └───────────────────┘                   └─────────┬─────────┘
+                                                            │
+                                                  ┌─────────┴─────────┐
+                                                  │    PostgreSQL     │
+                                                  │  (Session Store)  │
+                                                  └───────────────────┘
+
+1.2 COMPONENT BREAKDOWN
+───────────────────────
+
+A. FRONTEND SPA (ClaimAI UI)
+   - Serves as the user interface for Revenue Cycle Management (RCM) analysts.
+   - Built on pure vanilla HTML/CSS/JavaScript with Plotly.js for interactive
+     charts (Waterfall, Gauge, Heatmaps).
+   - Serves as the client-side orchestrator. It triggers predictions on port 8000
+     first, extracts the SHAP results, and then sends the context to port 8060 
+     to establish the conversational chat session.
+   - Built-in rule-based fallback chat engine to handle standard queries 
+     with ~0ms latency if the AI Analyst microservice is unreachable.
+
+B. PREDICTION API (model2main.py — Port 8000)
+   - FastAPI backend that loads the Behavioral XGBoost Model 2.
+   - Serves the frontend static files at the root mount.
+   - Preprocessing steps:
+     1. Pydantic validation (UserClaimInput) checking for ICD-10 formatting
+        and cross-field constraints (e.g. Outpatient stay must be 0).
+     2. Categorical conversions mapping ICD/CPT codes to group categories.
+     3. Feature engineering calculating log transformations on financial fields
+        and assigning high-cost flags.
+   - Runs model predictions (XGBClassifier) to calculate denial probability.
+   - Runs SHAP TreeExplainer to calculate exact per-feature contributions 
+     and pairwise interactions (ICD × CPT) on the fly.
+
+C. AI ANALYST MICROSERVICE (ai_analyst/main.py — Port 8060)
+   - FastAPI microservice backed by PostgreSQL session storage.
+   - Handles LLM conversational chat turns using Google Vertex AI Gemini 2.5 Flash.
+   - Fully grounded on the authoritative claim data and SHAP values via system 
+     prompts to prevent hallucinations and clinical/payer-rule inventions.
+
+D. SUPPORTING DATABASE
+   - PostgreSQL stores session metadata, chat histories, claim intelligence, 
+     and transaction audit logs.
+
+────────────────────────────────────────────────────────────────────────────────
+SECTION 2 — MLOPS LIFECYCLE & FEASIBILITY
+────────────────────────────────────────────────────────────────────────────────
+
+The Santechture platform contains strong MLOps foundations (such as validation,
+experiment tracking, and model registries) but requires automation to transition
+into a mature continuous lifecycle.
+
+2.1 MLOps LIFECYCLE DIAGRAM
+───────────────────────────
+
+    [ Raw Data (Parquet) ]
+              │
+              ▼
+   [ Data Validation & Prep ] ◄─── Pydantic Validation & Feature Contract
+              │
+              ▼
+    [ GPU Model Training ]    ◄─── Google Colab / GPU-accelerated XGBoost
+              │
+              ▼
+    [ Model Registration ]    ◄─── MLflow Tracking & Model Registry
+              │
+              ▼
+    [ Containerization ]      ◄─── Docker Compose (Prediction API + Analyst)
+              │
+              ▼
+    [ Production Serving ]    ◄─── FastAPI on port 8000 (with SHAP Explainer)
+              │
+              ▼
+  [ Monitoring & Retraining ] ◄─── [PROPOSED] Drift Monitoring & Automated CT
+
+2.2 FEASIBILITY ASSESSMENT
+──────────────────────────
+
+A. DATA QUALITY & INGESTION
+   - Current: Data ingestion is manual, reading Parquet files from Google Drive
+     in a Colab notebook.
+   - Feasibility: High. Can be automated by connecting the training script to a 
+     central database (e.g., Snowflake, BigQuery) with SQL preprocessing.
+
+B. DATA VALIDATION
+   - Current: Strong runtime validation at the API gateway using Pydantic.
+   - Feasibility: High. Propose implementing Great Expectations or Soda in the 
+     data pipeline before training to flag outlier schemas early.
+
+C. TRAINING PIPELINE & AUTOMATED CONTINUOUS TRAINING (CT)
+   - Current: Model training is manual, run on GPU-enabled Google Colab.
+   - Feasibility: Medium. Requires migrating the script (train.py) into an 
+     orchestration workflow tool (like Prefect or Apache Airflow) that can run 
+     on a scheduled basis or trigger on demand.
+
+D. EXPERIMENT TRACKING & REGISTRY
+   - Current: Script (register_model.py) logs hyper-parameters, metadata, and 
+     registers the candidate model to a local MLflow registry.
+   - Feasibility: High. Already implemented. Suggest moving tracking URI from 
+     local to a hosted MLflow server (e.g., GCP Vertex AI Model Registry).
+
+E. DEPLOYMENT & SERVING (CI/CD)
+   - Current: Microservices run in containerized Docker environments.
+   - Feasibility: High. Deployments can be scaled by moving from Docker Compose 
+     to Kubernetes (EKS/GKE). We can establish a CI/CD workflow where promoting
+     a model version in MLflow triggers a container build and rolling deployment.
+
+F. SYSTEM MONITORING & DRIFT DETECTION
+   - Current: Not implemented in code.
+   - Feasibility: Medium. Feasible to implement by writing prediction outcomes 
+     from model2main.py to PostgreSQL, then running a scheduled Cron job using 
+     Evidently AI to detect data/concept drift.
+
+────────────────────────────────────────────────────────────────────────────────
+SECTION 3 — RECOMMENDED ROADMAP
+────────────────────────────────────────────────────────────────────────────────
+
+1. PHASE 1: LOGGING & CACHING (Short-Term)
+   - Setup logging of actual predictions to PostgreSQL database.
+   - Implement the Redis caching interfaces in ai_analyst/cache to minimize 
+     API call latencies and Google Cloud costs.
+   - Centralize the MLflow tracking registry server.
+
+2. PHASE 2: AUTOMATED CD (Medium-Term)
+   - Setup GitHub Actions. Promoting a model version in MLflow should rebuild 
+     the prediction Docker image and deploy it.
+   - Establish unit testing on the feature contract during image builds.
+
+3. PHASE 3: AUTOMATED MONITORING & DRIFT (Long-Term)
+   - Deploy prediction service on Kubernetes with Autoscaling (HPA).
+   - Automate drift-detection reports comparing live inputs to training inputs.
+   - Set up automatic retraining workflows triggered by data drift alerts.
+================================================================================

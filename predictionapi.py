@@ -1,526 +1,244 @@
-"""
-model2main.py
-
-FastAPI inference service for Behavioral XGBoost Model 2.
-
-Pipeline
---------
-Incoming JSON
-    ↓
-Pydantic schema validation
-    ↓
-categorical_conversion.py
-    ↓
-feature_engineering.py
-    ↓
-feature_contract.py
-    ↓
-XGBoost Model 2
-    ↓
-Denial probability
-    ↓
-risk classification
-    ↓
-PredictionResponse
-"""
-
 import os
-import joblib
-
 from contextlib import asynccontextmanager
 
+import numpy as np
+import joblib
+
 from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import JSONResponse
-from fastapi.exceptions import RequestValidationError
-from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
-from validators.schemas import UserClaimInput, PredictionResponse
-
-from preprocessing.categorial_conversion import (
-    add_categorical_features,
-)
-
-from preprocessing.feature_engineering import (
-    engineer_features,
-)
-
-from preprocessing.feature_contract import (
-    build_model_dataframe,
-    get_feature_contract,
-)
+from validators.schemas import ClaimRequest
+from preprocessing.feature_engineering import build_activity_dataframe
+from explainability.shap_engine import ShapEngine
+from preprocessing.recommendation_engine import generate_recommendation
 
 
-# ============================================================================
-# CONFIGURATION
-# ============================================================================
+# ============================================================
+# GLOBALS
+# ============================================================
 
-MODEL_PATH = "models/behavioral_xgboost_model2_individual_cats.joblib"
-
-MODEL_NAME = "Behavioral XGBoost Model 2 - Individual Categories"
-
-MODEL_VERSION = "2.0.0"
+MODEL       = None
+ENCODER     = None
+SHAP_ENGINE = None
 
 
-# ============================================================================
-# GLOBAL MODEL
-# ============================================================================
+# ============================================================
+# FEATURE ORDER
+# ============================================================
 
-MODEL = None
+FEATURE_ORDER = [
+    "activity_code",
+    "activity_quantity",
+    "activity_gross",
+    "patient_age",
+    "gender",
+    "nationality",
+    "claim_gross",
+    "claim_net",
+    "encounter_type",
+    "length_of_stay",
+    "clinician_profession",
+    "clinician_category",
+    "facility_type",
+    "payer_classification",
+    "diagnosis_code",
+    "billing_lag_days",
+    "icd_category",
+    "cpt_category",
+    "icd_cpt_domain_match",
+]
 
 
-# ============================================================================
-# FASTAPI LIFESPAN
-# ============================================================================
+# ============================================================
+# LIFESPAN — load model once at startup
+# ============================================================
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """
-    Load the XGBoost model once when the FastAPI application starts.
-    """
+    global MODEL, ENCODER, SHAP_ENGINE
 
-    global MODEL
+    print("=" * 60)
+    print("Loading Claim Denial Prediction Service")
+    print("=" * 60)
 
-    print("=" * 70)
-    print("Starting Behavioral XGBoost Model 2 API")
-    print("=" * 70)
+    MODEL       = joblib.load("models/xgboost/model.joblib")
+    ENCODER     = joblib.load("models/xgboost/target_encoder.joblib")
+    SHAP_ENGINE = ShapEngine(MODEL)
 
-    if not os.path.exists(MODEL_PATH):
-        raise RuntimeError(
-            f"Model artifact not found: '{MODEL_PATH}'"
-        )
-
-    try:
-        print(f"Loading model from: {MODEL_PATH}")
-
-        MODEL = joblib.load(MODEL_PATH)
-
-        print("✅ Model loaded successfully!")
-        print(f"   Model: {MODEL_NAME}")
-        print(f"   Version: {MODEL_VERSION}")
-
-        contract = get_feature_contract()
-
-        print(
-            f"   Expected features: "
-            f"{contract['feature_count']}"
-        )
-
-        print("=" * 70)
-
-    except Exception as exc:
-        raise RuntimeError(
-            f"Failed to load XGBoost model: {exc}"
-        ) from exc
+    print("✅ Model Loaded")
+    print("✅ Encoder Loaded")
+    print("✅ SHAP Engine Loaded")
+    print("=" * 60)
 
     yield
 
-    # ------------------------------------------------------------
-    # Shutdown
-    # ------------------------------------------------------------
-
-    print("Shutting down Model 2 API...")
-
-    MODEL = None
+    MODEL = ENCODER = SHAP_ENGINE = None
 
 
-# ============================================================================
-# FASTAPI APPLICATION
-# ============================================================================
+# ============================================================
+# APP
+# ============================================================
 
 app = FastAPI(
-    title="Healthcare Claim Denial Prediction API - Model 2",
-    description=(
-        "Production endpoint for real-time healthcare claim "
-        "denial risk prediction using Behavioral XGBoost Model 2. "
-        "The model uses raw ICD/CPT codes together with "
-        "ICD/CPT categorical domains and claim-level behavioral features."
-    ),
-    version=MODEL_VERSION,
+    title="Claim Denial Prediction API",
+    version="3.0",
     lifespan=lifespan,
 )
 
 
-# ============================================================================
+# ============================================================
 # CORS
-# ============================================================================
+# ============================================================
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 
-# ============================================================================
-# REQUEST VALIDATION ERROR HANDLER
-# ============================================================================
+# ============================================================
+# NO-CACHE MIDDLEWARE
+# Ensures browser always gets fresh HTML/CSS/JS after changes.
+# ============================================================
 
-@app.exception_handler(RequestValidationError)
-async def validation_exception_handler(
-    request: Request,
-    exc: RequestValidationError,
-):
-    """
-    Return a cleaner validation response for invalid claim payloads.
-    """
-
-    errors = []
-
-    for error in exc.errors():
-
-        field_path = " → ".join(
-            str(loc)
-            for loc in error["loc"]
-            if loc != "body"
-        )
-
-        msg = error.get(
-            "msg",
-            "Invalid value",
-        )
-
-        if (
-            error["type"] == "value_error"
-            and "ctx" in error
-        ):
-            ctx_error = error["ctx"].get("error")
-
-            if ctx_error:
-                msg = str(ctx_error)
-
-        errors.append(
-            {
-                "field": field_path,
-                "issue": msg,
-                "provided_value": error.get("input"),
-            }
-        )
-
-    return JSONResponse(
-        status_code=422,
-        content={
-            "status": "validation_error",
-            "message": (
-                "Request failed schema validation. "
-                "Please correct the following fields "
-                "before resubmitting."
-            ),
-            "errors": errors,
-        },
-    )
+@app.middleware("http")
+async def no_cache_static(request: Request, call_next):
+    response = await call_next(request)
+    path = request.url.path
+    if (
+        path == "/"
+        or path.endswith(".html")
+        or "/css/" in path
+        or "/js/"  in path
+    ):
+        response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+        response.headers["Pragma"]        = "no-cache"
+        response.headers["Expires"]       = "0"
+    return response
 
 
-# ============================================================================
-# MODEL INFERENCE PIPELINE
-# ============================================================================
-
-def run_model2_inference(
-    data_dict: dict,
-) -> PredictionResponse:
-    """
-    Execute the complete Model 2 preprocessing and prediction pipeline.
-
-    Pipeline
-    --------
-    1. Convert raw ICD/CPT codes into categories.
-    2. Engineer numeric features.
-    3. Build exact 19-feature model DataFrame.
-    4. Run XGBoost prediction.
-    5. Convert probability into risk level.
-    """
-
-    if MODEL is None:
-        raise RuntimeError(
-            "Model 2 is not loaded."
-        )
-
-    # ------------------------------------------------------------------------
-    # Copy input so the original request dictionary is never modified.
-    # ------------------------------------------------------------------------
-
-    processed_data = dict(data_dict)
-
-    # ------------------------------------------------------------------------
-    # STEP 1
-    # CATEGORICAL CONVERSION
-    #
-    # diagnosis_code → icd_category
-    # activity_code  → cpt_category
-    # ------------------------------------------------------------------------
-
-    processed_data = add_categorical_features(
-        processed_data
-    )
-
-    # ------------------------------------------------------------------------
-    # STEP 2
-    # NUMERIC FEATURE ENGINEERING
-    #
-    # activity_gross → activity_gross_log
-    # claim_gross    → claim_gross_log
-    # claim_net      → claim_net_log
-    # activity_gross → high_cost_flag
-    # ------------------------------------------------------------------------
-
-    processed_data = engineer_features(
-        processed_data
-    )
-
-    # ------------------------------------------------------------------------
-    # STEP 3
-    # BUILD EXACT MODEL INPUT
-    #
-    # This selects exactly the 19 features expected by Model 2.
-    # ------------------------------------------------------------------------
-
-    X_inference = build_model_dataframe(
-        processed_data
-    )
-
-    # ------------------------------------------------------------------------
-    # STEP 4
-    # PREDICTION
-    # ------------------------------------------------------------------------
-
-    try:
-
-        probability = float(
-            MODEL.predict_proba(X_inference)[0, 1]
-        )
-
-    except Exception as exc:
-
-        raise RuntimeError(
-            f"XGBoost prediction failed: {exc}"
-        ) from exc
-
-    probability_pct = round(
-        probability * 100,
-        2,
-    )
-
-    # ------------------------------------------------------------------------
-    # STEP 5
-    # risk CLASSIFICATION
-    #
-    # IMPORTANT:
-    # These are application thresholds, not model training thresholds.
-    # ------------------------------------------------------------------------
-
-    if probability_pct >= 50.0:
-
-        risk_level = "HIGH"
-
-        is_high_risk = True
-
-        action = (
-            "Flagged for manual review. "
-            "High predicted denial risk."
-        )
-
-    elif probability_pct >= 35.0:
-
-        risk_level = "MEDIUM"
-
-        is_high_risk = False
-
-        action = (
-            "Moderate predicted denial risk. "
-            "Review claim details before submission."
-        )
-
-    else:
-
-        risk_level = "LOW"
-
-        is_high_risk = False
-
-        action = (
-            "Low predicted denial risk. "
-            "Standard processing recommended."
-        )
-
-    # ------------------------------------------------------------------------
-    # STEP 6
-    # RESPONSE
-    # ------------------------------------------------------------------------
-
-    return PredictionResponse(
-        denial_probability_pct=probability_pct,
-        is_high_risk=is_high_risk,
-        risk_level=risk_level,
-        action_recommendation=action,
-    )
-
-
-# ============================================================================
-# PREDICTION ENDPOINT
-# ============================================================================
-
-@app.post(
-    "/predict_user_claim",
-    response_model=PredictionResponse,
-)
-def predict_user_claim_risk(
-    claim: UserClaimInput,
-):
-    """
-    Predict denial probability for a submitted healthcare claim.
-    """
-
-    if MODEL is None:
-
-        raise HTTPException(
-            status_code=500,
-            detail="Model artifact is not loaded.",
-        )
-
-    try:
-
-        # ------------------------------------------------------------
-        # Pydantic → dictionary
-        #
-        # model_dump() is preferred for Pydantic v2.
-        # dict() is retained as fallback for Pydantic v1.
-        # ------------------------------------------------------------
-
-        if hasattr(claim, "model_dump"):
-
-            claim_data = claim.model_dump()
-
-        else:
-
-            claim_data = claim.dict()
-
-        # ------------------------------------------------------------
-        # Run complete inference pipeline
-        # ------------------------------------------------------------
-
-        return run_model2_inference(
-            claim_data
-        )
-
-    except ValueError as exc:
-
-        raise HTTPException(
-            status_code=422,
-            detail=str(exc),
-        ) from exc
-
-    except Exception as exc:
-
-        raise HTTPException(
-            status_code=500,
-            detail=(
-                f"Error processing claim prediction: "
-                f"{str(exc)}"
-            ),
-        ) from exc
-
-
-# ============================================================================
-# HEALTH CHECK
-# ============================================================================
+# ============================================================
+# HEALTH
+# ============================================================
 
 @app.get("/health")
 def health():
-    """
-    API health check.
-    """
-
-    contract = get_feature_contract()
-
     return {
-        "status": "healthy",
-        "model_loaded": MODEL is not None,
-        "model": MODEL_NAME,
-        "version": MODEL_VERSION,
-        "feature_count": contract["feature_count"],
-        "categorical_feature_count": len(
-            contract["categorical_features"]
-        ),
-        "numeric_feature_count": len(
-            contract["numeric_features"]
-        ),
+        "status":         "healthy",
+        "model_loaded":   MODEL   is not None,
+        "encoder_loaded": ENCODER is not None,
+        "shap_loaded":    SHAP_ENGINE is not None,
     }
 
 
-# ============================================================================
-# MODEL INFORMATION
-# ============================================================================
+# ============================================================
+# MODEL INFO
+# ============================================================
 
 @app.get("/model-info")
 def model_info():
-    """
-    Return the Model 2 feature contract.
+    return {
+        "model_type":              "XGBoost",
+        "feature_count":           len(FEATURE_ORDER),
+        "features":                FEATURE_ORDER,
+        "shap_enabled":            True,
+        "recommendations_enabled": True,
+        "claim_level_scoring":     True,
+    }
 
-    Useful for debugging and frontend integration.
-    """
+
+# ============================================================
+# PREDICT  —  POST /predict
+# ============================================================
+
+@app.post("/predict")
+def predict(request: ClaimRequest):
 
     if MODEL is None:
+        raise HTTPException(status_code=500, detail="Model not loaded")
 
-        raise HTTPException(
-            status_code=500,
-            detail="Model artifact is not loaded.",
-        )
+    try:
+        # Build feature DataFrame from the ClaimRequest
+        df = build_activity_dataframe(request)
 
-    contract = get_feature_contract()
+        missing = [c for c in FEATURE_ORDER if c not in df.columns]
+        if missing:
+            raise ValueError(f"Missing features: {missing}")
 
-    return {
-        "model": MODEL_NAME,
-        "version": MODEL_VERSION,
-        "feature_count": contract["feature_count"],
-        "categorical_features": (
-            contract["categorical_features"]
-        ),
-        "numeric_features": (
-            contract["numeric_features"]
-        ),
-        "feature_order": (
-            contract["feature_order"]
-        ),
-    }
+        df         = df[FEATURE_ORDER]
+        df_encoded = ENCODER.transform(df)
+        df_encoded = df_encoded[FEATURE_ORDER]
+
+        # Inference
+        probabilities = MODEL.predict_proba(df_encoded)[:, 1]
+
+        # Claim-level composite score  (0.7 × max  +  0.3 × avg)
+        max_risk = float(np.max(probabilities))
+        avg_risk = float(np.mean(probabilities))
+
+        claim_prob     = round(0.7 * max_risk + 0.3 * avg_risk, 4)
+        claim_prob_pct = round(claim_prob * 100, 2)
+
+        if claim_prob_pct >= 70:
+            risk_level = "HIGH"
+        elif claim_prob_pct >= 40:
+            risk_level = "MEDIUM"
+        else:
+            risk_level = "LOW"
+
+        # SHAP explanations
+        shap_results = SHAP_ENGINE.explain(df_encoded)
+
+        # Per-activity predictions
+        predictions = []
+        for idx, activity in enumerate(request.activities):
+            prob        = float(probabilities[idx])
+            top_drivers = shap_results[idx] if idx < len(shap_results) else []
+
+            predictions.append({
+                "activity_code":      activity.activity_code,
+                "cpt_category":       activity.cpt_category,
+                "denial_probability": round(prob, 4),
+                "predicted_denial":   prob >= 0.50,
+                "top_drivers":        top_drivers,
+                "recommendation":     generate_recommendation(
+                    prob,
+                    top_driver=top_drivers[0] if top_drivers else None,
+                ),
+            })
+
+        return {
+            "claim_id": request.claim_id,
+            "claim_summary": {
+                "claim_denial_probability":     claim_prob,
+                "claim_denial_probability_pct": claim_prob_pct,
+                "claim_risk_level":             risk_level,
+                "highest_activity_risk":        round(max_risk, 4),
+                "average_activity_risk":        round(avg_risk, 4),
+                "activity_count":               len(predictions),
+            },
+            "predictions": predictions,
+        }
+
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc))
 
 
-# ============================================================================
-# ROOT
-# ============================================================================
-
-@app.get("/api")
-def api_root():
-    """
-    API information endpoint.
-    """
-
-    return {
-        "service": "Healthcare Claim Denial Prediction API",
-        "model": MODEL_NAME,
-        "version": MODEL_VERSION,
-        "status": "running",
-        "prediction_endpoint": "/predict_user_claim",
-        "health_endpoint": "/health",
-        "model_info_endpoint": "/model-info",
-    }
-
-
-# ============================================================================
+# ============================================================
 # STATIC FRONTEND
-# ============================================================================
-#
-# Mount LAST so it does not interfere with API routes.
-# ============================================================================
+# NOTE: Must be mounted LAST — FastAPI routes above take
+#       priority over the StaticFiles catch-all.
+#       Serves frontend/index.html at http://127.0.0.1:8000/
+# ============================================================
 
-FRONTEND_DIRECTORY = "frontend"
-
-if os.path.isdir(FRONTEND_DIRECTORY):
-
+_FRONTEND = "frontend"
+if os.path.isdir(_FRONTEND):
     app.mount(
         "/",
-        StaticFiles(
-            directory=FRONTEND_DIRECTORY,
-            html=True,
-        ),
+        StaticFiles(directory=_FRONTEND, html=True),
         name="frontend",
     )

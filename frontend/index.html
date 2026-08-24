@@ -14,9 +14,9 @@
   <script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
 
   <!-- Styles -->
-  <link rel="stylesheet" href="css/base.css" />
-  <link rel="stylesheet" href="css/layout.css" />
-  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/base.css?v=4" />
+  <link rel="stylesheet" href="css/layout.css?v=4" />
+  <link rel="stylesheet" href="css/components.css?v=4" />
 
   <style>
     /* ── Top navigation bar ─────────────────────────────────────── */
@@ -76,6 +76,14 @@
       display: flex;
       align-items: center;
       gap: .45rem;
+    }
+    .top-nav-tab:hover {
+      color: var(--color-text-primary);
+    }
+    .top-nav-tab.active {
+      color: var(--color-accent);
+      border-bottom-color: var(--color-accent);
+      font-weight: 600;
     }
     .top-nav-tab img {
       width: var(--nav-icon-size);
@@ -191,6 +199,41 @@
     .app-shell { flex-direction: column; }
     .sidebar   { display: none; }
     .main-content { width: 100%; }
+
+    /* Content area max-width keeps wide-screen readable */
+    .content-area {
+      max-width: 1400px;
+      margin-left: auto;
+      margin-right: auto;
+      width: 100%;
+    }
+
+    /* Overview top row: score card narrower, gauge wider */
+    .overview-top-row {
+      display: grid;
+      grid-template-columns: 280px 1fr 280px;
+      gap: 1.25rem;
+      align-items: start;
+      margin-bottom: 1.25rem;
+    }
+    @media (max-width: 1100px) {
+      .overview-top-row { grid-template-columns: 1fr 1fr; }
+      .overview-top-row > :last-child { grid-column: 1 / -1; }
+    }
+    @media (max-width: 700px) {
+      .overview-top-row { grid-template-columns: 1fr; }
+    }
+
+    /* Form columns: tighter gap on mid screens */
+    @media (max-width: 1050px) {
+      .form-columns { grid-template-columns: 1fr 1fr !important; }
+    }
+
+    /* Activity table: constrain input widths so the table doesn't explode */
+    .activities-table .act-code  { width: 120px; min-width: 90px; }
+    .activities-table .act-qty   { width: 65px;  min-width: 55px; }
+    .activities-table .act-gross { width: 110px; min-width: 80px; }
+    .activities-table .act-cpt-cat { min-width: 160px; }
 
     /* Chat is now a floating panel triggered from nav */
     .chat-float-btn {
@@ -383,28 +426,33 @@
               class="json-textarea"
               spellcheck="false"
               placeholder='{
+  "claim_id": "CLM-001",
   "diagnosis_code": "I10",
-  "diagnosis_type": "Principal",
-  "activity_code": "99213",
-  "activity_gross": 250.00,
-  "activity_quantity": 1,
-  "claim_gross": 250.00,
-  "claim_net": 250.00,
+  "icd_category": "Circulatory",
   "patient_age": 52,
   "gender": "MALE",
   "nationality": "INDIAN",
-  "payer_id": "E001",
-  "insurance_plan_tier": "Insurance",
+  "encounter_type": "OP",
+  "length_of_stay": 0,
+  "claim_gross": 500.00,
+  "claim_net": 500.00,
+  "billing_lag_days": 1,
   "clinician_profession": "Internal Medicine",
   "clinician_category": "Internal Medicine",
   "facility_type": "Clinic",
-  "billing_lag_days": 1,
-  "length_of_stay": 0,
-  "encounter_type": "OP"
+  "payer_classification": "E001",
+  "activities": [
+    {
+      "activity_code": "99213",
+      "activity_quantity": 1,
+      "activity_gross": 250.00,
+      "cpt_category": "Evaluation and Management"
+    }
+  ]
 }'
             ></textarea>
             <div id="json-parse-error" class="json-error"></div>
-            <div class="json-hint">Paste or edit a JSON object matching the UserClaimInput schema. Click Evaluate to submit.</div>
+            <div class="json-hint">Paste a ClaimRequest JSON. Must include an <code>activities</code> array. Click Evaluate to submit.</div>
           </div>
 
           <!-- ── FIELD FORM PANEL ─────────────────────────────── -->
@@ -420,21 +468,6 @@
                   <input id="f-diagnosis_code" type="text" value="I10"
                          placeholder="e.g. I10, E11.22, M54.5" />
                   <div class="field-hint">Letter + 2 digits + optional decimal</div>
-                </div>
-
-                <div class="field-group">
-                  <label for="f-diagnosis_type">Diagnosis Type</label>
-                  <select id="f-diagnosis_type">
-                    <option value="Principal" selected>Principal</option>
-                    <option value="Secondary">Secondary</option>
-                    <option value="Admitting">Admitting</option>
-                  </select>
-                </div>
-
-                <div class="field-group">
-                  <label for="f-activity_code">CPT / Activity Code *</label>
-                  <input id="f-activity_code" type="text" value="99213"
-                         placeholder="e.g. 99213, 27447" />
                 </div>
 
                 <div class="field-group">
@@ -481,16 +514,6 @@
                 <div class="form-col-title">Financial</div>
 
                 <div class="field-group">
-                  <label for="f-activity_gross">Activity Gross (AED) *</label>
-                  <input id="f-activity_gross" type="number" value="250.00" min="0.01" step="10" />
-                </div>
-
-                <div class="field-group">
-                  <label for="f-activity_quantity">Activity Quantity *</label>
-                  <input id="f-activity_quantity" type="number" value="1" min="1" max="15" />
-                </div>
-
-                <div class="field-group">
                   <label for="f-claim_gross">Claim Gross (AED) *</label>
                   <input id="f-claim_gross" type="number" value="250.00" min="0.01" step="10" />
                 </div>
@@ -513,8 +536,8 @@
                 <div class="form-col-title">Provider &amp; Insurance</div>
 
                 <div class="field-group">
-                  <label for="f-payer_id">Payer ID</label>
-                  <input id="f-payer_id" type="text" value="E001" placeholder="e.g. E001" />
+                  <label for="f-payer_id">Payer ID / Classification</label>
+                  <input id="f-payer_id" type="text" value="E001" placeholder="e.g. E001, DAMAN" />
                 </div>
 
                 <div class="field-group">
@@ -550,6 +573,32 @@
               </div><!-- /col3 -->
 
             </div><!-- /form-columns -->
+
+            <!-- ── Activities Section ──────────────────────────── -->
+            <div class="activities-section">
+              <div class="activities-header">
+                <div>
+                  <div class="form-col-title" style="margin-bottom:.2rem;">Activities</div>
+                  <div class="field-hint">Add one row per CPT / activity line on the claim.</div>
+                </div>
+                <button type="button" class="btn-add-act" id="add-activity-btn">+ Add Activity</button>
+              </div>
+              <div class="data-table-wrap activities-table-wrap">
+                <table class="data-table activities-table">
+                  <thead>
+                    <tr>
+                      <th>Activity Code *</th>
+                      <th>Qty</th>
+                      <th>Gross (AED) *</th>
+                      <th>CPT Category *</th>
+                      <th style="width:40px;"></th>
+                    </tr>
+                  </thead>
+                  <tbody id="activities-tbody"></tbody>
+                </table>
+              </div>
+            </div><!-- /activities-section -->
+
           </div><!-- /form-fields-panel -->
 
           <button type="submit" class="btn-primary" id="submit-btn">
@@ -558,42 +607,117 @@
         </form>
         </div><!-- /form-card -->
 
-        <!-- verdict + overview results sit below the form, still in overview tab -->
+        <!-- overview results sit below the form -->
         <div id="overview-placeholder" class="placeholder-box">
           <div class="ph-icon">📊</div>
-          <p>Submit a claim above to see the denial risk assessment.</p>
+          <p>Submit a claim above to see the denial likelihood assessment.</p>
         </div>
+
         <div id="overview-content" class="hidden">
-          <div class="grid-3" style="align-items:start;margin-bottom:1.25rem;">
-            <div class="chart-card" style="text-align:center;">
-              <div id="gauge-chart" class="plotly-container" style="min-height:270px;"></div>
-              <div style="margin-top:.5rem;"><span id="risk-badge" class="risk-badge">—</span></div>
+
+          <!-- ── Row 1: Claim Score Hero + Gauge + Patient Info ── -->
+          <div class="overview-top-row">
+
+            <!-- Claim Score Hero -->
+            <div class="claim-score-card">
+              <div class="claim-score-header">
+                <span class="claim-score-label">Overall Claim Denial Score</span>
+                <span id="risk-badge" class="risk-badge">—</span>
+              </div>
+              <div class="claim-score-body">
+                <span id="claim-score-value" class="claim-score-value">—</span>
+              </div>
+              <div class="claim-score-bar-track">
+                <div id="claim-score-bar" class="claim-score-fill" style="width:0%"></div>
+              </div>
+              <div class="claim-score-bands">
+                <span class="band low">LOW &lt;40%</span>
+                <span class="band medium">MED 40–70%</span>
+                <span class="band high">HIGH ≥70%</span>
+              </div>
+              <div id="claim-score-level" class="claim-score-level">—</div>
             </div>
+
+            <!-- Gauge — takes the 1fr middle column -->
+            <div class="chart-card" style="text-align:center;padding-bottom:.75rem;">
+              <div class="chart-title">Denial Probability Gauge</div>
+              <div id="gauge-chart" class="plotly-container" style="min-height:260px;"></div>
+            </div>
+
+            <!-- Patient & Claim info -->
             <div class="info-card">
               <div class="info-card-title">Patient &amp; Claim</div>
               <table id="patient-table" class="info-table"></table>
             </div>
-            <div class="info-card">
-              <div class="info-card-title">Model</div>
-              <table class="info-table">
-                <tr><td>Algorithm</td>   <td>XGBoost v1.5</td></tr>
-                <tr><td>Training set</td><td>Behavioral dataset</td></tr>
-                <tr><td>ROC-AUC</td>     <td>0.8466</td></tr>
-                <tr><td>Accuracy</td>    <td>76%</td></tr>
-                <tr><td>Latency</td>     <td>~120 ms</td></tr>
-                <tr><td>Likelihood bands</td>  <td>LOW &lt;35% · MED &lt;50%</td></tr>
+
+          </div><!-- /overview-top-row -->
+
+          <!-- ── Row 2: KPI strip ── -->
+          <div class="grid-4" style="margin-bottom:1.25rem;">
+            <div id="kpi-claim-score" class="kpi-card">
+              <div class="kpi-label">Claim Denial Score</div>
+              <div class="kpi-value neutral">—</div>
+              <div class="kpi-sub">Overall Claim Score</div>
+            </div>
+            <div id="kpi-highest-act" class="kpi-card">
+              <div class="kpi-label">Highest Activity</div>
+              <div class="kpi-value neutral">—</div>
+              <div class="kpi-sub">Most At-Risk Activity</div>
+            </div>
+            <div id="kpi-avg-act" class="kpi-card">
+              <div class="kpi-label">Average Activity</div>
+              <div class="kpi-value neutral">—</div>
+              <div class="kpi-sub">Across All Activities</div>
+            </div>
+            <div id="kpi-act-count" class="kpi-card">
+              <div class="kpi-label">Activities</div>
+              <div class="kpi-value neutral">—</div>
+              <div class="kpi-sub">Submitted</div>
+            </div>
+          </div><!-- /kpi strip -->
+
+          <!-- ── Row 3: Action banner ── -->
+          <div id="action-banner" class="action-banner low" style="margin-bottom:1.25rem;margin-top:0;"><strong>—</strong></div>
+
+          <!-- ── Row 4: Activity-level predictions table ── -->
+          <div class="chart-card" style="margin-bottom:1.25rem;padding-bottom:1rem;">
+            <div class="chart-title">Activity-Level Denial Predictions</div>
+            <div class="chart-caption">
+              Per-activity XGBoost prediction with SHAP top drivers. Each row is one activity line in the claim.
+              Red rows indicate activities the model predicts will be denied.
+            </div>
+            <div class="data-table-wrap" style="border:none;border-radius:0;margin-top:.5rem;">
+              <table class="data-table act-pred-table">
+                <thead>
+                  <tr>
+                    <th>Activity Code</th>
+                    <th>CPT Category</th>
+                    <th>Qty</th>
+                    <th>Gross (AED)</th>
+                    <th style="min-width:160px;">Denial Likelihood</th>
+                    <th>Verdict</th>
+                    <th>Top SHAP Drivers</th>
+                    <th style="min-width:200px;">Recommendation</th>
+                  </tr>
+                </thead>
+                <tbody id="activity-predictions-body">
+                  <tr><td colspan="8" class="no-data-row">No predictions yet.</td></tr>
+                </tbody>
               </table>
             </div>
           </div>
-          <div class="chart-card" style="margin-bottom:1.25rem;">
-            <div class="chart-title">Denial Likelihood Factor Distribution — This Claim</div>
-            <div class="chart-caption">
-              Share of denial likelihood contributed by each model feature for this specific claim.
-              Derived from actual SHAP values — only features pushing toward denial are shown.
+
+          <!-- ── Row 5: Model info ── -->
+          <div class="info-card" style="margin-bottom:1.25rem;">
+            <div class="info-card-title">Model Reference</div>
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:.75rem 1.5rem;">
+              <div><div class="kpi-label">Algorithm</div><div style="font-weight:600;font-size:.85rem;">XGBoost</div></div>
+              <div><div class="kpi-label">Encoder</div><div style="font-weight:600;font-size:.85rem;">Target Encoder</div></div>
+              <div><div class="kpi-label">Features</div><div style="font-weight:600;font-size:.85rem;">19 features</div></div>
+              <div><div class="kpi-label">Claim Score</div><div style="font-weight:600;font-size:.85rem;">0.7 × max + 0.3 × avg</div></div>
             </div>
-            <div id="denial-reason-chart" class="plotly-container" style="min-height:240px;"></div>
           </div>
-          <div id="action-banner" class="action-banner low"><strong>—</strong></div>
+
         </div><!-- /overview-content -->
 
       </div><!-- /tab-overview -->
@@ -753,13 +877,13 @@
 <!-- ================================================================
      SCRIPTS  — v=2 forces browser to bypass cache and fetch fresh files
      ================================================================ -->
-<script src="js/api.js?v=2"></script>
-<script src="js/shap.js?v=2"></script>
-<script src="js/charts.js?v=2"></script>
-<script src="js/icd.js?v=2"></script>
-<script src="js/interactions.js?v=2"></script>
-<script src="js/chat.js?v=2"></script>
-<script src="js/app.js?v=2"></script>
+<script src="js/api.js?v=4"></script>
+<script src="js/shap.js?v=4"></script>
+<script src="js/charts.js?v=4"></script>
+<script src="js/icd.js?v=4"></script>
+<script src="js/interactions.js?v=4"></script>
+<script src="js/chat.js?v=4"></script>
+<script src="js/app.js?v=4"></script>
 
 <script>
   /* ── Top-nav tab sync ─────────────────────────────────────────── */
@@ -824,26 +948,35 @@
     formPanel.classList.add('hidden');
     // Pre-populate JSON from current form values if blank
     if (!jsonInput.value.trim()) {
-      const g = id => document.getElementById(id)?.value;
+      const g = id => document.getElementById(id)?.value ?? '';
+      // Collect activity rows that exist at the time of toggle
+      const actRows = document.querySelectorAll('.activity-row');
+      const activities = Array.from(actRows).map(row => ({
+        activity_code:     row.querySelector('.act-code')?.value?.trim()    || '99213',
+        activity_quantity: parseFloat(row.querySelector('.act-qty')?.value)  || 1,
+        activity_gross:    parseFloat(row.querySelector('.act-gross')?.value) || 250,
+        cpt_category:      row.querySelector('.act-cpt-cat')?.value?.trim()  || 'Medicine',
+      }));
       const sample = {
-        diagnosis_code:       g('f-diagnosis_code')?.toUpperCase(),
-        diagnosis_type:       g('f-diagnosis_type'),
-        activity_code:        g('f-activity_code'),
-        activity_gross:       parseFloat(g('f-activity_gross')),
-        activity_quantity:    parseInt(g('f-activity_quantity'), 10),
-        claim_gross:          parseFloat(g('f-claim_gross')),
-        claim_net:            parseFloat(g('f-claim_net')),
-        patient_age:          parseInt(g('f-patient_age'), 10),
-        gender:               g('f-gender'),
-        nationality:          g('f-nationality'),
-        payer_id:             g('f-payer_id'),
-        insurance_plan_tier:  g('f-insurance_plan_tier'),
-        clinician_profession: g('f-clinician_profession'),
-        clinician_category:   g('f-clinician_category'),
-        facility_type:        g('f-facility_type'),
-        billing_lag_days:     parseInt(g('f-billing_lag_days'), 10),
-        length_of_stay:       parseInt(g('f-length_of_stay'), 10),
-        encounter_type:       g('f-encounter_type'),
+        claim_id:             `CLM-${Date.now()}`,
+        diagnosis_code:       (g('f-diagnosis_code') || 'I10').toUpperCase(),
+        icd_category:         'Circulatory',
+        patient_age:          parseInt(g('f-patient_age'), 10) || 52,
+        gender:               g('f-gender') || 'MALE',
+        nationality:          g('f-nationality') || 'INDIAN',
+        encounter_type:       g('f-encounter_type') || 'OP',
+        length_of_stay:       parseInt(g('f-length_of_stay'), 10) || 0,
+        claim_gross:          parseFloat(g('f-claim_gross')) || 250,
+        claim_net:            parseFloat(g('f-claim_net'))   || 250,
+        billing_lag_days:     parseInt(g('f-billing_lag_days'), 10) || 1,
+        clinician_profession: g('f-clinician_profession') || 'Internal Medicine',
+        clinician_category:   g('f-clinician_category')   || 'Internal Medicine',
+        facility_type:        g('f-facility_type') || 'Clinic',
+        payer_classification: g('f-payer_id') || 'E001',
+        activities:           activities.length ? activities : [{
+          activity_code: '99213', activity_quantity: 1,
+          activity_gross: 250, cpt_category: 'Medicine',
+        }],
       };
       jsonInput.value = JSON.stringify(sample, null, 2);
     }

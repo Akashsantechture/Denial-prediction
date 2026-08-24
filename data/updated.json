@@ -1,0 +1,142 @@
+[
+  {
+  "claim_id": "CLM_100089",
+  "patient_age": 78,
+  "gender": "Male",
+  "nationality": "EMIRATI",
+  "encounter_type": "OP",
+  "length_of_stay": 0,
+  "claim_gross": 708.00,
+  "claim_net": 708.00,
+  "billing_lag_days": 15,
+  "clinician_category": "Urology",
+  "facility_type": "Hospital",
+  "insurance_plan_tier": "Insurance",
+  "diagnosis_code": "N40.1",
+  "icd_category": "Genitourinary",
+
+  "activities": [
+    {
+      "activity_code": "82306",
+      "activity_quantity": 1,
+      "activity_gross": 106.00,
+      "cpt_category": "Pathology_Laboratory"
+    },
+    {
+      "activity_code": "82565",
+      "activity_quantity": 1,
+      "activity_gross": 21.60,
+      "cpt_category": "Pathology_Laboratory"
+    },
+    {
+      "activity_code": "99214",
+      "activity_quantity": 1,
+      "activity_gross": 299.60,
+      "cpt_category": "Evaluation_Management"
+    }
+  ]
+} ,
+  {
+    "primary_diagnosis_code": "I21.9",
+    "icd_category": "Cardiology",
+    "activities": [
+      "93000",
+      "71045",
+      "85025",
+      "81001"
+    ],
+    "activity_categories": [
+      "Cardiology",
+      "Radiology",
+      "Laboratory",
+      "Laboratory"
+    ]
+  },
+
+
+  {
+    "claim_id": "12345",
+    "diagnosis_code": "N20.0",
+    "activities": [
+      { "activity_code": "52356" },
+      { "activity_code": "85025" },
+      { "activity_code": "99204" }
+    ]
+  },
+  
+  {
+    "claim_id": "12345",
+    "activities": [
+      { "activity_code": "52356", "denial_probability": 0.91 },
+      { "activity_code": "85025", "denial_probability": 0.22 },
+      { "activity_code": "99204", "denial_probability": 0.08 }
+    ]
+  }
+]
+
+
+
+
+{
+  "claim_id": "CLM_100089",
+  "patient_age": 78,
+  "gender": "Male",
+  "nationality": "EMIRATI",
+  "encounter_type": "OP",
+  "length_of_stay": 0,
+  "claim_gross": 708.00,
+  "claim_net": 708.00,
+  "billing_lag_days": 15,
+  "clinician_profession": "Physician",
+  "clinician_category": "Urology",
+  "facility_type": "Hospital",
+  "payer_classification": "Insurance",
+  "diagnosis_code": "N40.1",
+  "icd_category": "Genitourinary",
+  "activities": [
+    {
+      "activity_code": "82306",
+      "activity_quantity": 1,
+      "activity_gross": 106.00,
+      "cpt_category": "Pathology_Laboratory"
+    },
+    {
+      "activity_code": "82565",
+      "activity_quantity": 1,
+      "activity_gross": 21.60,
+      "cpt_category": "Pathology_Laboratory"
+    },
+    {
+      "activity_code": "99214",
+      "activity_quantity": 1,
+      "activity_gross": 299.60,
+      "cpt_category": "Evaluation_Management"
+    }
+  ]
+}
+
+
+{
+  "claim_id": "CLM_100089",
+  "activity_count": 3,
+  "predictions": [
+    {
+      "activity_code": "82306",
+      "cpt_category": "Pathology_Laboratory",
+      "denial_probability": 0.5971,
+      "predicted_denial": true
+    },
+    {
+      "activity_code": "82565",
+      "cpt_category": "Pathology_Laboratory",
+      "denial_probability": 0.2995,
+      "predicted_denial": false
+    },
+    {
+      "activity_code": "99214",
+      "cpt_category": "Evaluation_Management",
+      "denial_probability": 0.2497,
+      "predicted_denial": false
+    }
+  ]
+}

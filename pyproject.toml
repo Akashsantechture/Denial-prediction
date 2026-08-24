@@ -5,11 +5,13 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.11.9"
 dependencies = [
+    "category-encoders>=2.10.0",
     "fastapi>=0.140.13",
     "google-auth>=2.56.3",
     "google-genai>=2.18.1",
     "joblib>=1.5.3",
     "lightgbm>=4.7.0",
+    "matplotlib>=3.11.1",
     "numpy>=2.4.6",
     "openai>=3.0.0",
     "pandas>=3.0.5",

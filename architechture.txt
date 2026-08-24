@@ -9,12 +9,12 @@ SECTION 1 — OVERVIEW
 ────────────────────────────────────────────────────────────────────────────────
 
 ClaimAI is a standalone HTML/CSS/JS single-page application (SPA) that runs
-entirely in the browser. It connects to a FastAPI backend (genericmain.py) via
+entirely in the browser. It connects to a FastAPI backend (model2main.py) via
 fetch() API calls for claim risk prediction. No framework (React, Vue, etc.) is
 used — the frontend is pure vanilla JS with Plotly.js for all charts.
 
 Entry point : frontend/index.html
-Run command : uvicorn genericmain:app --reload  →  visit http://127.0.0.1:8000
+Run command : uvicorn model2main:app --reload  →  visit http://127.0.0.1:8000
 Serving     : FastAPI StaticFiles mount serves frontend/ at the root path "/"
 
 
@@ -448,7 +448,7 @@ SECTION 5 — DATA FLOW DIAGRAM
   api.js  API.predict(payload)
             │
      ┌──────┴──────────────┐
-     │ POST /predict_user  │  ◄──── genericmain.py (FastAPI + XGBoost v1.5)
+     │ POST /predict_user  │  ◄──── model2main.py (FastAPI + XGBoost v2.0)
      │ _claim              │
      └──────┬──────────────┘
             │
@@ -723,7 +723,7 @@ STEP 7 — Knowledge base documents to add (drop in rag_service/docs/)
   Re-run ingest.py after adding new documents.
 
 STEP 8 — Run both services together
-  Terminal 1:  uvicorn genericmain:app --reload          (port 8000)
+  Terminal 1:  uvicorn model2main:app --reload          (port 8000)
   Terminal 2:  uvicorn rag_service.main:app --port 8001  (port 8001)
   Browser:     http://127.0.0.1:8000
 

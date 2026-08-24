@@ -30,6 +30,7 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 1.5rem;
+  align-items: start;
 }
 @media (max-width: 900px) {
   .form-columns { grid-template-columns: 1fr 1fr; }
@@ -494,3 +495,249 @@
 .expander-body.open { display: block; }
 .expander-body p { margin-bottom: .55rem; }
 .expander-body p:last-child { margin-bottom: 0; }
+
+/* ============================================================
+   CLAIM SCORE HERO CARD
+   ============================================================ */
+.claim-score-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 1.25rem 1.25rem 1rem;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: .55rem;
+}
+
+.claim-score-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.claim-score-label {
+  font-size: .72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--color-text-muted);
+}
+
+.claim-score-body {
+  display: flex;
+  align-items: baseline;
+  gap: .5rem;
+}
+
+.claim-score-value {
+  font-size: 3rem;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--color-text-primary);
+  letter-spacing: -1px;
+}
+
+.claim-score-bar-track {
+  height: 8px;
+  background: var(--color-border);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.claim-score-fill {
+  height: 100%;
+  border-radius: 99px;
+  transition: width 600ms cubic-bezier(.4,0,.2,1);
+}
+.claim-score-fill.high   { background: var(--color-high); }
+.claim-score-fill.medium { background: var(--color-medium); }
+.claim-score-fill.low    { background: var(--color-low); }
+
+.claim-score-bands {
+  display: flex;
+  gap: .5rem;
+  font-size: .68rem;
+  color: var(--color-text-muted);
+}
+.claim-score-bands .band {
+  padding: .1rem .4rem;
+  border-radius: 99px;
+  font-weight: 600;
+}
+.claim-score-bands .band.high   { background: var(--color-high-bg);   color: #991B1B; }
+.claim-score-bands .band.medium { background: var(--color-medium-bg); color: #92400E; }
+.claim-score-bands .band.low    { background: var(--color-low-bg);    color: #065F46; }
+
+.claim-score-level {
+  font-size: .78rem;
+  font-weight: 700;
+  letter-spacing: .04em;
+  color: var(--color-text-muted);
+}
+.claim-score-level.high   { color: var(--color-high); }
+.claim-score-level.medium { color: var(--color-medium); }
+.claim-score-level.low    { color: var(--color-low); }
+
+/* ============================================================
+   ACTIVITY PREDICTIONS TABLE  (Overview tab)
+   ============================================================ */
+.act-pred-table td { vertical-align: middle; }
+
+/* Row shading for denied activities */
+.act-pred-table tbody tr.row-denied {
+  background: #FFF5F5 !important;
+  border-left: 3px solid var(--color-high);
+}
+.act-pred-table tbody tr.row-denied:hover { background: #FEE2E2 !important; }
+
+/* Probability cell: value + mini bar */
+.act-prob-row {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+}
+.act-prob-val {
+  font-size: .82rem;
+  font-weight: 700;
+  min-width: 42px;
+}
+.act-prob-val.high   { color: var(--color-high); }
+.act-prob-val.medium { color: var(--color-medium); }
+.act-prob-val.low    { color: var(--color-low); }
+
+.act-prob-bar-wrap {
+  flex: 1;
+  height: 6px;
+  background: var(--color-border);
+  border-radius: 99px;
+  overflow: hidden;
+  min-width: 60px;
+}
+.act-prob-bar {
+  height: 100%;
+  border-radius: 99px;
+}
+.act-prob-bar.high   { background: var(--color-high); }
+.act-prob-bar.medium { background: var(--color-medium); }
+.act-prob-bar.low    { background: var(--color-low); }
+
+/* Verdict pill */
+.denial-verdict {
+  display: inline-block;
+  padding: .18rem .6rem;
+  border-radius: 999px;
+  font-size: .74rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.denial-verdict.denied   { background: var(--color-high-bg);  color: #991B1B; }
+.denial-verdict.approved { background: var(--color-low-bg);   color: #065F46; }
+
+/* CPT category badge */
+.cpt-badge {
+  display: inline-block;
+  padding: .1rem .45rem;
+  background: #EFF6FF;
+  color: #1D4ED8;
+  border: 1px solid #BFDBFE;
+  border-radius: 999px;
+  font-size: .72rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* SHAP driver pills cell */
+.driver-pills-cell { white-space: nowrap; }
+
+/* Recommendation cell */
+.rec-cell {
+  font-size: .78rem;
+  color: var(--color-text-secondary);
+  max-width: 220px;
+  white-space: normal;
+  line-height: 1.4;
+}
+
+/* Empty state */
+.no-data-row {
+  text-align: center;
+  color: var(--color-text-muted);
+  padding: 1.5rem !important;
+  font-size: .82rem;
+}
+
+/* ============================================================
+   ACTIVITIES FORM SECTION  (Claim entry form)
+   ============================================================ */
+.activities-section {
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--color-border-light);
+}
+
+.activities-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: .65rem;
+}
+
+.btn-add-act {
+  background: var(--color-accent);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: .38rem .85rem;
+  font-size: .8rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--font);
+  transition: background var(--transition);
+  white-space: nowrap;
+}
+.btn-add-act:hover { background: var(--color-accent-dark); }
+
+.activities-table-wrap { border-radius: var(--radius-sm); }
+
+.activities-table th,
+.activities-table td { padding: .4rem .6rem; }
+
+/* Constrain each activity column so the table stays compact */
+.activities-table td:nth-child(1) { width: 130px; }
+.activities-table td:nth-child(2) { width: 72px;  }
+.activities-table td:nth-child(3) { width: 120px; }
+.activities-table td:nth-child(4) { min-width: 170px; }
+.activities-table td:nth-child(5) { width: 44px; text-align: center; }
+
+/* Inline field inputs inside the activity table */
+.field-inline {
+  padding: .35rem .55rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: .82rem;
+  font-family: var(--font);
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+.field-inline:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 2px rgba(59,130,246,.1);
+}
+
+.btn-remove-act {
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  font-size: .9rem;
+  padding: .2rem .4rem;
+  border-radius: var(--radius-sm);
+  transition: color var(--transition), background var(--transition);
+}
+.btn-remove-act:hover { color: var(--color-high); background: var(--color-high-bg); }

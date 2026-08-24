@@ -1,0 +1,162 @@
+request payload
+
+
+{
+  "claim_id": "CLM_100089",
+  "patient_age": 78,
+  "gender": "Male",
+  "nationality": "EMIRATI",
+  "encounter_type": "OP",
+  "length_of_stay": 0,
+  "claim_gross": 708.00,
+  "claim_net": 708.00,
+  "billing_lag_days": 15,
+
+  "clinician_profession": "Urology",
+  "clinician_category": "Urology",
+
+  "facility_type": "Hospital",
+  "payer_classification": "Insurance",
+
+  "diagnosis_code": "N40.1",
+  "icd_category": "Genitourinary",
+
+  "activities": [
+    {
+      "activity_code": "82306",
+      "activity_quantity": 1,
+      "activity_gross": 106.00,
+      "cpt_category": "Pathology_Laboratory"
+    },
+    {
+      "activity_code": "82565",
+      "activity_quantity": 1,
+      "activity_gross": 21.60,
+      "cpt_category": "Pathology_Laboratory"
+    },
+    {
+      "activity_code": "99214",
+      "activity_quantity": 1,
+      "activity_gross": 299.60,
+      "cpt_category": "Evaluation_Management"
+    }
+  ]
+}
+
+
+
+response:
+
+{
+  "claim_id": "CLM_100089",
+  "claim_summary": {
+    "claim_denial_probability": 0.3631,
+    "claim_denial_probability_pct": 36.31,
+    "claim_risk_level": "LOW",
+    "activity_count": 3
+  },
+  "predictions": [
+    {
+      "activity_code": "82306",
+      "cpt_category": "Pathology_Laboratory",
+      "denial_probability": 0.6079,
+      "predicted_denial": true,
+      "top_drivers": [
+        {
+          "feature": "activity_code",
+          "shap_value": 0.5179,
+          "impact": "increase_risk"
+        },
+        {
+          "feature": "billing_lag_days",
+          "shap_value": -0.359,
+          "impact": "decrease_risk"
+        },
+        {
+          "feature": "claim_net",
+          "shap_value": 0.2572,
+          "impact": "increase_risk"
+        },
+        {
+          "feature": "claim_gross",
+          "shap_value": 0.1468,
+          "impact": "increase_risk"
+        },
+        {
+          "feature": "activity_gross",
+          "shap_value": 0.1411,
+          "impact": "increase_risk"
+        }
+      ],
+      "recommendation": "Moderate denial risk. Verify coding accuracy before submission."
+    },
+    {
+      "activity_code": "82565",
+      "cpt_category": "Pathology_Laboratory",
+      "denial_probability": 0.2829,
+      "predicted_denial": false,
+      "top_drivers": [
+        {
+          "feature": "activity_code",
+          "shap_value": -0.7205,
+          "impact": "decrease_risk"
+        },
+        {
+          "feature": "billing_lag_days",
+          "shap_value": -0.4079,
+          "impact": "decrease_risk"
+        },
+        {
+          "feature": "claim_net",
+          "shap_value": 0.2375,
+          "impact": "increase_risk"
+        },
+        {
+          "feature": "activity_gross",
+          "shap_value": 0.1077,
+          "impact": "increase_risk"
+        },
+        {
+          "feature": "icd_category",
+          "shap_value": 0.093,
+          "impact": "increase_risk"
+        }
+      ],
+      "recommendation": "Low denial risk. Ready for submission."
+    },
+    {
+      "activity_code": "99214",
+      "cpt_category": "Evaluation_Management",
+      "denial_probability": 0.1985,
+      "predicted_denial": false,
+      "top_drivers": [
+        {
+          "feature": "billing_lag_days",
+          "shap_value": -0.4944,
+          "impact": "decrease_risk"
+        },
+        {
+          "feature": "cpt_category",
+          "shap_value": -0.3689,
+          "impact": "decrease_risk"
+        },
+        {
+          "feature": "claim_net",
+          "shap_value": 0.2754,
+          "impact": "increase_risk"
+        },
+        {
+          "feature": "icd_cpt_domain_match",
+          "shap_value": -0.1941,
+          "impact": "decrease_risk"
+        },
+        {
+          "feature": "icd_category",
+          "shap_value": 0.1437,
+          "impact": "increase_risk"
+        }
+      ],
+      "recommendation": "Low denial risk. Ready for submission."
+    }
+  ]
+}

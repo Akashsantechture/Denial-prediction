@@ -1,0 +1,444 @@
+[
+  {
+    "claim_id": "CLM_158393",
+    "patient_age": 46,
+    "gender": "Female",
+    "nationality": "EGYPTIAN",
+    "encounter_type": "OP",
+    "length_of_stay": 0,
+    "claim_gross": 514.40,
+    "claim_net": 58.00,
+    "billing_lag_days": null,
+    "clinician_profession": "INTERNAL MEDICINE",
+    "clinician_category": "Gastroenterology",
+    "facility_type": "Hospital",
+    "payer_classification": "Insurance",
+    "diagnosis_code": "K50.814",
+    "icd_category": "Digestive System",
+    "activities": [
+      {
+        "activity_code": "11",
+        "activity_quantity": 1.0,
+        "activity_gross": 350.00,
+        "cpt_category": "Evaluation_Management"
+      },
+      {
+        "activity_code": "85025",
+        "activity_quantity": 1.0,
+        "activity_gross": 106.40,
+        "cpt_category": "Pathology_Laboratory"
+      },
+      {
+        "activity_code": "85652",
+        "activity_quantity": 1.0,
+        "activity_gross": 20.00,
+        "cpt_category": "Pathology_Laboratory"
+      },
+      {
+        "activity_code": "86140",
+        "activity_quantity": 1.0,
+        "activity_gross": 38.00,
+        "cpt_category": "Pathology_Laboratory"
+      },
+      {
+        "activity_code": "86141",
+        "activity_quantity": 1.0,
+        "activity_gross": 253.00,
+        "cpt_category": "Pathology_Laboratory"
+      }
+    ]
+  },
+  {
+    "claim_id": "CLM_313461",
+    "patient_age": 47,
+    "gender": "Female",
+    "nationality": "EMIRATI",
+    "encounter_type": "OP",
+    "length_of_stay": 0,
+    "claim_gross": 1201.64,
+    "claim_net": 1201.64,
+    "billing_lag_days": 43,
+    "clinician_profession": "General Practitioner",
+    "clinician_category": "General Practitioner",
+    "facility_type": "Hospital",
+    "payer_classification": "Insurance",
+    "diagnosis_code": "R07.9",
+    "icd_category": "Symptoms, Signs and Clinical Findings",
+    "activities": [
+      {
+        "activity_code": "71045",
+        "activity_quantity": 1.0,
+        "activity_gross": 56.40,
+        "cpt_category": "Radiology"
+      },
+      {
+        "activity_code": "80053",
+        "activity_quantity": 1.0,
+        "activity_gross": 231.60,
+        "cpt_category": "Pathology_Laboratory"
+      },
+      {
+        "activity_code": "82550",
+        "activity_quantity": 1.0,
+        "activity_gross": 27.60,
+        "cpt_category": "Pathology_Laboratory"
+      },
+      {
+        "activity_code": "84484",
+        "activity_quantity": 1.0,
+        "activity_gross": 43.20,
+        "cpt_category": "Pathology_Laboratory"
+      },
+      {
+        "activity_code": "85025",
+        "activity_quantity": 1.0,
+        "activity_gross": 33.60,
+        "cpt_category": "Pathology_Laboratory"
+      },
+      {
+        "activity_code": "86140",
+        "activity_quantity": 1.0,
+        "activity_gross": 22.80,
+        "cpt_category": "Pathology_Laboratory"
+      },
+      {
+        "activity_code": "93000",
+        "activity_quantity": 1.0,
+        "activity_gross": 130.00,
+        "cpt_category": "Medicine"
+      },
+      {
+        "activity_code": "96365",
+        "activity_quantity": 1.0,
+        "activity_gross": 172.00,
+        "cpt_category": "Medicine"
+      },
+      {
+        "activity_code": "96367",
+        "activity_quantity": 1.0,
+        "activity_gross": 82.00,
+        "cpt_category": "Medicine"
+      },
+      {
+        "activity_code": "96375",
+        "activity_quantity": 1.0,
+        "activity_gross": 40.00,
+        "cpt_category": "Medicine"
+      },
+      {
+        "activity_code": "99283",
+        "activity_quantity": 1.0,
+        "activity_gross": 177.62,
+        "cpt_category": "Evaluation_Management"
+      },
+      {
+        "activity_code": "DT2-B682-07588-02",
+        "activity_quantity": 1.0,
+        "activity_gross": 3.07,
+        "cpt_category": "Pharmacy"
+      },
+      {
+        "activity_code": "F15-6596-04308-02",
+        "activity_quantity": 0.1,
+        "activity_gross": 7.65,
+        "cpt_category": "Pharmacy"
+      },
+      {
+        "activity_code": "H21-4261-03760-01",
+        "activity_quantity": 0.2,
+        "activity_gross": 0.90,
+        "cpt_category": "Pharmacy"
+      }
+    ]
+  },
+  {
+    "claim_id": "CLM_333014",
+    "patient_age": 56,
+    "gender": "Male",
+    "nationality": "EMIRATI",
+    "encounter_type": "OP",
+    "length_of_stay": 0,
+    "claim_gross": 326.00,
+    "claim_net": 326.00,
+    "billing_lag_days": 43,
+    "clinician_profession": "Physiotherapy",
+    "clinician_category": "Physiotherapist 1",
+    "facility_type": "Hospital",
+    "payer_classification": "Insurance",
+    "diagnosis_code": "M54.2",
+    "icd_category": "Musculoskeletal",
+    "activities": [
+      {
+        "activity_code": "97010",
+        "activity_quantity": 1.0,
+        "activity_gross": 44.00,
+        "cpt_category": "Physical_Medicine"
+      },
+      {
+        "activity_code": "97014",
+        "activity_quantity": 1.0,
+        "activity_gross": 58.00,
+        "cpt_category": "Physical_Medicine"
+      },
+      {
+        "activity_code": "97110",
+        "activity_quantity": 1.0,
+        "activity_gross": 116.00,
+        "cpt_category": "Physical_Medicine"
+      },
+      {
+        "activity_code": "97140",
+        "activity_quantity": 1.0,
+        "activity_gross": 108.00,
+        "cpt_category": "Physical_Medicine"
+      }
+    ]
+  },
+  {
+    "claim_id": "CLM_603630",
+    "patient_age": 51,
+    "gender": "Male",
+    "nationality": "EMIRATI",
+    "encounter_type": "OP",
+    "length_of_stay": 0,
+    "claim_gross": 203.30,
+    "claim_net": 203.30,
+    "billing_lag_days": null,
+    "clinician_profession": "Orthopedic Surgery",
+    "clinician_category": "Orthopedic Surgery",
+    "facility_type": "Hospital",
+    "payer_classification": "Insurance",
+    "diagnosis_code": "M17.9",
+    "icd_category": "Musculoskeletal",
+    "activities": [
+      {
+        "activity_code": "99213",
+        "activity_quantity": 1.0,
+        "activity_gross": 203.30,
+        "cpt_category": "Evaluation_Management"
+      }
+    ]
+  },
+  {
+    "claim_id": "CLM_629543",
+    "patient_age": 53,
+    "gender": "Male",
+    "nationality": "EMIRATI",
+    "encounter_type": "OP",
+    "length_of_stay": 0,
+    "claim_gross": 841.30,
+    "claim_net": 841.30,
+    "billing_lag_days": 35,
+    "clinician_profession": "Dermatology",
+    "clinician_category": "Dermatology",
+    "facility_type": "Hospital",
+    "payer_classification": "Insurance",
+    "diagnosis_code": "L80",
+    "icd_category": "Skin and Subcutaneous Tissue",
+    "activities": [
+      {
+        "activity_code": "96920",
+        "activity_quantity": 1.0,
+        "activity_gross": 638.00,
+        "cpt_category": "Medicine"
+      },
+      {
+        "activity_code": "99213",
+        "activity_quantity": 1.0,
+        "activity_gross": 203.30,
+        "cpt_category": "Evaluation_Management"
+      }
+    ]
+  },
+  {
+    "claim_id": "CLM_632799",
+    "patient_age": 58,
+    "gender": "Male",
+    "nationality": "EMIRATI",
+    "encounter_type": "OP",
+    "length_of_stay": 0,
+    "claim_gross": 326.00,
+    "claim_net": 326.00,
+    "billing_lag_days": null,
+    "clinician_profession": "Physiotherapy",
+    "clinician_category": "Physiotherapist 1",
+    "facility_type": "Hospital",
+    "payer_classification": "Insurance",
+    "diagnosis_code": "M62.830",
+    "icd_category": "Musculoskeletal",
+    "activities": [
+      {
+        "activity_code": "97010",
+        "activity_quantity": 1.0,
+        "activity_gross": 44.00,
+        "cpt_category": "Physical_Medicine"
+      },
+      {
+        "activity_code": "97014",
+        "activity_quantity": 1.0,
+        "activity_gross": 58.00,
+        "cpt_category": "Physical_Medicine"
+      },
+      {
+        "activity_code": "97110",
+        "activity_quantity": 1.0,
+        "activity_gross": 116.00,
+        "cpt_category": "Physical_Medicine"
+      },
+      {
+        "activity_code": "97140",
+        "activity_quantity": 1.0,
+        "activity_gross": 108.00,
+        "cpt_category": "Physical_Medicine"
+      }
+    ]
+  },
+  {
+    "claim_id": "CLM_638302",
+    "patient_age": 40,
+    "gender": "Male",
+    "nationality": "EMIRATI",
+    "encounter_type": "OP",
+    "length_of_stay": 0,
+    "claim_gross": 156.00,
+    "claim_net": 156.00,
+    "billing_lag_days": 26,
+    "clinician_profession": "Family Medicine",
+    "clinician_category": "Family Medicine",
+    "facility_type": "Hospital",
+    "payer_classification": "Insurance",
+    "diagnosis_code": "M25.511",
+    "icd_category": "Musculoskeletal",
+    "activities": [
+      {
+        "activity_code": "73030",
+        "activity_quantity": 1.0,
+        "activity_gross": 78.00,
+        "cpt_category": "Radiology"
+      }
+    ]
+  },
+  {
+    "claim_id": "CLM_649079",
+    "patient_age": 16,
+    "gender": "Male",
+    "nationality": "EMIRATI",
+    "encounter_type": "OP",
+    "length_of_stay": 0,
+    "claim_gross": 1738.50,
+    "claim_net": 1738.50,
+    "billing_lag_days": 115,
+    "clinician_profession": "General Dentist",
+    "clinician_category": "General Dentist",
+    "facility_type": "Hospital",
+    "payer_classification": "Insurance",
+    "diagnosis_code": "K02.62",
+    "icd_category": "Digestive System",
+    "activities": [
+      {
+        "activity_code": "20111",
+        "activity_quantity": 1.0,
+        "activity_gross": 0.00,
+        "cpt_category": "Dental"
+      },
+      {
+        "activity_code": "20119",
+        "activity_quantity": 1.0,
+        "activity_gross": 0.00,
+        "cpt_category": "Dental"
+      },
+      {
+        "activity_code": "20141",
+        "activity_quantity": 1.0,
+        "activity_gross": 57.00,
+        "cpt_category": "Dental"
+      },
+      {
+        "activity_code": "23112",
+        "activity_quantity": 1.0,
+        "activity_gross": 171.00,
+        "cpt_category": "Dental"
+      },
+      {
+        "activity_code": "23113",
+        "activity_quantity": 1.0,
+        "activity_gross": 199.50,
+        "cpt_category": "Dental"
+      },
+      {
+        "activity_code": "23114",
+        "activity_quantity": 1.0,
+        "activity_gross": 228.00,
+        "cpt_category": "Dental"
+      },
+      {
+        "activity_code": "23313",
+        "activity_quantity": 1.0,
+        "activity_gross": 228.00,
+        "cpt_category": "Dental"
+      }
+    ]
+  },
+  {
+    "claim_id": "CLM_653269",
+    "patient_age": 20,
+    "gender": "Male",
+    "nationality": "EMIRATI",
+    "encounter_type": "OP",
+    "length_of_stay": 0,
+    "claim_gross": 203.30,
+    "claim_net": 203.30,
+    "billing_lag_days": 34,
+    "clinician_profession": "General Surgery",
+    "clinician_category": "General Surgery",
+    "facility_type": "Hospital",
+    "payer_classification": "Insurance",
+    "diagnosis_code": "M54.5",
+    "icd_category": "Musculoskeletal",
+    "activities": [
+      {
+        "activity_code": "99213",
+        "activity_quantity": 1.0,
+        "activity_gross": 203.30,
+        "cpt_category": "Evaluation_Management"
+      }
+    ]
+  },
+  {
+    "claim_id": "CLM_702412",
+    "patient_age": 32,
+    "gender": "Male",
+    "nationality": "EMIRATI",
+    "encounter_type": "OP",
+    "length_of_stay": 0,
+    "claim_gross": 234.09,
+    "claim_net": 138.72,
+    "billing_lag_days": null,
+    "clinician_profession": "General Dentist",
+    "clinician_category": "General Dentist",
+    "facility_type": "Hospital",
+    "payer_classification": "Insurance",
+    "diagnosis_code": "K02.52",
+    "icd_category": "Digestive System",
+    "activities": [
+      {
+        "activity_code": "23311",
+        "activity_quantity": 1.0,
+        "activity_gross": 95.37,
+        "cpt_category": "Dental"
+      },
+      {
+        "activity_code": "91111",
+        "activity_quantity": 1.0,
+        "activity_gross": 86.70,
+        "cpt_category": "Dental"
+      },
+      {
+        "activity_code": "91119",
+        "activity_quantity": 1.0,
+        "activity_gross": 52.02,
+        "cpt_category": "Dental"
+      }
+    ]
+  }
+]
