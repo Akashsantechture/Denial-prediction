@@ -1,0 +1,406 @@
+================================================================================
+  ClaimAI — Board Presentation Q&A
+  Denial Prediction Platform | Santechture
+================================================================================
+
+
+────────────────────────────────────────────────────────────────────────────────
+Q1.  What problem does ClaimAI solve?
+────────────────────────────────────────────────────────────────────────────────
+
+Healthcare providers in the UAE submit thousands of insurance claims every
+month. A significant portion of those claims are denied by payers, requiring
+costly manual review, rework, and resubmission. The root cause is almost
+always the same: the claim was submitted without understanding why payers
+deny it in the first place.
+
+ClaimAI solves this at the point of submission. Before a claim goes out,
+the platform scores it against a trained machine learning model, identifies
+every feature driving the denial risk, and tells the clinical billing team
+exactly what to fix — in plain language, within seconds.
+
+
+────────────────────────────────────────────────────────────────────────────────
+Q2.  What is the core technology powering the predictions?
+────────────────────────────────────────────────────────────────────────────────
+
+The prediction engine is XGBoost — a gradient-boosted decision tree
+classifier — trained on UAE healthcare claims data. The model takes 19
+input features per activity line (diagnosis code, CPT/activity code, claim
+amount, billing lag, clinician type, facility type, payer classification,
+ICD-CPT domain match, and others) and outputs a denial probability between
+0 and 100%.
+
+SHAP (SHapley Additive exPlanations) TreeExplainer runs on every prediction
+to decompose the model output into per-feature contributions. This is what
+allows the platform to say precisely which feature is pushing a specific
+claim toward denial — not a generic explanation, but the actual mathematical
+reason computed by the model for that individual claim.
+
+
+────────────────────────────────────────────────────────────────────────────────
+Q3.  How is the claim-level denial score calculated?
+────────────────────────────────────────────────────────────────────────────────
+
+A healthcare claim can contain multiple activity lines (procedures billed
+together). The model scores each activity independently because each has
+its own CPT code, gross amount, and procedure-specific features.
+
+The claim-level score is then computed as a weighted composite:
+
+    Claim Score = 0.7 × highest_activity_risk + 0.3 × average_activity_risk
+
+This formula intentionally weights the worst activity more heavily because
+a single high-risk activity line is usually sufficient for a payer to deny
+the entire claim. The resulting score is what appears on the Overview tab
+as the Claim Denial Score.
+
+
+────────────────────────────────────────────────────────────────────────────────
+Q4.  What are SHAP values and why do they matter clinically?
+────────────────────────────────────────────────────────────────────────────────
+
+SHAP values are a game-theory-based method that fairly distributes a model's
+prediction among its input features. For ClaimAI, each SHAP value represents
+the contribution of one feature to the log-odds of denial for a specific
+activity, measured in log-odds units.
+
+Clinically, they answer the question: "Of all the things about this claim,
+which one is most responsible for the high denial score?" A billing team
+member does not need to understand log-odds — they see: "Activity Gross
+Amount is pushing this claim toward denial with a score of +0.94." That
+is actionable. They can check the billed amount, verify it is correct, or
+flag it for review before submission.
+
+
+────────────────────────────────────────────────────────────────────────────────
+Q5.  How accurate is the model?
+────────────────────────────────────────────────────────────────────────────────
+
+The XGBoost model achieves the following on the held-out test set:
+
+    ROC-AUC:           0.8466
+    Overall Accuracy:  76%
+    Denied Recall:     75%  (catches 3 in 4 actual denials)
+    Denied Precision:  67%  (of flagged claims, 2 in 3 are genuinely denied)
+
+The top five features by information gain are:
+  1. activity_gross (17.53%)
+  2. cpt_category (16.98%)
+  3. activity_code (14.19%)
+  4. claim_net (11.44%)
+  5. billing_lag_days (5.56%)
+
+These five features alone account for approximately 66% of the model's
+predictive power.
+
+
+────────────────────────────────────────────────────────────────────────────────
+Q6.  What does the platform actually look like to a user?
+────────────────────────────────────────────────────────────────────────────────
+
+The user opens a web browser, navigates to the platform URL, and sees a
+clean claims entry form. They enter the claim details — diagnosis code,
+procedure codes, amounts, billing lag, patient demographics, and provider
+information — either by filling individual fields or by pasting a JSON
+payload directly.
+
+After clicking Evaluate, they see within seconds:
+
+  - A Claim Denial Score (the composite risk percentage)
+  - A colour-coded verdict: HIGH / MEDIUM / LOW
+  - A per-activity breakdown table showing each procedure's denial risk
+  - SHAP waterfall, scatter, and dependence charts explaining the drivers
+  - ICD Drill-Down and Interactions tabs showing population-level context
+  - An AI chat assistant they can ask questions in plain English
+
+Everything runs in the browser. No installation required.
+
+
+────────────────────────────────────────────────────────────────────────────────
+Q7.  What is the AI Analyst and how does it work?
+────────────────────────────────────────────────────────────────────────────────
+
+The AI Analyst is a conversational panel embedded in the platform. It can
+answer natural language questions about the claim that was just scored —
+why it was flagged, what each SHAP driver means, which activity is at most
+risk, and what specific steps the billing team should take.
+
+Technically it operates on two levels:
+
+  Primary (Gemini AI): When the AI Analyst microservice is running, the
+  chat is powered by Google's Gemini 2.5 Flash model via Vertex AI. The
+  full claim intelligence — all 19 feature values, the model prediction,
+  and the SHAP evidence — is sent to Gemini as structured context. Gemini
+  then generates grounded, evidence-based responses about that specific claim.
+
+  Fallback (Rule-based): If the Gemini service is unavailable for any reason,
+  the platform transparently falls back to a local rule-based engine. The
+  user experience is identical — responses are still grounded in the real
+  SHAP values and claim data, just generated deterministically rather than
+  by the LLM.
+
+
+────────────────────────────────────────────────────────────────────────────────
+Q8.  What data does the AI Analyst have access to?
+────────────────────────────────────────────────────────────────────────────────
+
+The AI Analyst has access to exactly the information that was submitted and
+scored in the current session:
+
+  - The raw claim fields (ICD code, CPT code, amounts, demographics, etc.)
+  - The model's denial probability and risk classification
+  - The SHAP values for every activity on the claim
+  - The per-activity verdict and recommendation from the prediction engine
+  - The conversation history within the current session
+
+It has no access to other patients' claims, payer policy documents, external
+databases, or the internet. All responses are grounded in the claim that is
+currently on screen. The conversation history is stored in PostgreSQL during
+the session and automatically deleted when the user submits a new claim.
+
+
+────────────────────────────────────────────────────────────────────────────────
+Q9.  What are the system's main components and how do they connect?
+────────────────────────────────────────────────────────────────────────────────
+
+The platform has three runtime services:
+
+  1. Prediction API (port 8000) — FastAPI + XGBoost + SHAP. Accepts the
+     claim payload, runs the 19-feature inference pipeline, computes SHAP
+     values via TreeExplainer, and returns the full prediction response.
+     Also serves the frontend as static files.
+
+  2. AI Analyst Microservice (port 8060) — FastAPI + Gemini (Vertex AI) +
+     PostgreSQL. Manages conversational sessions. Receives the claim
+     intelligence from the browser, stores it in PostgreSQL, and on each
+     chat turn builds a structured prompt and calls Gemini.
+
+  3. Browser SPA — Vanilla JavaScript + Plotly.js. The frontend is a pure
+     HTML/CSS/JS single-page application with no framework dependency. It
+     calls both backend services directly via fetch() and is the
+     orchestrator — neither backend service talks to the other.
+
+
+────────────────────────────────────────────────────────────────────────────────
+Q10. How is the platform deployed?
+────────────────────────────────────────────────────────────────────────────────
+
+Both services are containerised with Docker. A docker-compose.yml file
+defines the full stack: the Prediction API container, the AI Analyst
+container, and a PostgreSQL database container. The entire system can be
+brought up with a single command:
+
+    docker compose up --build
+
+For cloud deployment, each service has its own Dockerfile and can be
+deployed independently to any container orchestration platform (Kubernetes,
+AWS ECS, Azure Container Apps, etc.). The Prediction API image uses
+python:3.11-slim with XGBoost and SHAP. The Analyst image includes the
+Google Cloud credentials and Vertex AI SDK.
+
+
+────────────────────────────────────────────────────────────────────────────────
+Q11. What are SHAP interactions and why is there a dedicated tab for them?
+────────────────────────────────────────────────────────────────────────────────
+
+Some features in the model do not operate in isolation — their combined
+effect on denial likelihood is stronger than the sum of their individual
+contributions. The most significant of these is the ICD × CPT interaction:
+the pairing of a diagnosis code category with a procedure category.
+
+The Interactions tab shows a population-level heatmap of all ICD group ×
+CPT group combinations from the training data, colour-coded by their
+combined SHAP contribution and by their observed denial rate. This allows
+a billing team to see at a glance which diagnosis-procedure pairings are
+historically problematic — not just for the current claim, but across the
+entire claims population. For example, Pathology & Laboratory procedures
+paired with Neurological diagnoses show among the highest combined denial
+signals in the training data.
+
+
+────────────────────────────────────────────────────────────────────────────────
+Q12. What does the ICD Drill-Down tab show?
+────────────────────────────────────────────────────────────────────────────────
+
+The ICD Drill-Down tab provides a population-level reference view for every
+ICD-10 code group in the training dataset. For each code it shows the
+observed denial rate, the mean SHAP contribution across all training claims
+with that code, and the average model-predicted probability.
+
+When a claim is submitted, the tab automatically highlights the row matching
+the submitted ICD code group in amber — so the billing team can instantly
+see how the current claim's diagnosis sits relative to the historical denial
+rates for that entire code category. A separate heatmap shows denial rates
+broken down by ICD group and encounter type (Outpatient, Inpatient, Emergency).
+
+
+────────────────────────────────────────────────────────────────────────────────
+Q13. How does the platform handle the case where the AI Analyst is offline?
+────────────────────────────────────────────────────────────────────────────────
+
+The platform is designed to be fully functional without the AI Analyst
+microservice. The fallback is seamless:
+
+  - When a claim is submitted, the browser attempts to create a session
+    on the AI Analyst (port 8060) in the background, after the greeting
+    is already shown to the user.
+
+  - If the attempt fails (service down, network error, timeout), the chat
+    badge switches to "⚡ Rule-based" and the local rule engine handles
+    all responses.
+
+  - If the LLM call fails for an individual message (Gemini quota, timeout),
+    only that single message falls back. The next message tries Gemini again.
+
+  - The prediction results, all charts, and all four tabs work entirely
+    independently of the AI Analyst service.
+
+
+────────────────────────────────────────────────────────────────────────────────
+Q14. What is the billing lag feature and why does it matter?
+────────────────────────────────────────────────────────────────────────────────
+
+Billing lag is the number of days between the service date and the date
+the claim was submitted to the payer. It has a 5.56% information gain in
+the model — the fifth most important feature.
+
+Counterintuitively, the model assigns higher denial risk to short billing
+lags (0–3 days). The training data shows that claims submitted very quickly
+after the service date tend to be denied more often, likely because rushed
+submissions are associated with incomplete or inaccurate documentation.
+Longer lags, while potentially raising other flags, are associated with
+more thorough documentation and lower denial rates in the model's learned
+patterns.
+
+
+────────────────────────────────────────────────────────────────────────────────
+Q15. Can the platform handle multi-activity claims?
+────────────────────────────────────────────────────────────────────────────────
+
+Yes. The claim form includes a dynamic activity table where billing staff
+can add as many activity lines as the claim contains. Each activity has its
+own CPT code, quantity, gross amount, and CPT category.
+
+The model scores each activity independently, producing individual denial
+probabilities and SHAP breakdowns for each line. The Overview tab shows all
+activities in a single table with per-row denial probabilities, verdicts,
+and top SHAP driver pills. The SHAP Analysis tab has an activity selector
+dropdown that lets the user drill into the detailed SHAP charts for any
+specific activity line.
+
+
+────────────────────────────────────────────────────────────────────────────────
+Q16. How is this different from a simple rules engine?
+────────────────────────────────────────────────────────────────────────────────
+
+A traditional rules engine checks explicit if-then conditions that a human
+programmed — "deny if CPT is X and diagnosis is Y." It cannot detect subtle
+statistical patterns, interactions between features, or population-level
+trends that were never explicitly programmed.
+
+ClaimAI's XGBoost model learned its decision logic from the actual historical
+claims data — including patterns that are not intuitive or obvious to a
+human. It captures non-linear relationships (activity gross above a certain
+threshold behaves differently depending on the CPT category), interaction
+effects (ICD × CPT domain mismatch amplifies other denial signals), and
+demographic patterns (nationality interacts with encounter type in ways that
+a rule engine would not capture).
+
+The SHAP layer then makes that learned logic transparent and actionable,
+which a black-box rules engine cannot do.
+
+
+────────────────────────────────────────────────────────────────────────────────
+Q17. What is the MLOps strategy for keeping the model current?
+────────────────────────────────────────────────────────────────────────────────
+
+The platform is built with an MLOps lifecycle in mind:
+
+  Data Pipeline: Raw claims data is validated, feature-engineered, and
+  versioned before entering the training pipeline.
+
+  Training: XGBoost models are trained and tracked in MLflow, which records
+  hyperparameters, metrics, and model artifacts. Every model version is
+  registered in the MLflow Model Registry before deployment.
+
+  Monitoring: Prediction logs are stored and monitored for data drift (input
+  feature distribution shifts), concept drift (model performance degradation),
+  and prediction volume anomalies. When drift metrics exceed thresholds, a
+  retraining trigger fires automatically.
+
+  Retraining: New training runs are kicked off against the latest validated
+  data. The new model version is evaluated against the current champion before
+  any promotion to production. Docker images are rebuilt and redeployed.
+
+
+────────────────────────────────────────────────────────────────────────────────
+Q18. How long does a prediction take?
+────────────────────────────────────────────────────────────────────────────────
+
+A standard single-activity claim prediction — including SHAP computation —
+completes in approximately 100–200ms on typical server hardware. Multi-activity
+claims with 5–10 activity lines take proportionally longer (roughly 300–500ms
+for 10 activities) because SHAP is computed for each activity row independently.
+
+The first prediction after server startup takes slightly longer (~2–3 seconds)
+because XGBoost's first inference call involves JIT compilation. Subsequent
+calls are fully cached in memory.
+
+The frontend applies a 20-second timeout to prediction requests to handle
+worst-case cold-start scenarios. The AI Analyst chat responses from Gemini
+have a separate 30-second timeout.
+
+
+────────────────────────────────────────────────────────────────────────────────
+Q19. What does the platform NOT do, and what are the current limitations?
+────────────────────────────────────────────────────────────────────────────────
+
+Being transparent about current limitations:
+
+  - The ICD Drill-Down and Interactions tabs show population-level data from
+    the training dataset, not live database queries. As payer denial patterns
+    change over time, this reference data will need periodic updates.
+
+  - The SHAP Dependence chart background dots are synthetic illustrations, not
+    real historical claims. Only the diamond marker (this claim) is real data.
+
+  - The model was trained on a specific UAE claims dataset. Generalisation to
+    significantly different payer networks or clinical settings has not been
+    validated.
+
+  - The AI Analyst cannot currently access payer-specific policy documents,
+    prior authorisation requirements, or external coding guidelines. This is
+    a planned RAG (Retrieval-Augmented Generation) upgrade.
+
+  - There is no batch processing endpoint yet. Claims must be submitted one
+    at a time through the web interface or the REST API.
+
+
+────────────────────────────────────────────────────────────────────────────────
+Q20. What is the roadmap and what comes next?
+────────────────────────────────────────────────────────────────────────────────
+
+Three near-term capabilities are planned:
+
+  Phase 2 — RAG-enhanced AI Analyst: Embed a knowledge base of payer denial
+  codes, UAE HAAD/DHA guidelines, prior authorisation requirements, and
+  clinical coding references into a vector store. The AI Analyst would then
+  ground its answers in both the SHAP evidence AND the relevant policy
+  context — giving billing teams citation-backed explanations tied to actual
+  payer rules.
+
+  Phase 3 — Batch scoring API: A /predict/batch endpoint accepting arrays of
+  ClaimRequest objects, enabling integration into existing RCM (Revenue Cycle
+  Management) systems. Claims would be scored nightly or in real time via
+  webhook, with results written to a reporting database.
+
+  Phase 4 — Appeal letter generation: Using the SHAP evidence and the
+  AI Analyst's reasoning capabilities to auto-draft denial appeal letters
+  pre-populated with the specific clinical justification for each denied
+  activity line, referenced to payer policy codes.
+
+
+================================================================================
+  END OF DOCUMENT
+================================================================================

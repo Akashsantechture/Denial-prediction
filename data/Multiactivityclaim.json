@@ -8,7 +8,7 @@
     "length_of_stay": 0,
     "claim_gross": 514.40,
     "claim_net": 58.00,
-    "billing_lag_days": null,
+    "billing_lag_days": 34,
     "clinician_profession": "INTERNAL MEDICINE",
     "clinician_category": "Gastroenterology",
     "facility_type": "Hospital",
@@ -70,6 +70,8 @@
         "activity_quantity": 1.0,
         "activity_gross": 56.40,
         "cpt_category": "Radiology"
+        
+        
       },
       {
         "activity_code": "80053",
@@ -203,7 +205,7 @@
     "length_of_stay": 0,
     "claim_gross": 203.30,
     "claim_net": 203.30,
-    "billing_lag_days": null,
+    "billing_lag_days": 56,
     "clinician_profession": "Orthopedic Surgery",
     "clinician_category": "Orthopedic Surgery",
     "facility_type": "Hospital",
@@ -259,7 +261,7 @@
     "length_of_stay": 0,
     "claim_gross": 326.00,
     "claim_net": 326.00,
-    "billing_lag_days": null,
+    "billing_lag_days": 34,
     "clinician_profession": "Physiotherapy",
     "clinician_category": "Physiotherapist 1",
     "facility_type": "Hospital",
@@ -413,7 +415,7 @@
     "length_of_stay": 0,
     "claim_gross": 234.09,
     "claim_net": 138.72,
-    "billing_lag_days": null,
+    "billing_lag_days": 45,
     "clinician_profession": "General Dentist",
     "clinician_category": "General Dentist",
     "facility_type": "Hospital",

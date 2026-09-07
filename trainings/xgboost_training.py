@@ -24,7 +24,7 @@ from xgboost import XGBClassifier
 # CONFIG
 # ==========================================================
 
-DATA_PATH = "data/denial_prediction_final.parquet"
+DATA_PATH = "data/claim_activity_denial_model_v3.parquet"
 
 MODEL_DIR = Path("models/xgboost")
 MODEL_DIR.mkdir(parents=True, exist_ok=True)
@@ -38,7 +38,9 @@ METRICS_PATH = MODEL_DIR / "metrics.json"
 # LOAD DATA
 # ==========================================================
 
+print("=" * 60)
 print("Loading parquet...")
+print("=" * 60)
 
 df = pd.read_parquet(DATA_PATH)
 
@@ -62,23 +64,29 @@ train_claims, test_claims = train_test_split(
     random_state=42,
 )
 
-train_df = df[df["haad_claim_id"].isin(train_claims)].copy()
-test_df = df[df["haad_claim_id"].isin(test_claims)].copy()
+train_df = df[
+    df["haad_claim_id"].isin(train_claims)
+].copy()
 
-print(f"Train Rows: {len(train_df):,}")
-print(f"Test Rows : {len(test_df):,}")
+test_df = df[
+    df["haad_claim_id"].isin(test_claims)
+].copy()
+
+print(f"Train Rows : {len(train_df):,}")
+print(f"Test Rows  : {len(test_df):,}")
 
 
 # ==========================================================
-# FEATURES
+# TARGET
 # ==========================================================
 
-TARGET = "target_denied"
+TARGET = "activity_denied"
 
 DROP_COLS = [
-    "target_denied",
-    "activity_denied",
+    TARGET,
     "haad_claim_id",
+    "billing_lag_days",
+    "billing_lag_missing_flag",
 ]
 
 CAT_COLS = [
@@ -87,13 +95,11 @@ CAT_COLS = [
     "nationality",
     "encounter_type",
     "clinician_profession",
-    "clinician_category",
     "facility_type",
     "payer_classification",
-    "diagnosis_code",
-    "icd_category",
+    "primary_diagnosis_code",
+    "primary_diagnosis_category",
     "cpt_category",
-    "icd_cpt_domain_match",
 ]
 
 X_train = train_df.drop(columns=DROP_COLS)
@@ -107,7 +113,7 @@ y_test = test_df[TARGET]
 # TARGET ENCODING
 # ==========================================================
 
-print("Target Encoding...")
+print("\nTarget Encoding...")
 
 encoder = TargetEncoder(
     cols=CAT_COLS,
@@ -115,32 +121,75 @@ encoder = TargetEncoder(
     handle_unknown="value",
 )
 
-X_train = encoder.fit_transform(X_train, y_train)
-X_test = encoder.transform(X_test)
+X_train = encoder.fit_transform(
+    X_train,
+    y_train
+)
 
-joblib.dump(encoder, ENCODER_PATH)
+X_test = encoder.transform(
+    X_test
+)
+
+joblib.dump(
+    encoder,
+    ENCODER_PATH
+)
 
 print("Encoder saved.")
 
 
 # ==========================================================
-# XGBOOST
+# SAFETY CHECK
 # ==========================================================
 
-print("Training XGBoost...")
+remaining_strings = X_train.select_dtypes(
+    include=["object", "string"]
+).columns.tolist()
+
+print("\nRemaining String Columns:")
+print(remaining_strings)
+
+if len(remaining_strings) > 0:
+    raise ValueError(
+        f"Still contains string columns: {remaining_strings}"
+    )
+
+
+# ==========================================================
+# CLASS BALANCING
+# ==========================================================
+
+neg = (y_train == 0).sum()
+pos = (y_train == 1).sum()
+
+scale_pos_weight = neg / pos
+
+print(
+    f"\nscale_pos_weight = {scale_pos_weight:.3f}"
+)
+
+
+# ==========================================================
+# MODEL
+# ==========================================================
+
+print("\nTraining XGBoost...")
 
 model = XGBClassifier(
     objective="binary:logistic",
-    eval_metric="logloss",
+    eval_metric="aucpr",
 
-    n_estimators=500,
+    n_estimators=1000,
     max_depth=8,
-    learning_rate=0.05,
+    learning_rate=0.03,
 
     subsample=0.8,
     colsample_bytree=0.8,
 
-    scale_pos_weight=1,
+    min_child_weight=5,
+    gamma=0.2,
+
+    scale_pos_weight=scale_pos_weight,
 
     tree_method="hist",
 
@@ -148,7 +197,10 @@ model = XGBClassifier(
     n_jobs=-1,
 )
 
-model.fit(X_train, y_train)
+model.fit(
+    X_train,
+    y_train
+)
 
 print("Training completed.")
 
@@ -157,37 +209,114 @@ print("Training completed.")
 # EVALUATION
 # ==========================================================
 
-print("Evaluating...")
+print("\nEvaluating...")
 
 y_pred = model.predict(X_test)
-y_prob = model.predict_proba(X_test)[:, 1]
+
+y_prob = model.predict_proba(
+    X_test
+)[:, 1]
 
 metrics = {
-    "roc_auc": float(roc_auc_score(y_test, y_prob)),
-    "pr_auc": float(average_precision_score(y_test, y_prob)),
-    "accuracy": float(accuracy_score(y_test, y_pred)),
-    "precision": float(precision_score(y_test, y_pred)),
-    "recall": float(recall_score(y_test, y_pred)),
-    "f1": float(f1_score(y_test, y_pred)),
+    "roc_auc": float(
+        roc_auc_score(
+            y_test,
+            y_prob
+        )
+    ),
+
+    "pr_auc": float(
+        average_precision_score(
+            y_test,
+            y_prob
+        )
+    ),
+
+    "accuracy": float(
+        accuracy_score(
+            y_test,
+            y_pred
+        )
+    ),
+
+    "precision": float(
+        precision_score(
+            y_test,
+            y_pred
+        )
+    ),
+
+    "recall": float(
+        recall_score(
+            y_test,
+            y_pred
+        )
+    ),
+
+    "f1": float(
+        f1_score(
+            y_test,
+            y_pred
+        )
+    ),
 }
 
-print("\n========== RESULTS ==========")
+print("\n" + "=" * 60)
+print("RESULTS")
+print("=" * 60)
 
 for k, v in metrics.items():
-    print(f"{k}: {v:.4f}")
+    print(f"{k:<12}: {v:.4f}")
 
-print("=============================\n")
+print("=" * 60)
+
+
+# ==========================================================
+# FEATURE IMPORTANCE
+# ==========================================================
+
+feature_importance = (
+    pd.DataFrame({
+        "feature": X_train.columns,
+        "importance": model.feature_importances_
+    })
+    .sort_values(
+        "importance",
+        ascending=False
+    )
+)
+
+print("\nTop 25 Features\n")
+
+print(
+    feature_importance
+    .head(25)
+    .to_string(index=False)
+)
 
 
 # ==========================================================
 # SAVE
 # ==========================================================
 
-joblib.dump(model, MODEL_PATH)
+joblib.dump(
+    model,
+    MODEL_PATH
+)
 
-with open(METRICS_PATH, "w") as f:
-    json.dump(metrics, f, indent=4)
+with open(
+    METRICS_PATH,
+    "w"
+) as f:
+    json.dump(
+        metrics,
+        f,
+        indent=4
+    )
 
-print(f"Model saved   : {MODEL_PATH}")
-print(f"Metrics saved : {METRICS_PATH}")
-print(f"Encoder saved : {ENCODER_PATH}")
+print("\nSaved Artifacts")
+print(f"Model   : {MODEL_PATH}")
+print(f"Encoder : {ENCODER_PATH}")
+print(f"Metrics : {METRICS_PATH}")
+
+print("\nTraining Complete.")

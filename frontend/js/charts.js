@@ -111,7 +111,6 @@ const Charts = (() => {
     const values  = [baseLogOdds,      ...contributions.map(c => c.value), finalLogOdds];
     const measure = ['absolute',       ...contributions.map(() => 'relative'), 'total'];
 
-    // Left margin: longest label × 9px, floor 240px
     const lm = _leftMargin(labels, 240);
 
     Plotly.react(elId, [{
@@ -124,33 +123,38 @@ const Charts = (() => {
       decreasing: { marker: { color: COLORS.low,  line: { color: '#059669', width: 1 } } },
       increasing: { marker: { color: COLORS.high, line: { color: '#DC2626', width: 1 } } },
       totals:     { marker: { color: '#64748B',   line: { color: '#475569', width: 1 } } },
-      text:  values.map(v => (v >= 0 ? '+' : '') + v.toFixed(3)),
-      textposition: 'outside',
-      textfont: { size: 10, color: COLORS.dark },
+      // 'auto' keeps labels inside bars when space allows, avoids right-edge clipping
+      text:         values.map(v => (v >= 0 ? '+' : '') + v.toFixed(3)),
+      textposition: 'auto',
+      insidetextanchor: 'middle',
+      textfont:     { size: 10, color: '#fff' },
+      outsidetextfont: { size: 10, color: COLORS.dark },
     }], {
       paper_bgcolor: PAPER_BG,
       plot_bgcolor:  PLOT_BG,
       font: FONT,
-      height: Math.max(380, 44 * labels.length),
-      margin: { l: lm, r: 90, t: 20, b: 60, pad: 4 },
+      height: Math.max(400, 46 * labels.length),
+      // r:130 gives outside labels room · b:110 clears both axis ticks + legend annotation
+      margin: { l: lm, r: 130, t: 24, b: 110, pad: 4 },
       xaxis: {
-        title:         { text: '← Reduces denial likelihood     |     Increases denial likelihood →', font: { size: 11 } },
+        title:         { text: 'SHAP Value (log-odds)', font: { size: 11 } },
         gridcolor:     COLORS.gridline,
         zerolinecolor: '#475569',
         zerolinewidth: 1.5,
-        tickformat:    '.3f',
+        tickformat:    '.2f',
+        // automargin keeps ticks from colliding with axis title
+        automargin:    true,
       },
       yaxis: {
-        autorange:  'reversed',
-        tickfont:   { size: 11 },
-        // NO automargin — margin.l handles this
+        autorange: 'reversed',
+        tickfont:  { size: 11 },
       },
       annotations: [{
-        text: 'Red bars push toward DENIAL · Green bars push toward APPROVAL · Values are SHAP log-odds',
+        text:      '<b style="color:#EF4444">Red</b> bars → DENIAL &nbsp;|&nbsp; <b style="color:#10B981">Green</b> bars → APPROVAL &nbsp;|&nbsp; Values in SHAP log-odds',
         showarrow: false,
         xref: 'paper', yref: 'paper',
-        x: 0.5, y: -0.08,
-        font: { size: 10, color: COLORS.muted },
+        x: 0.5, y: -0.22,
+        font:  { size: 10, color: COLORS.muted },
         align: 'center',
       }],
     }, PLOTLY_CFG);
@@ -200,12 +204,18 @@ const Charts = (() => {
         ],
         showscale: true,
         colorbar: {
-          title:    { text: 'Impact<br>Strength', font: { size: 10 }, side: 'right' },
-          thickness: 12,
-          tickvals:  [0.05, 0.5, 0.95],
-          ticktext:  ['Weak', 'Medium', 'Strong'],
-          tickfont:  { size: 9 },
-          len: 0.6,
+          // No title on colorbar — avoids vertical rotation overlap.
+          // Strength levels expressed via ticktext alone.
+          thickness:  12,
+          tickvals:   [0.05, 0.5, 0.95],
+          ticktext:   ['Weak', 'Med', 'Strong'],
+          tickfont:   { size: 9 },
+          len:        0.55,
+          yanchor:    'middle',
+          y:          0.5,
+          x:          1.02,
+          xanchor:    'left',
+          outlinewidth: 0,
         },
         line: { color: 'white', width: 1.5 },
       },
@@ -215,25 +225,36 @@ const Charts = (() => {
       paper_bgcolor: PAPER_BG,
       plot_bgcolor:  PLOT_BG,
       font: FONT,
-      height: Math.max(380, 38 * contributions.length + 100),
-      margin: { l: lm, r: 100, t: 20, b: 50, pad: 4 },
+      height: Math.max(380, 40 * contributions.length + 120),
+      // r:130 accommodates colorbar without overlap
+      margin: { l: lm, r: 130, t: 28, b: 70, pad: 4 },
       xaxis: {
-        title:         { text: '← Reduces denial likelihood                Increases denial likelihood →', font: { size: 11 } },
+        title:         { text: 'SHAP Value (log-odds)', font: { size: 11 } },
         gridcolor:     COLORS.gridline,
         zerolinecolor: '#475569',
         zerolinewidth: 2,
         tickformat:    '.3f',
+        automargin:    true,
       },
       yaxis: {
         autorange: 'reversed',
         tickfont:  { size: 11 },
-        // NO automargin
       },
       shapes: [{
         type: 'line', x0: 0, x1: 0,
         y0: -0.5, y1: contributions.length - 0.5,
         line: { color: '#CBD5E1', width: 1.5, dash: 'dot' },
         yref: 'y', xref: 'x',
+      }],
+      // Colorbar strength label as a clean annotation above the colorbar
+      annotations: [{
+        text:      'Impact strength',
+        showarrow: false,
+        xref: 'paper', yref: 'paper',
+        x: 1.085, y: 0.82,
+        font:     { size: 9, color: COLORS.muted },
+        align:    'center',
+        xanchor:  'center',
       }],
     }, PLOTLY_CFG);
   }
@@ -269,12 +290,17 @@ const Charts = (() => {
           colorscale: [[0, '#BFDBFE'], [0.5, '#FEF08A'], [1, '#FCA5A5']],
           showscale: true,
           colorbar: {
-            title:    { text: 'Dx–Proc<br>Mismatch', font: { size: 9 }, side: 'right' },
-            thickness: 10,
-            tickvals:  [0.05, 0.95],
-            ticktext:  ['Good match', 'Mismatch'],
-            tickfont:  { size: 9 },
-            len: 0.5,
+            // Plain ticktext labels, no title to avoid rotation overlap
+            thickness:  10,
+            tickvals:   [0.05, 0.95],
+            ticktext:   ['Match', 'Mismatch'],
+            tickfont:   { size: 9 },
+            len:        0.45,
+            yanchor:    'middle',
+            y:          0.5,
+            x:          1.02,
+            xanchor:    'left',
+            outlinewidth: 0,
           },
         },
         name: 'Similar claims',
@@ -287,30 +313,42 @@ const Charts = (() => {
           size: 18, color: COLORS.dark, symbol: 'diamond',
           line: { color: 'white', width: 2.5 },
         },
-        name: '★ This claim',
+        name: '★ This activity',
         hovertemplate:
-          `<b>This claim</b><br>Amount: AED ${Number(claimNet).toLocaleString('en')}<br>` +
-          `Denial likelihood impact: ${actualShap.toFixed(3)}<extra></extra>`,
+          `<b>This activity</b><br>Gross: AED ${Number(claimNet).toLocaleString('en')}<br>` +
+          `SHAP impact: ${actualShap.toFixed(3)}<extra></extra>`,
       },
     ], {
       paper_bgcolor: PAPER_BG,
       plot_bgcolor:  PLOT_BG,
       font: FONT,
       height: 340,
-      margin: { l: 80, r: 110, t: 20, b: 55, pad: 4 },
+      // r:130 gives colorbar room without overlapping plot area
+      margin: { l: 80, r: 130, t: 28, b: 60, pad: 4 },
       xaxis: {
-        title:      { text: 'Claim amount — log scale (larger = higher claim value)', font: { size: 11 } },
+        title:      { text: 'Activity gross — log scale (larger = higher gross amount)', font: { size: 11 } },
         gridcolor:  COLORS.gridline,
         tickformat: '.1f',
+        automargin: true,
       },
       yaxis: {
-        title:         { text: 'Impact on denial likelihood', font: { size: 11 } },
+        title:         { text: 'SHAP contribution (log-odds)', font: { size: 11 } },
         gridcolor:     COLORS.gridline,
         zerolinecolor: '#475569',
         zerolinewidth: 1.5,
       },
       showlegend: true,
-      legend: { font: { size: 11 }, x: 0.02, y: 1.14, orientation: 'h' },
+      legend: { font: { size: 11 }, x: 0.02, y: 1.12, orientation: 'h' },
+      // ICD-CPT mismatch label as annotation above colorbar, no rotation clash
+      annotations: [{
+        text:     'ICD–CPT match',
+        showarrow: false,
+        xref: 'paper', yref: 'paper',
+        x: 1.085, y: 0.76,
+        font:    { size: 9, color: COLORS.muted },
+        align:   'center',
+        xanchor: 'center',
+      }],
     }, PLOTLY_CFG);
   }
 

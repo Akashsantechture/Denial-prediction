@@ -7,7 +7,7 @@
  * --------
  *   POST /predict
  *
- * Request shape — ClaimRequest
+ * Request shape — ClaimRequest (validators/schemas.py)
  * ----------------------------
  *   {
  *     claim_id:             string,
@@ -18,22 +18,22 @@
  *     length_of_stay:       int,
  *     claim_gross:          float,
  *     claim_net:            float,
- *     billing_lag_days:     int,
  *     clinician_profession: string,
- *     clinician_category:   string,
  *     facility_type:        string,
  *     payer_classification: string,
- *     diagnosis_code:       string,
- *     icd_category:         string,   ← derived from diagnosis_code prefix
+ *     primary_diagnosis_code: string,
  *     activities: [{
- *       activity_code:   string,
- *       activity_quantity: float,
- *       activity_gross:  float,
- *       cpt_category:    string,      ← entered by user
+ *       activity_code:      string,
+ *       activity_quantity:  float,
+ *       activity_gross:     float,
+ *       diagnoses: [{
+ *         diagnosis_code:   string,
+ *         diagnosis_type:   string   // "primary" | "secondary"
+ *       }]
  *     }]
  *   }
  *
- * Response shape — PredictSuccess
+ * Response shape — POST /predict
  * --------------------------------
  *   {
  *     ok: true,
@@ -48,7 +48,6 @@
  *     },
  *     predictions: [{
  *       activity_code:      string,
- *       cpt_category:       string,
  *       denial_probability: float,    0–1
  *       predicted_denial:   bool,
  *       top_drivers: [{
@@ -56,7 +55,6 @@
  *         shap_value: float,
  *         impact:     "increase_risk"|"decrease_risk"
  *       }],
- *       recommendation: string,
  *     }]
  *   }
  *
@@ -66,39 +64,41 @@
  */
 
 const API = (() => {
-  const BASE_URL    = 'http://127.0.0.1:8000';
-  const PREDICT_URL = `${BASE_URL}/predict`;
-  const HEALTH_URL  = `${BASE_URL}/health`;
-  const TIMEOUT_MS  = 25_000;
+  const BASE_URL        = 'http://127.0.0.1:8000';
+  const PREDICT_URL     = `${BASE_URL}/predict`;
+  const HEALTH_URL      = `${BASE_URL}/health`;
+  const MODEL_INFO_URL  = `${BASE_URL}/model-info`;
+  const TIMEOUT_MS      = 25_000;
 
   // ── ICD category derivation ──────────────────────────────────────────
-  // Maps the first letter of an ICD-10 code to a broad clinical category.
-  // This avoids sending a blank icd_category to the API.
+  // Maps the first letter of an ICD-10 code to a clinical category
+  // that matches preprocessing/categorial_conversion.py ICD_CATEGORY_MAP.
   const ICD_CATEGORY_MAP = {
-    A: 'Infectious', B: 'Infectious',
-    C: 'Neoplasms',  D: 'Neoplasms',
-    E: 'Endocrine',
-    F: 'Mental',
-    G: 'Neurological',
-    H: 'Sensory',
-    I: 'Circulatory',
-    J: 'Respiratory',
-    K: 'Digestive',
-    L: 'Skin',
+    A: 'Infectious',                    B: 'Infectious',
+    C: 'Oncology',                      D: 'Oncology_Hematology',
+    E: 'Endocrinology',
+    F: 'Psychiatry',
+    G: 'Neurology',
+    H: 'Eye_Ear',
+    I: 'Cardiology',
+    J: 'Pulmonology',
+    K: 'Gastroenterology_Dental',
+    L: 'Dermatology',
     M: 'Musculoskeletal',
     N: 'Genitourinary',
-    O: 'Obstetric',
-    P: 'Perinatal',
+    O: 'OBGYN',
+    P: 'Pediatrics',
     Q: 'Congenital',
-    R: 'Symptoms',
-    S: 'Injury', T: 'Injury',
-    V: 'External', W: 'External', X: 'External', Y: 'External',
-    Z: 'Health Status',
+    R: 'General_Symptoms',
+    S: 'Trauma_Burns_Poisoning',        T: 'Trauma_Burns_Poisoning',
+    V: 'External_Causes',               W: 'External_Causes',
+    X: 'External_Causes',               Y: 'External_Causes',
+    Z: 'Factors_Influencing_Health_Status',
   };
 
   function deriveIcdCategory(diagnosisCode) {
-    if (!diagnosisCode) return 'Other';
-    return ICD_CATEGORY_MAP[diagnosisCode[0].toUpperCase()] ?? 'Other';
+    if (!diagnosisCode) return 'Unknown_ICD';
+    return ICD_CATEGORY_MAP[diagnosisCode[0].toUpperCase()] ?? 'Unknown_ICD';
   }
 
   // ── Fetch with timeout ───────────────────────────────────────────────
@@ -115,29 +115,45 @@ const API = (() => {
   /**
    * Send a claim to POST /predict.
    *
-   * @param {Object} payload  — flat claim object collected from the form
-   *                            Must include an `activities` array.
+   * @param {Object} payload  — object collected from the form.
+   *   Expected fields:
+   *     primary_diagnosis_code  string
+   *     patient_age             int
+   *     gender / nationality / encounter_type / length_of_stay
+   *     claim_gross / claim_net
+   *     clinician_profession / facility_type / payer_classification
+   *     activities: [{
+   *       activity_code, activity_quantity, activity_gross,
+   *       diagnoses: [{ diagnosis_code, diagnosis_type }]
+   *     }]
    * @returns PredictSuccess | ApiError
    */
   async function predict(payload) {
-    // Build ClaimRequest — map flat form fields to API schema
+
+    // Build ClaimRequest — map flat form fields to exact API schema
     const claimRequest = {
-      claim_id:             payload.claim_id || `CLM-${Date.now()}`,
-      patient_age:          payload.patient_age,
-      gender:               payload.gender,
-      nationality:          payload.nationality,
-      encounter_type:       payload.encounter_type,
-      length_of_stay:       payload.length_of_stay,
-      claim_gross:          payload.claim_gross,
-      claim_net:            payload.claim_net,
-      billing_lag_days:     payload.billing_lag_days,
-      clinician_profession: payload.clinician_profession,
-      clinician_category:   payload.clinician_category,
-      facility_type:        payload.facility_type,
-      payer_classification: payload.payer_classification || payload.payer_id || 'UNKNOWN',
-      diagnosis_code:       payload.diagnosis_code,
-      icd_category:         payload.icd_category || deriveIcdCategory(payload.diagnosis_code),
-      activities:           payload.activities || [],
+      claim_id:               payload.claim_id || `CLM-${Date.now()}`,
+      patient_age:            payload.patient_age,
+      gender:                 payload.gender,
+      nationality:            payload.nationality,
+      encounter_type:         payload.encounter_type,
+      length_of_stay:         payload.length_of_stay,
+      claim_gross:            payload.claim_gross,
+      claim_net:              payload.claim_net,
+      clinician_profession:   payload.clinician_profession,
+      facility_type:          payload.facility_type,
+      payer_classification:   payload.payer_classification || payload.payer_id || 'UNKNOWN',
+      primary_diagnosis_code: payload.primary_diagnosis_code || payload.diagnosis_code || '',
+      activities:             (payload.activities || []).map(a => ({
+        activity_code:      a.activity_code,
+        activity_quantity:  a.activity_quantity,
+        activity_gross:     a.activity_gross,
+        // diagnoses array: each activity carries its own diagnosis list
+        // primary always included; secondary diagnoses optional
+        diagnoses: Array.isArray(a.diagnoses) && a.diagnoses.length > 0
+          ? a.diagnoses
+          : [{ diagnosis_code: payload.primary_diagnosis_code || payload.diagnosis_code || '', diagnosis_type: 'primary' }],
+      })),
     };
 
     let response;
@@ -166,7 +182,8 @@ const API = (() => {
         ok:            true,
         claim_id:      data.claim_id,
         claim_summary: data.claim_summary,
-        predictions:   data.predictions ?? [],
+        // API returns "activity_predictions" — normalise to "predictions" for the frontend
+        predictions:   data.activity_predictions ?? data.predictions ?? [],
       };
     }
 
@@ -190,13 +207,23 @@ const API = (() => {
     try {
       const response = await _fetchTimeout(HEALTH_URL);
       if (response.status === 200) return response.json();
-      return { status: 'unhealthy', model_loaded: false };
+      return { status: 'unhealthy', model_loaded: false, encoder_loaded: false, shap_loaded: false };
     } catch (_) {
-      return { status: 'unreachable', model_loaded: false };
+      return { status: 'unreachable', model_loaded: false, encoder_loaded: false, shap_loaded: false };
     }
   }
 
-  return { predict, health, deriveIcdCategory, PREDICT_URL, BASE_URL };
+  async function modelInfo() {
+    try {
+      const response = await _fetchTimeout(MODEL_INFO_URL);
+      if (response.status === 200) return response.json();
+      return null;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  return { predict, health, modelInfo, deriveIcdCategory, PREDICT_URL, BASE_URL };
 })();
 
 

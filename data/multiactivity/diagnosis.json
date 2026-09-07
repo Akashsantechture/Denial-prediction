@@ -1,0 +1,314 @@
+{
+  "claim_id": "100000",
+  "patient_age": 77,
+  "gender": "Female",
+  "nationality": "EMIRATI",
+  "encounter_type": "OP",
+  "length_of_stay": 0,
+  "claim_gross": 339.72,
+  "claim_net": 339.72,
+  "clinician_profession": "Cardiology",
+  "clinician_category": "Cardiology",
+  "facility_type": "Hospital",
+  "payer_classification": "Insurance",
+  "primary_diagnosis_code": "E78.5",
+  "activities": [
+    {
+      "activity_code": "93000",
+      "activity_quantity": 1.0,
+      "activity_gross": 130.0,
+      "diagnoses": [
+        {
+          "diagnosis_code": "I10",
+          "diagnosis_type": "Secondary"
+        },
+        {
+          "diagnosis_code": "E55.9",
+          "diagnosis_type": "Secondary"
+        },
+        {
+          "diagnosis_code": "E66.3",
+          "diagnosis_type": "Secondary"
+        },
+        {
+          "diagnosis_code": "E11.65",
+          "diagnosis_type": "Secondary"
+        },
+        {
+          "diagnosis_code": "Z79.899",
+          "diagnosis_type": "Secondary"
+        }
+      ]
+    },
+    {
+      "activity_code": "99202",
+      "activity_quantity": 1.0,
+      "activity_gross": 209.72,
+      "diagnoses": [
+        {
+          "diagnosis_code": "Z79.899",
+          "diagnosis_type": "Secondary"
+        },
+        {
+          "diagnosis_code": "E11.65",
+          "diagnosis_type": "Secondary"
+        },
+        {
+          "diagnosis_code": "E55.9",
+          "diagnosis_type": "Secondary"
+        },
+        {
+          "diagnosis_code": "E66.3",
+          "diagnosis_type": "Secondary"
+        },
+        {
+          "diagnosis_code": "I10",
+          "diagnosis_type": "Secondary"
+        }
+      ]
+    }
+  ]
+}
+
+
+
+{
+  "claim_id": "100004",
+  "patient_age": 19,
+  "gender": "Male",
+  "nationality": "EMIRATI",
+  "encounter_type": "OP",
+  "length_of_stay": 0,
+  "claim_gross": 466.52,
+  "claim_net": 466.52,
+  "clinician_profession": "Internal Medicine",
+  "clinician_category": "Internal Medicine",
+  "facility_type": "Hospital",
+  "payer_classification": "Insurance",
+  "primary_diagnosis_code": "D72.819",
+  "activities": [
+    {
+      "activity_code": "99204",
+      "activity_quantity": 1.0,
+      "activity_gross": 466.52,
+      "diagnoses": [
+        {
+          "diagnosis_code": "Z02.3",
+          "diagnosis_type": "Secondary"
+        }
+      ]
+    }
+  ]
+}
+
+
+
+
+
+{
+  "claim_id": "100089",
+  "patient_age": 78,
+  "gender": "Male",
+  "nationality": "EMIRATI",
+  "encounter_type": "OP",
+  "length_of_stay": 0,
+  "claim_gross": 708.0,
+  "claim_net": 708.0,
+  "clinician_profession": "Urology",
+  "clinician_category": "Urology",
+  "facility_type": "Hospital",
+  "payer_classification": "Insurance",
+  "primary_diagnosis_code": "N40.1",
+  "activities": [
+    {
+      "activity_code": "82306",
+      "activity_quantity": 1.0,
+      "activity_gross": 106.0,
+      "diagnoses": [
+        {
+          "diagnosis_code": "F03.91",
+          "diagnosis_type": "Secondary"
+        },
+        {
+          "diagnosis_code": "F32.9",
+          "diagnosis_type": "Secondary"
+        },
+        {
+          "diagnosis_code": "N32.81",
+          "diagnosis_type": "Secondary"
+        }
+      ]
+    },
+    {
+      "activity_code": "82565",
+      "activity_quantity": 1.0,
+      "activity_gross": 21.6,
+      "diagnoses": [
+        {
+          "diagnosis_code": "F03.91",
+          "diagnosis_type": "Secondary"
+        },
+        {
+          "diagnosis_code": "F32.9",
+          "diagnosis_type": "Secondary"
+        },
+        {
+          "diagnosis_code": "N32.81",
+          "diagnosis_type": "Secondary"
+        }
+      ]
+    },
+    {
+      "activity_code": "82607",
+      "activity_quantity": 1.0,
+      "activity_gross": 64.8,
+      "diagnoses": [
+        {
+          "diagnosis_code": "F03.91",
+          "diagnosis_type": "Secondary"
+        },
+        {
+          "diagnosis_code": "F32.9",
+          "diagnosis_type": "Secondary"
+        },
+        {
+          "diagnosis_code": "N32.81",
+          "diagnosis_type": "Secondary"
+        }
+      ]
+    },
+    {
+      "activity_code": "83036",
+      "activity_quantity": 1.0,
+      "activity_gross": 42.0,
+      "diagnoses": [
+        {
+          "diagnosis_code": "F03.91",
+          "diagnosis_type": "Secondary"
+        },
+        {
+          "diagnosis_code": "F32.9",
+          "diagnosis_type": "Secondary"
+        },
+        {
+          "diagnosis_code": "N32.81",
+          "diagnosis_type": "Secondary"
+        }
+      ]
+    },
+    {
+      "activity_code": "84443",
+      "activity_quantity": 1.0,
+      "activity_gross": 72.0,
+      "diagnoses": [
+        {
+          "diagnosis_code": "F03.91",
+          "diagnosis_type": "Secondary"
+        },
+        {
+          "diagnosis_code": "F32.9",
+          "diagnosis_type": "Secondary"
+        },
+        {
+          "diagnosis_code": "N32.81",
+          "diagnosis_type": "Secondary"
+        }
+      ]
+    },
+    {
+      "activity_code": "84450",
+      "activity_quantity": 1.0,
+      "activity_gross": 22.8,
+      "diagnoses": [
+        {
+          "diagnosis_code": "F03.91",
+          "diagnosis_type": "Secondary"
+        },
+        {
+          "diagnosis_code": "F32.9",
+          "diagnosis_type": "Secondary"
+        },
+        {
+          "diagnosis_code": "N32.81",
+          "diagnosis_type": "Secondary"
+        }
+      ]
+    },
+    {
+      "activity_code": "84460",
+      "activity_quantity": 1.0,
+      "activity_gross": 22.8,
+      "diagnoses": [
+        {
+          "diagnosis_code": "F03.91",
+          "diagnosis_type": "Secondary"
+        },
+        {
+          "diagnosis_code": "F32.9",
+          "diagnosis_type": "Secondary"
+        },
+        {
+          "diagnosis_code": "N32.81",
+          "diagnosis_type": "Secondary"
+        }
+      ]
+    },
+    {
+      "activity_code": "85025",
+      "activity_quantity": 1.0,
+      "activity_gross": 33.6,
+      "diagnoses": [
+        {
+          "diagnosis_code": "F03.91",
+          "diagnosis_type": "Secondary"
+        },
+        {
+          "diagnosis_code": "F32.9",
+          "diagnosis_type": "Secondary"
+        },
+        {
+          "diagnosis_code": "N32.81",
+          "diagnosis_type": "Secondary"
+        }
+      ]
+    },
+    {
+      "activity_code": "86140",
+      "activity_quantity": 1.0,
+      "activity_gross": 22.8,
+      "diagnoses": [
+        {
+          "diagnosis_code": "F03.91",
+          "diagnosis_type": "Secondary"
+        },
+        {
+          "diagnosis_code": "F32.9",
+          "diagnosis_type": "Secondary"
+        },
+        {
+          "diagnosis_code": "N32.81",
+          "diagnosis_type": "Secondary"
+        }
+      ]
+    },
+    {
+      "activity_code": "99214",
+      "activity_quantity": 1.0,
+      "activity_gross": 299.6,
+      "diagnoses": [
+        {
+          "diagnosis_code": "F03.91",
+          "diagnosis_type": "Secondary"
+        },
+        {
+          "diagnosis_code": "F32.9",
+          "diagnosis_type": "Secondary"
+        },
+        {
+          "diagnosis_code": "N32.81",
+          "diagnosis_type": "Secondary"
+        }
+      ]
+    }
+  ]
+}

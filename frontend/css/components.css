@@ -298,8 +298,8 @@
   font-size: .74rem;
   font-weight: 700;
 }
-.shap-pill.pos { background: #FEE2E2; color: #991B1B; }
-.shap-pill.neg { background: #D1FAE5; color: #065F46; }
+.shap-pill.pos { background: #7F1D1D; color: #FEE2E2; border: 1px solid #EF4444; }
+.shap-pill.neg { background: #14532D; color: #D1FAE5; border: 1px solid #22C55E; }
 
 /* Filter / sort bar */
 .filter-bar {
@@ -741,3 +741,63 @@
   transition: color var(--transition), background var(--transition);
 }
 .btn-remove-act:hover { color: var(--color-high); background: var(--color-high-bg); }
+
+/* ============================================================
+   SHAP TAB — Activity selector bar
+   ============================================================ */
+.shap-activity-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: .75rem 1rem;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.shap-activity-bar-left {
+  display: flex;
+  align-items: center;
+  gap: .65rem;
+}
+
+.shap-activity-bar-label {
+  font-size: .78rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+.shap-activity-select {
+  padding: .4rem .75rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: .84rem;
+  font-weight: 600;
+  font-family: var(--font);
+  color: var(--color-text-primary);
+  background: var(--color-surface);
+  cursor: pointer;
+  min-width: 220px;
+}
+.shap-activity-select:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(59,130,246,.1);
+}
+
+.shap-activity-badge-row {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  flex-wrap: wrap;
+}
+
+/* ── All-activities SHAP comparison table ── */
+.shap-all-acts-table tbody tr { cursor: pointer; }
+.shap-all-acts-table tbody tr:hover { background: #EFF6FF !important; }
+.shap-all-acts-table tbody tr.shap-row-active { background: #FEF3C7 !important; }
+.shap-all-acts-table tbody tr.shap-row-denied { border-left: 3px solid var(--color-high); }

@@ -71,3 +71,14 @@ credential.json
 *credentials*.json
 *-key.json
 *service-account*.json
+
+# --- Secrets & Credentials ---
+.env
+*.env
+.env.*
+**/credentials.json
+credentials.json
+
+# --- AI Analyst Local Storage & Caches ---
+ai_analyst/cache/
+ai_analyst/db/

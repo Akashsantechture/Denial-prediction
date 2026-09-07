@@ -64,15 +64,3 @@ billing_lag_days
 
 
 models:/m-3d9f2287a247422792b135f851710f00
-
-
-
-Useful commands
-What	Command
-Build + start in one shot	docker compose up --build
-Run in background (detached)	docker compose up -d
-Follow logs	docker compose logs -f
-Follow only analyst logs	docker compose logs -f analyst
-Restart one service	docker compose restart analyst
-See running containers	docker ps
-Open shell inside analyst container	docker exec -it analyst bash

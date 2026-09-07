@@ -14,9 +14,9 @@
   <script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
 
   <!-- Styles -->
-  <link rel="stylesheet" href="css/base.css?v=4" />
-  <link rel="stylesheet" href="css/layout.css?v=4" />
-  <link rel="stylesheet" href="css/components.css?v=4" />
+  <link rel="stylesheet" href="css/base.css?v=5" />
+  <link rel="stylesheet" href="css/layout.css?v=5" />
+  <link rel="stylesheet" href="css/components.css?v=5" />
 
   <style>
     /* ── Top navigation bar ─────────────────────────────────────── */
@@ -233,7 +233,212 @@
     .activities-table .act-code  { width: 120px; min-width: 90px; }
     .activities-table .act-qty   { width: 65px;  min-width: 55px; }
     .activities-table .act-gross { width: 110px; min-width: 80px; }
-    .activities-table .act-cpt-cat { min-width: 160px; }
+
+    /* Secondary DX inputs inside activity rows */
+    .act-secondary-dx-cell { min-width: 180px; }
+    .secondary-dx-list { display: flex; flex-direction: column; gap: .25rem; margin-bottom: .25rem; }
+    .secondary-dx-row  { display: flex; align-items: center; gap: .25rem; }
+    .btn-add-sec-dx {
+      background: none; border: 1px dashed var(--color-border);
+      border-radius: var(--radius-sm); padding: .18rem .5rem;
+      font-size: .72rem; color: var(--color-text-muted); cursor: pointer;
+      font-family: var(--font); white-space: nowrap;
+    }
+    .btn-add-sec-dx:hover { border-color: var(--color-accent); color: var(--color-accent); }
+    .btn-remove-sec-dx {
+      background: none; border: none; color: var(--color-text-muted);
+      cursor: pointer; font-size: .8rem; padding: 0 .2rem; line-height: 1;
+    }
+    .btn-remove-sec-dx:hover { color: var(--color-high); }
+
+    /* ── Live Interaction Explorer ──────────────────────────────────── */
+    .live-interaction-section {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border-light);
+      border-radius: var(--radius-md);
+      padding: 1rem 1.25rem 1.25rem;
+      margin-bottom: 1rem;
+    }
+
+    /* Controls row */
+    .live-controls-row {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      flex-wrap: wrap;
+      margin-bottom: .85rem;
+      padding-bottom: .75rem;
+      border-bottom: 1px solid var(--color-border-light);
+    }
+    .live-ctrl-group { display: flex; align-items: center; gap: .5rem; }
+    .live-ctrl-label {
+      font-size: .72rem;
+      font-weight: 600;
+      color: var(--color-text-muted);
+      text-transform: uppercase;
+      letter-spacing: .04em;
+      white-space: nowrap;
+    }
+    .live-activity-select {
+      font-family: var(--font);
+      font-size: .8rem;
+      background: var(--color-chart-bg);
+      color: var(--color-text-primary);
+      border: 1px solid var(--color-border-light);
+      border-radius: var(--radius-sm);
+      padding: .28rem .55rem;
+      min-width: 220px;
+      cursor: pointer;
+    }
+    .live-ctrl-legend { gap: .4rem; flex-wrap: wrap; }
+
+    /* Depth toggle buttons */
+    .depth-toggle-group { display: flex; gap: .25rem; }
+    .depth-btn {
+      font-family: var(--font);
+      font-size: .75rem;
+      font-weight: 600;
+      letter-spacing: .03em;
+      background: var(--color-chart-bg);
+      color: var(--color-text-muted);
+      border: 1px solid var(--color-border-light);
+      border-radius: var(--radius-sm);
+      padding: .28rem .72rem;
+      cursor: pointer;
+      transition: background .15s, color .15s, border-color .15s;
+    }
+    .depth-btn:hover { background: var(--color-border-light); color: var(--color-text-primary); }
+    .depth-btn.active {
+      background: var(--color-accent, #3B82F6);
+      color: #fff;
+      border-color: var(--color-accent, #3B82F6);
+    }
+
+    /* Direction badges */
+    .depth-dir-badge {
+      display: inline-block;
+      font-size: .68rem;
+      font-weight: 600;
+      padding: .2rem .5rem;
+      border-radius: var(--radius-sm);
+      white-space: nowrap;
+    }
+    .dir-amplifying  { background: #7F1D1D;  color: #FEE2E2; border: 1px solid #EF4444; }
+    .dir-conflicting { background: #1E3A5F;  color: #DBEAFE; border: 1px solid #3B82F6; }
+    .dir-mixed       { background: #78350F;  color: #FEF3C7; border: 1px solid #F59E0B; }
+
+    /* Live header banner */
+    .live-interaction-header {
+      border-radius: var(--radius-sm);
+      padding: .6rem 1rem;
+      margin-bottom: .85rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: .5rem;
+      min-height: 2.4rem;
+      font-size: .8rem;
+    }
+    .live-interaction-header.neutral { background: var(--color-chart-bg); }
+    .live-interaction-header.high    { background: rgba(239,68,68,.12); border: 1px solid rgba(239,68,68,.25); }
+    .live-interaction-header.medium  { background: rgba(245,158,11,.12); border: 1px solid rgba(245,158,11,.25); }
+    .live-interaction-header.low     { background: rgba(34,197,94,.10); border: 1px solid rgba(34,197,94,.2); }
+    .live-header-left, .live-header-right { display: flex; align-items: center; gap: .6rem; flex-wrap: wrap; }
+    .live-badge {
+      font-size: .68rem; font-weight: 700; letter-spacing: .06em;
+      background: var(--color-accent, #3B82F6); color: #fff;
+      padding: .15rem .45rem; border-radius: var(--radius-sm);
+    }
+    .live-act-label  { font-size: .8rem; color: var(--color-text-primary); }
+    .live-depth-label {
+      font-size: .7rem; font-weight: 600;
+      color: var(--color-text-muted);
+      background: var(--color-chart-bg);
+      border: 1px solid var(--color-border-light);
+      padding: .1rem .4rem; border-radius: var(--radius-sm);
+    }
+    .live-dominant-label { font-size: .72rem; color: var(--color-text-muted); }
+    .live-dominant-combo { font-size: .8rem; font-weight: 600; color: var(--color-text-primary); }
+    .live-combined-score { font-size: .8rem; font-weight: 700; }
+    .live-combined-score.pos { color: #F87171; text-shadow: 0 0 8px rgba(239,68,68,.4); }
+    .live-combined-score.neg { color: #34D399; text-shadow: 0 0 8px rgba(52,211,153,.4); }
+
+    /* Live depth content wrapper */
+    .live-depth-content { min-height: 200px; }
+
+    /* Depth-2 two-column layout */
+    .live-section-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+      align-items: start;
+    }
+    @media (max-width: 900px) { .live-section-row { grid-template-columns: 1fr; } }
+    .live-heatmap-wrap, .live-pairs-table-wrap { min-width: 0; }
+
+    /* Depth-3/4 single column */
+    .live-section-col { display: flex; flex-direction: column; gap: .5rem; }
+
+    /* Dominant pair row highlight */
+    .dominant-pair-row td { background: rgba(239,68,68,.07) !important; }
+    .dominant-pair-row td:first-child { border-left: 3px solid #EF4444; }
+
+    /* Feature label pills */
+    .feat-label {
+      display: inline-block;
+      font-size: .73rem;
+      background: var(--color-chart-bg);
+      border: 1px solid var(--color-border-light);
+      border-radius: var(--radius-sm);
+      padding: .1rem .4rem;
+      color: var(--color-text-primary);
+      white-space: nowrap;
+    }
+    .feat-label-triple {
+      font-size: .72rem;
+      color: var(--color-text-secondary, #94a3b8);
+      word-break: break-word;
+    }
+
+    /* Text risk / safe colours */
+    .text-risk { color: #F87171; font-weight: 700; }
+    .text-safe { color: #34D399; font-weight: 700; }
+
+    /* Dominant quad card */
+    .dominant-quad-card {
+      border-radius: var(--radius-md);
+      padding: .9rem 1.1rem;
+      margin-bottom: .8rem;
+      border: 1px solid var(--color-border-light);
+    }
+    .dominant-quad-card.high   { background: rgba(239,68,68,.1);  border-color: rgba(239,68,68,.3); }
+    .dominant-quad-card.medium { background: rgba(245,158,11,.1); border-color: rgba(245,158,11,.3); }
+    .dominant-quad-card.low    { background: rgba(34,197,94,.08); border-color: rgba(34,197,94,.2); }
+    .dominant-quad-card.neutral{ background: var(--color-chart-bg); }
+    .quad-card-title  { font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--color-text-muted); margin-bottom: .3rem; }
+    .quad-card-combo  { font-size: .88rem; font-weight: 700; color: var(--color-text-primary); margin-bottom: .4rem; word-break: break-word; }
+    .quad-card-meta   { display: flex; align-items: center; gap: .6rem; flex-wrap: wrap; margin-bottom: .6rem; }
+    .quad-combined    { font-size: .82rem; font-weight: 700; }
+    .quad-combined.pos { color: #F87171; }
+    .quad-combined.neg { color: #34D399; }
+    .quad-card-breakdown { display: flex; flex-wrap: wrap; gap: .5rem; }
+    .quad-factor { display: flex; align-items: center; gap: .35rem; }
+    .quad-feat-name { font-size: .75rem; color: var(--color-text-muted); }
+
+    /* Live placeholder */
+    .live-placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: .6rem;
+      padding: 2.5rem 1rem;
+      color: var(--color-text-muted);
+      font-size: .85rem;
+      text-align: center;
+    }
+    .live-placeholder .placeholder-icon { font-size: 2rem; opacity: .4; }
 
     /* Chat is now a floating panel triggered from nav */
     .chat-float-btn {
@@ -427,8 +632,7 @@
               spellcheck="false"
               placeholder='{
   "claim_id": "CLM-001",
-  "diagnosis_code": "I10",
-  "icd_category": "Circulatory",
+  "primary_diagnosis_code": "I10",
   "patient_age": 52,
   "gender": "MALE",
   "nationality": "INDIAN",
@@ -436,9 +640,7 @@
   "length_of_stay": 0,
   "claim_gross": 500.00,
   "claim_net": 500.00,
-  "billing_lag_days": 1,
   "clinician_profession": "Internal Medicine",
-  "clinician_category": "Internal Medicine",
   "facility_type": "Clinic",
   "payer_classification": "E001",
   "activities": [
@@ -446,13 +648,15 @@
       "activity_code": "99213",
       "activity_quantity": 1,
       "activity_gross": 250.00,
-      "cpt_category": "Evaluation and Management"
+      "diagnoses": [
+        { "diagnosis_code": "I10", "diagnosis_type": "primary" }
+      ]
     }
   ]
 }'
             ></textarea>
             <div id="json-parse-error" class="json-error"></div>
-            <div class="json-hint">Paste a ClaimRequest JSON. Must include an <code>activities</code> array. Click Evaluate to submit.</div>
+            <div class="json-hint">Paste a ClaimRequest JSON. Must include <code>primary_diagnosis_code</code> and an <code>activities</code> array. Each activity needs a <code>diagnoses</code> array. Click Evaluate to submit.</div>
           </div>
 
           <!-- ── FIELD FORM PANEL ─────────────────────────────── -->
@@ -464,10 +668,10 @@
                 <div class="form-col-title">Clinical &amp; Patient</div>
 
                 <div class="field-group">
-                  <label for="f-diagnosis_code">Primary ICD-10 Code *</label>
-                  <input id="f-diagnosis_code" type="text" value="I10"
+                  <label for="f-primary_diagnosis_code">Primary ICD-10 Code *</label>
+                  <input id="f-primary_diagnosis_code" type="text" value="I10"
                          placeholder="e.g. I10, E11.22, M54.5" />
-                  <div class="field-hint">Letter + 2 digits + optional decimal</div>
+                  <div class="field-hint">Letter + 2 digits + optional decimal (e.g. I10, E11.9)</div>
                 </div>
 
                 <div class="field-group">
@@ -523,12 +727,6 @@
                   <input id="f-claim_net" type="number" value="250.00" min="0" step="10" />
                   <div class="field-hint">Cannot exceed Claim Gross</div>
                 </div>
-
-                <div class="field-group">
-                  <label for="f-billing_lag_days">Billing Lag (days)</label>
-                  <input id="f-billing_lag_days" type="number" value="1" min="0" max="365" />
-                  <div class="field-hint">Days between service date and submission</div>
-                </div>
               </div><!-- /col2 -->
 
               <!-- Column 3: Provider & Insurance -->
@@ -541,25 +739,9 @@
                 </div>
 
                 <div class="field-group">
-                  <label for="f-insurance_plan_tier">Insurance Plan Tier</label>
-                  <select id="f-insurance_plan_tier">
-                    <option value="Insurance" selected>Insurance</option>
-                    <option value="Standard">Standard</option>
-                    <option value="Basic">Basic</option>
-                    <option value="VIP">VIP</option>
-                  </select>
-                </div>
-
-                <div class="field-group">
                   <label for="f-clinician_profession">Clinician Profession</label>
                   <input id="f-clinician_profession" type="text"
                          value="Internal Medicine" placeholder="e.g. Internal Medicine" />
-                </div>
-
-                <div class="field-group">
-                  <label for="f-clinician_category">Clinician Category</label>
-                  <input id="f-clinician_category" type="text"
-                         value="Internal Medicine" placeholder="e.g. Pulmonology" />
                 </div>
 
                 <div class="field-group">
@@ -590,7 +772,7 @@
                       <th>Activity Code *</th>
                       <th>Qty</th>
                       <th>Gross (AED) *</th>
-                      <th>CPT Category *</th>
+                      <th>Secondary Diagnoses</th>
                       <th style="width:40px;"></th>
                     </tr>
                   </thead>
@@ -655,9 +837,9 @@
           <!-- ── Row 2: KPI strip ── -->
           <div class="grid-4" style="margin-bottom:1.25rem;">
             <div id="kpi-claim-score" class="kpi-card">
-              <div class="kpi-label">Claim Denial Score</div>
+              <div class="kpi-label">At-Risk Amount</div>
               <div class="kpi-value neutral">—</div>
-              <div class="kpi-sub">Overall Claim Score</div>
+              <div class="kpi-sub">—</div>
             </div>
             <div id="kpi-highest-act" class="kpi-card">
               <div class="kpi-label">Highest Activity</div>
@@ -713,7 +895,7 @@
             <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:.75rem 1.5rem;">
               <div><div class="kpi-label">Algorithm</div><div style="font-weight:600;font-size:.85rem;">XGBoost</div></div>
               <div><div class="kpi-label">Encoder</div><div style="font-weight:600;font-size:.85rem;">Target Encoder</div></div>
-              <div><div class="kpi-label">Features</div><div style="font-weight:600;font-size:.85rem;">19 features</div></div>
+              <div><div class="kpi-label">Features</div><div style="font-weight:600;font-size:.85rem;">38 features</div></div>
               <div><div class="kpi-label">Claim Score</div><div style="font-weight:600;font-size:.85rem;">0.7 × max + 0.3 × avg</div></div>
             </div>
           </div>
@@ -731,54 +913,97 @@
           <p>Submit a claim above to see SHAP feature explanations.</p>
         </div>
         <div id="shap-content" class="hidden">
+
+          <!-- ── Activity selector bar ─────────────────────────── -->
+          <div class="shap-activity-bar">
+            <div class="shap-activity-bar-left">
+              <span class="shap-activity-bar-label">Analysing activity:</span>
+              <select id="shap-activity-select" class="shap-activity-select"></select>
+            </div>
+            <div id="shap-activity-badge-row" class="shap-activity-badge-row"></div>
+          </div>
+
+          <!-- ── KPI strip ─────────────────────────────────────── -->
           <div class="grid-4" style="margin-bottom:1.25rem;">
             <div id="kpi-prob" class="kpi-card">
-              <div class="kpi-label">Denial Probability</div>
+              <div class="kpi-label">Activity Denial Probability</div>
               <div class="kpi-value high">—</div>
               <div class="kpi-sub">—</div>
             </div>
             <div id="kpi-shap" class="kpi-card">
               <div class="kpi-label">Net SHAP Log-Odds</div>
               <div class="kpi-value neutral">—</div>
-              <div class="kpi-sub">Base: 0.42</div>
+              <div class="kpi-sub">Base: −0.32</div>
             </div>
             <div id="kpi-flags" class="kpi-card">
-              <div class="kpi-label">High-Impact Flags</div>
+              <div class="kpi-label">High-Impact Drivers</div>
               <div class="kpi-value neutral">—</div>
               <div class="kpi-sub">—</div>
             </div>
             <div id="kpi-revised" class="kpi-card">
-              <div class="kpi-label">If Top Flag Fixed</div>
+              <div class="kpi-label">If Top Driver Fixed</div>
               <div class="kpi-value green">—</div>
               <div class="kpi-sub">↓ Revised likelihood</div>
             </div>
           </div>
+
+          <!-- ── Waterfall ─────────────────────────────────────── -->
           <div class="chart-card" style="margin-bottom:1.25rem;">
-            <div class="chart-title">SHAP Waterfall — This Claim</div>
-            <div class="chart-caption">Each bar shows how a feature shifts the prediction from the base value (0.42) to the final output.</div>
+            <div class="chart-title">SHAP Waterfall — Selected Activity</div>
+            <div class="chart-caption">Each bar shows how a feature shifts the prediction away from the base (−0.32). Red = pushes toward denial · Green = pushes toward approval.</div>
             <div id="shap-waterfall-chart" class="plotly-container" style="min-height:400px;"></div>
           </div>
+
+          <!-- ── Scatter + Dependence ──────────────────────────── -->
           <div class="grid-2" style="margin-bottom:1.25rem;">
             <div class="chart-card">
               <div class="chart-title">Feature Value vs SHAP Value</div>
-              <div class="chart-caption">Each dot = one feature. Colour shows impact strength: blue = weak, red = strong. Position left/right shows direction — right pushes toward denial, left toward approval.</div>
+              <div class="chart-caption">Each dot = one feature for this activity. Colour = impact strength: blue weak → red strong. Right of zero pushes toward denial.</div>
               <div id="shap-scatter-chart" class="plotly-container" style="min-height:340px;"></div>
             </div>
             <div class="chart-card">
-              <div class="chart-title">SHAP Dependence — Claim Amount</div>
-              <div class="chart-caption">Claim net (log) vs SHAP value, coloured by ICD–CPT mismatch signal. Above zero → higher claim amount increases denial likelihood. Below zero → reduces it.</div>
+              <div class="chart-title">SHAP Dependence — Activity Gross</div>
+              <div class="chart-caption">Activity gross (log) vs SHAP contribution. Above zero → higher amount increases denial likelihood. Below zero → reduces it.</div>
               <div id="shap-dependence-chart" class="plotly-container" style="min-height:340px;"></div>
             </div>
           </div>
+
+          <!-- ── All-activities comparison table ──────────────── -->
+          <div class="chart-card" style="margin-bottom:1.25rem;">
+            <div class="chart-title">All Activities — SHAP Driver Comparison</div>
+            <div class="chart-caption">Top SHAP driver per activity line. Click a row to jump to that activity's detailed analysis above.</div>
+            <div class="data-table-wrap" style="border:none;border-radius:0;margin-top:.5rem;">
+              <table class="data-table shap-all-acts-table">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Activity Code</th>
+                    <th>CPT Category</th>
+                    <th>Denial Prob</th>
+                    <th>Verdict</th>
+                    <th>Top SHAP Driver</th>
+                    <th>SHAP Value</th>
+                    <th>2nd Driver</th>
+                    <th>3rd Driver</th>
+                  </tr>
+                </thead>
+                <tbody id="shap-all-acts-body"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- ── How-to expander ───────────────────────────────── -->
           <div class="expander">
             <button class="expander-trigger">How to read these charts <span class="expander-arrow">▼</span></button>
             <div class="expander-body">
-              <p><strong>Waterfall</strong> — Each bar shifts the output (log-odds) from the base to the final prediction. Red = toward denial; green = toward approval.</p>
-              <p><strong>Feature Value vs SHAP Value</strong> — Red = high feature value; blue = low. Far right = strong denial push.</p>
-              <p><strong>Claim Amount Dependence</strong> — Low claim values → negative SHAP (approval); high values → positive SHAP (denial).</p>
-              <p class="text-muted text-xs">SHAP values estimated from v1.5 feature gain percentages.</p>
+              <p><strong>Activity selector</strong> — choose any activity line from the claim. All charts and KPIs update to show that activity's individual SHAP values from the model.</p>
+              <p><strong>Waterfall</strong> — shows how each of the 38 model features pushed the selected activity's score away from the base (−0.32 log-odds). Red bars push toward denial; green bars push toward approval.</p>
+              <p><strong>Feature Value vs SHAP Value</strong> — each dot is one feature. Position right of zero = pushes toward denial for this activity. Colour intensity = strength of impact.</p>
+              <p><strong>Dependence chart</strong> — shows how the activity gross amount (log-scaled) correlates with its SHAP contribution across similar claims. The diamond marks this activity.</p>
+              <p><strong>All-activities table</strong> — side-by-side comparison of the top 3 SHAP drivers for every activity on the claim. Click a row to switch the selector above.</p>
             </div>
           </div>
+
         </div>
       </div>
 
@@ -819,31 +1044,94 @@
            TAB 4 — INTERACTIONS
            ============================================================ -->
       <div id="tab-interactions" class="tab-panel">
-        <div id="interactions-caption" class="section-caption mb-3"></div>
-        <div class="section-title mb-2">Top Interaction Pairs</div>
-        <div class="section-caption">Ranked by combined SHAP likelihood. Active claim row highlighted amber.</div>
-        <div class="data-table-wrap" style="margin-bottom:1.5rem;">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>#</th><th>ICD Category</th><th>CPT Category</th><th>Claims</th>
-                <th>Avg ICD Impact</th><th>Avg CPT Impact</th><th>Combined Likelihood</th>
-              </tr>
-            </thead>
-            <tbody id="pairs-table-body"></tbody>
-          </table>
-        </div>
-        <div class="chart-card" style="margin-bottom:1.25rem;">
-          <div class="chart-title">ICD Group × CPT Group — Mean SHAP Interaction</div>
-          <div class="chart-caption">Darker = stronger combined effect beyond individual features.</div>
-          <div id="interactions-shap-heatmap" class="plotly-container" style="min-height:420px;"></div>
-        </div>
-        <div class="chart-card">
-          <div class="chart-title">ICD × CPT Group — Denial Rate Heatmap (Actual %)</div>
-          <div class="chart-caption">Each cell = observed denial rate for that diagnosis–procedure combination.</div>
-          <div id="interactions-denial-heatmap" class="plotly-container" style="min-height:420px;"></div>
-        </div>
-      </div>
+
+        <!-- ══════════════════════════════════════════════════
+             LIVE INTERACTION EXPLORER
+             ══════════════════════════════════════════════════ -->
+        <div class="live-interaction-section">
+
+          <!-- Controls row: activity selector + depth toggle -->
+          <div class="live-controls-row">
+
+            <div class="live-ctrl-group">
+              <label class="live-ctrl-label" for="int-activity-select">Activity</label>
+              <select id="int-activity-select" class="live-activity-select">
+                <option value="0">Submit a claim to populate…</option>
+              </select>
+            </div>
+
+            <div class="live-ctrl-group">
+              <label class="live-ctrl-label">Interaction Depth</label>
+              <div class="depth-toggle-group" id="depth-toggle-group">
+                <button class="depth-btn active" data-depth="2" title="Pairwise — 1:1">1:1</button>
+                <button class="depth-btn"        data-depth="3" title="Triple  — 1:1:1">1:1:1</button>
+                <button class="depth-btn"        data-depth="4" title="Quad    — 1:1:1:1">1:1:1:1</button>
+              </div>
+            </div>
+
+            <div class="live-ctrl-group live-ctrl-legend">
+              <span class="depth-dir-badge dir-amplifying">↑ All amplify denial</span>
+              <span class="depth-dir-badge dir-conflicting">↓ All reduce denial</span>
+              <span class="depth-dir-badge dir-mixed">⚡ Mixed directions</span>
+            </div>
+
+          </div><!-- /live-controls-row -->
+
+          <!-- Dynamic header banner (filled by renderLive) -->
+          <div id="live-interaction-header" class="live-interaction-header neutral"></div>
+
+          <!-- Dynamic content area (filled by _renderDepth2/3/4) -->
+          <div id="live-depth-content" class="live-depth-content">
+            <div class="live-placeholder">
+              <div class="placeholder-icon">⚡</div>
+              <div>Submit a claim to activate live interaction analysis.</div>
+            </div>
+          </div>
+
+        </div><!-- /live-interaction-section -->
+
+        <!-- ══════════════════════════════════════════════════
+             POPULATION REFERENCE (collapsible)
+             ══════════════════════════════════════════════════ -->
+        <div class="expander-block" style="margin-top:1.5rem;">
+          <button class="expander-trigger" type="button">
+            Population Reference — Model-level ICD × CPT Interactions
+            <span class="expander-arrow">▼</span>
+          </button>
+          <div class="expander-body">
+
+            <div id="interactions-caption" class="section-caption mb-3"></div>
+
+            <div class="section-title mb-2">Top Interaction Pairs</div>
+            <div class="section-caption">Ranked by combined SHAP likelihood. Active claim row highlighted amber.</div>
+            <div class="data-table-wrap" style="margin-bottom:1.5rem;">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>#</th><th>ICD Category</th><th>CPT Category</th><th>Claims</th>
+                    <th>Avg ICD Impact</th><th>Avg CPT Impact</th><th>Combined Likelihood</th>
+                  </tr>
+                </thead>
+                <tbody id="pairs-table-body"></tbody>
+              </table>
+            </div>
+
+            <div class="chart-card" style="margin-bottom:1.25rem;">
+              <div class="chart-title">ICD Group × CPT Group — Mean SHAP Interaction</div>
+              <div class="chart-caption">Darker = stronger combined effect beyond individual features.</div>
+              <div id="interactions-shap-heatmap" class="plotly-container" style="min-height:420px;"></div>
+            </div>
+
+            <div class="chart-card">
+              <div class="chart-title">ICD × CPT Group — Denial Rate Heatmap (Actual %)</div>
+              <div class="chart-caption">Each cell = observed denial rate for that diagnosis–procedure combination.</div>
+              <div id="interactions-denial-heatmap" class="plotly-container" style="min-height:420px;"></div>
+            </div>
+
+          </div><!-- /expander-body -->
+        </div><!-- /expander-block -->
+
+      </div><!-- /tab-interactions -->
 
     </div><!-- /content-area -->
   </main>
@@ -877,13 +1165,13 @@
 <!-- ================================================================
      SCRIPTS  — v=2 forces browser to bypass cache and fetch fresh files
      ================================================================ -->
-<script src="js/api.js?v=4"></script>
-<script src="js/shap.js?v=4"></script>
-<script src="js/charts.js?v=4"></script>
-<script src="js/icd.js?v=4"></script>
-<script src="js/interactions.js?v=4"></script>
-<script src="js/chat.js?v=4"></script>
-<script src="js/app.js?v=4"></script>
+<script src="js/api.js?v=7"></script>
+<script src="js/shap.js?v=7"></script>
+<script src="js/charts.js?v=8"></script>
+<script src="js/icd.js?v=7"></script>
+<script src="js/interactions.js?v=8"></script>
+<script src="js/chat.js?v=7"></script>
+<script src="js/app.js?v=10"></script>
 
 <script>
   /* ── Top-nav tab sync ─────────────────────────────────────────── */
@@ -949,33 +1237,41 @@
     // Pre-populate JSON from current form values if blank
     if (!jsonInput.value.trim()) {
       const g = id => document.getElementById(id)?.value ?? '';
-      // Collect activity rows that exist at the time of toggle
+      const primaryDx = (g('f-primary_diagnosis_code') || 'I10').toUpperCase();
+
+      // Collect activity rows — build diagnoses array for each
       const actRows = document.querySelectorAll('.activity-row');
-      const activities = Array.from(actRows).map(row => ({
-        activity_code:     row.querySelector('.act-code')?.value?.trim()    || '99213',
-        activity_quantity: parseFloat(row.querySelector('.act-qty')?.value)  || 1,
-        activity_gross:    parseFloat(row.querySelector('.act-gross')?.value) || 250,
-        cpt_category:      row.querySelector('.act-cpt-cat')?.value?.trim()  || 'Medicine',
-      }));
+      const activities = Array.from(actRows).map(row => {
+        const actCode = row.querySelector('.act-code')?.value?.trim() || '99213';
+        const diagnoses = [{ diagnosis_code: primaryDx, diagnosis_type: 'primary' }];
+        row.querySelectorAll('.secondary-dx-row').forEach(secRow => {
+          const secCode = secRow.querySelector('.sec-dx-code')?.value?.trim().toUpperCase();
+          if (secCode) diagnoses.push({ diagnosis_code: secCode, diagnosis_type: 'secondary' });
+        });
+        return {
+          activity_code:     actCode,
+          activity_quantity: parseFloat(row.querySelector('.act-qty')?.value)  || 1,
+          activity_gross:    parseFloat(row.querySelector('.act-gross')?.value) || 250,
+          diagnoses,
+        };
+      });
+
       const sample = {
-        claim_id:             `CLM-${Date.now()}`,
-        diagnosis_code:       (g('f-diagnosis_code') || 'I10').toUpperCase(),
-        icd_category:         'Circulatory',
-        patient_age:          parseInt(g('f-patient_age'), 10) || 52,
-        gender:               g('f-gender') || 'MALE',
-        nationality:          g('f-nationality') || 'INDIAN',
-        encounter_type:       g('f-encounter_type') || 'OP',
-        length_of_stay:       parseInt(g('f-length_of_stay'), 10) || 0,
-        claim_gross:          parseFloat(g('f-claim_gross')) || 250,
-        claim_net:            parseFloat(g('f-claim_net'))   || 250,
-        billing_lag_days:     parseInt(g('f-billing_lag_days'), 10) || 1,
-        clinician_profession: g('f-clinician_profession') || 'Internal Medicine',
-        clinician_category:   g('f-clinician_category')   || 'Internal Medicine',
-        facility_type:        g('f-facility_type') || 'Clinic',
-        payer_classification: g('f-payer_id') || 'E001',
-        activities:           activities.length ? activities : [{
-          activity_code: '99213', activity_quantity: 1,
-          activity_gross: 250, cpt_category: 'Medicine',
+        claim_id:               `CLM-${Date.now()}`,
+        primary_diagnosis_code: primaryDx,
+        patient_age:            parseInt(g('f-patient_age'), 10) || 52,
+        gender:                 g('f-gender') || 'MALE',
+        nationality:            g('f-nationality') || 'INDIAN',
+        encounter_type:         g('f-encounter_type') || 'OP',
+        length_of_stay:         parseInt(g('f-length_of_stay'), 10) || 0,
+        claim_gross:            parseFloat(g('f-claim_gross')) || 250,
+        claim_net:              parseFloat(g('f-claim_net'))   || 250,
+        clinician_profession:   g('f-clinician_profession') || 'Internal Medicine',
+        facility_type:          g('f-facility_type') || 'Clinic',
+        payer_classification:   g('f-payer_id') || 'E001',
+        activities:             activities.length ? activities : [{
+          activity_code: '99213', activity_quantity: 1, activity_gross: 250,
+          diagnoses: [{ diagnosis_code: primaryDx, diagnosis_type: 'primary' }],
         }],
       };
       jsonInput.value = JSON.stringify(sample, null, 2);

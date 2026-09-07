@@ -1,0 +1,413 @@
+================================================================================
+  ClaimAI — Board Presentation Slide Content
+  Denial Prediction Platform | Santechture
+  10 Slides  |  Slides 3 & 4 reserved for Architecture and Flow Diagrams
+================================================================================
+
+NOTE TO PRESENTER
+─────────────────
+Slides 3 and 4 are reserved for diagrams (architecture diagram and data
+flow diagram). The content for those slides is visual — refer to the
+diagrams in docs/architechture.txt and docs/integration.txt for the
+source material. The text below covers Slides 1–2 and 5–10.
+
+
+================================================================================
+SLIDE 1 — TITLE SLIDE
+================================================================================
+
+  TITLE:
+  ClaimAI
+  Intelligent Claim Denial Prediction
+
+  SUBTITLE:
+  Reducing revenue leakage through explainable machine learning
+  applied at the point of claim submission
+
+  PRESENTED BY:
+  Santechture — Smart Solutions. Proven Results.
+
+  TAGLINE (bottom of slide):
+  "Know why a claim will be denied before it leaves the building."
+
+
+================================================================================
+SLIDE 2 — THE PROBLEM WE ARE SOLVING
+================================================================================
+
+  HEADLINE:
+  Claim denials are a preventable revenue problem
+
+  BODY POINTS:
+
+  The cost of denials
+  ───────────────────
+  - Healthcare providers across the UAE lose significant revenue annually
+    to claim denials that could have been prevented at submission
+  - Each denied claim requires manual review, rework, and resubmission —
+    multiplying administrative cost per claim
+  - The longer a denial goes unaddressed, the lower the probability of
+    successful recovery
+
+  Why denials happen
+  ──────────────────
+  - ICD and CPT code mismatches that violate payer clinical logic
+  - Claim amounts outside expected ranges for the procedure and setting
+  - Short billing lags indicating insufficient documentation time
+  - Encounter type and facility mismatches with the billed services
+  - Payer-specific patterns that are not visible to billing staff
+
+  The gap today
+  ─────────────
+  - Billing teams submit claims without real-time feedback on denial risk
+  - Post-denial review is reactive, not preventive
+  - There is no tool that explains WHICH specific element of a claim is
+    the primary driver of denial risk for that individual claim
+
+  The opportunity
+  ───────────────
+  - Intervene at the moment of submission, before the claim reaches the payer
+  - Identify the exact driver and give the billing team a targeted action
+  - Reduce denial rate, reduce rework cost, protect revenue
+
+
+================================================================================
+SLIDE 3 — ARCHITECTURE DIAGRAM
+================================================================================
+
+  [RESERVED FOR DIAGRAM]
+
+  Suggested title: "ClaimAI — System Architecture"
+
+  Content for the diagram (three-tier layout):
+
+  Top tier — Browser (SPA)
+    Vanilla JS + Plotly.js
+    Served from the Prediction API
+    Communicates directly with both backend services
+
+  Middle tier — Two microservices
+    Left:  Prediction API (port 8000)
+           FastAPI + XGBoost + SHAP TreeExplainer
+    Right: AI Analyst Microservice (port 8060)
+           FastAPI + Gemini 2.5 Flash (Vertex AI)
+
+  Bottom tier — Data & Infrastructure
+    PostgreSQL — session storage + conversation history
+    Model Registry (MLflow) — versioned model artifacts
+    Google Cloud Vertex AI — LLM inference
+    Docker / Container Orchestration
+
+  Key annotation: "Neither backend service calls the other.
+  The browser is the orchestrator."
+
+
+================================================================================
+SLIDE 4 — DATA FLOW DIAGRAM
+================================================================================
+
+  [RESERVED FOR DIAGRAM]
+
+  Suggested title: "ClaimAI — End-to-End Data Flow"
+
+  Six-step flow:
+
+  Step 1 — User submits claim
+    Form fields or JSON → browser collects ClaimRequest object
+    (19 fields + N activity lines)
+
+  Step 2 — Prediction
+    POST /predict → predictionapi.py
+    XGBoost scores each activity → SHAP TreeExplainer decomposes each score
+    Returns: claim score, per-activity probabilities, SHAP drivers
+
+  Step 3 — Frontend renders results
+    Overview: Claim Score Hero + activity table + gauge
+    SHAP tab: Waterfall + scatter + dependence charts (per activity)
+    ICD / Interactions: Population reference heatmaps
+
+  Step 4 — AI session created
+    Browser POSTs claim intelligence to /analyst/session (port 8060)
+    Gemini session initialised, claim evidence stored in PostgreSQL
+    Badge: "✦ Gemini AI"
+
+  Step 5 — User chats
+    POST /analyst/chat → Gemini reasoning against claim evidence
+    If Gemini fails → local rule engine (transparent fallback)
+
+  Step 6 — Session cleanup
+    DELETE /analyst/session on new submission
+    PostgreSQL cascade-deletes all session data
+
+
+================================================================================
+SLIDE 5 — THE CLAIMAI SOLUTION
+================================================================================
+
+  HEADLINE:
+  Real-time denial prediction with explainable AI
+
+  BODY:
+
+  What it does
+  ────────────
+  ClaimAI scores every claim before submission against a trained XGBoost
+  model. In under 200 milliseconds it tells the billing team:
+
+    - The Claim Denial Score (composite probability, 0–100%)
+    - Which activity on the claim is at highest risk and why
+    - The exact model features driving the score, ranked by impact
+    - A specific action to take to reduce the risk before submitting
+
+  How it explains itself
+  ──────────────────────
+  Every prediction is accompanied by SHAP (SHapley Additive exPlanations)
+  values — a mathematically rigorous method that decomposes the model's
+  output into individual feature contributions for that specific claim.
+
+  This is not a generic explanation. It is the actual reason the model
+  scored that specific claim the way it did.
+
+  What makes it different
+  ───────────────────────
+  - Trained on UAE healthcare claims data
+  - Per-activity SHAP analysis, not just a claim-level black box
+  - Multi-activity claim support built in
+  - Conversational AI analyst powered by Gemini 2.5 Flash
+  - Fully containerised, API-first, integrates into any RCM workflow
+  - Works entirely in the browser — no installation, no client software
+
+
+================================================================================
+SLIDE 6 — MODEL PERFORMANCE & EVIDENCE
+================================================================================
+
+  HEADLINE:
+  A model built for healthcare, validated on real claims
+
+  SECTION A — Model Specifications
+
+  Algorithm:       XGBoost (gradient-boosted decision trees)
+  Device:          CUDA (GPU-accelerated training)
+  Features:        19 per activity line
+  Output:          Denial probability 0–100% per activity
+
+  SECTION B — Performance Metrics
+
+  ROC-AUC:         0.8466
+  Overall Accuracy: 76%
+  Denied Recall:   75%  — catches 3 in 4 actual denials before submission
+  Denied Precision: 67%  — 2 in 3 flagged claims are genuinely at risk
+
+  SECTION C — Top 5 Predictive Features (by information gain)
+
+  1. Activity Gross Amount       17.53%
+  2. CPT Category                16.98%
+  3. Activity code         14.19%
+  4. Net Claim Amount            11.44%
+  5. Billing Lag Days             5.56%
+  ─────────────────────────────────────
+     Top 5 combined:             65.70%
+
+  SECTION D — Claim Scoring Formula
+
+  Claim Denial Score = 0.7 × (highest activity risk)
+                     + 0.3 × (average activity risk)
+
+  This composite weights the most dangerous activity line heavily, because
+  a single high-risk procedure is typically sufficient to trigger payer denial
+  of the entire claim.
+
+  Risk Bands:
+  LOW       <  40%   Standard processing
+  MEDIUM    40–70%   Review before submission
+  HIGH      ≥  70%   Manual review required
+
+
+================================================================================
+SLIDE 7 — THE AI ANALYST: GEMINI-POWERED CLAIM INTELLIGENCE
+================================================================================
+
+  HEADLINE:
+  Ask questions. Get answers grounded in the model's evidence.
+
+  BODY:
+
+  What it is
+  ──────────
+  The AI Analyst is an embedded conversational interface that lets billing
+  staff ask plain-English questions about any claim that has just been scored.
+  It is powered by Google Gemini 2.5 Flash via Vertex AI.
+
+  What makes it trustworthy
+  ─────────────────────────
+  Gemini does not hallucinate answers about this claim. Before the conversation
+  starts, the full claim intelligence — all 19 feature values, the model's
+  denial probability, and the complete SHAP evidence — is sent to Gemini as
+  structured context. Every response Gemini gives is grounded in that evidence.
+  The system prompt explicitly prohibits responses that are not supported by
+  the provided claim data.
+
+  Example conversations
+  ─────────────────────
+  "Why is activity 99213 flagged as high risk?"
+  → Gemini explains the top SHAP drivers specific to that activity line
+
+  "What would reduce the claim score most?"
+  → Targeted remediation steps based on the highest-impact SHAP driver
+
+  "How does the billing lag affect this claim?"
+  → Specific analysis of the billing lag SHAP value and its direction
+
+  "Compare all activities on this claim"
+  → Side-by-side analysis of every activity's denial probability and drivers
+
+  Resilience
+  ──────────
+  If Gemini is unavailable, the platform falls back silently to a local
+  rule-based engine. The badge in the chat header changes from "✦ Gemini AI"
+  to "⚡ Rule-based". Every other feature of the platform continues to work
+  without interruption.
+
+
+================================================================================
+SLIDE 8 — EXPLAINABILITY: WHAT THE CHARTS SHOW
+================================================================================
+
+  HEADLINE:
+  Every prediction is transparent, auditable, and actionable
+
+  SHAP Waterfall Chart
+  ────────────────────
+  Shows how each of the 19 model features shifted the prediction away from
+  the population baseline (−0.32 log-odds). Red bars push toward denial.
+  Green bars push toward approval. The waterfall always closes at the model's
+  exact output — it is not an approximation.
+
+  Feature Value vs SHAP Value
+  ────────────────────────────
+  A dot plot where each dot is one feature for the selected activity.
+  The horizontal position shows whether the feature is pushing toward denial
+  (right) or approval (left). The colour shows the strength of that push
+  from blue (weak) to red (strong).
+
+  SHAP Dependence — Activity Gross
+  ─────────────────────────────────
+  Shows how the billed gross amount relates to its SHAP contribution for
+  this specific activity (the diamond marker). Background dots are
+  illustrative trend points. If the diamond is above zero, the amount is
+  a denial driver. If below zero, it is reducing denial likelihood.
+
+  ICD × CPT Interaction Heatmap
+  ──────────────────────────────
+  Population-level view of which diagnosis-procedure pairings have the
+  highest combined denial signal in the training data. Helps billing teams
+  identify structurally problematic claim patterns before they become denials.
+
+  Activity Selector
+  ─────────────────
+  For multi-activity claims, every chart can be instantly switched to show
+  the analysis for any individual activity line via a dropdown. The
+  highest-risk activity is pre-selected by default.
+
+
+================================================================================
+SLIDE 9 — DEPLOYMENT, SECURITY & OPERATIONS
+================================================================================
+
+  HEADLINE:
+  Production-ready, containerised, and operationally sound
+
+  SECTION A — Deployment
+
+  Both services are fully containerised with Docker:
+
+  Prediction API image
+    python:3.11-slim + XGBoost + SHAP + FastAPI
+    Stateless — scales horizontally without any configuration change
+    Cold start: ~3 seconds. Subsequent requests: <200ms
+
+  AI Analyst image
+    python:3.11-slim + Google Cloud SDK + PostgreSQL driver
+    Google Cloud credentials mounted as a secret (not baked into the image)
+    Conversation sessions are ephemeral — auto-deleted on new submission
+
+  Orchestration: Docker Compose for development.
+  Production: Any container orchestration platform (Kubernetes, ECS, Azure
+  Container Apps). Services are independent and can be scaled separately.
+
+  SECTION B — Data & Privacy
+
+  - No patient PHI is persisted by the prediction service. The API is
+    stateless — input flows in, prediction flows out, nothing is stored.
+  - The AI Analyst stores session data in PostgreSQL for the duration of
+    the conversation only. Sessions are explicitly deleted (CASCADE) when
+    the user submits a new claim.
+  - The request log table in PostgreSQL stores operational metadata only
+    (latency, status, endpoint) — no clinical field values.
+
+  SECTION C — MLOps
+
+  - Models are versioned and tracked in MLflow
+  - Data drift and concept drift are monitored continuously
+  - Automated retraining trigger fires when drift metrics exceed thresholds
+  - New model versions are validated against champion before promotion
+  - All prediction inputs and outputs are logged for audit and retraining
+
+
+================================================================================
+SLIDE 10 — ROADMAP & BUSINESS IMPACT
+================================================================================
+
+  HEADLINE:
+  Where we are, and where we are going
+
+  SECTION A — Current State (Production-ready)
+
+  ✅  XGBoost model: 0.8466 AUC, 76% accuracy on UAE claims data
+  ✅  Real SHAP explanations for every activity on every claim
+  ✅  Multi-activity claim support with per-line breakdown
+  ✅  Gemini 2.5 Flash AI Analyst with transparent fallback
+  ✅  Fully containerised, Docker Compose deployment
+  ✅  REST API — ready for integration into existing RCM platforms
+  ✅  No client software required — runs entirely in the browser
+
+
+  SECTION B — Near-Term Roadmap
+
+  Phase 2 — RAG-enhanced AI Analyst (next 3 months)
+    Embed UAE HAAD/DHA payer guidelines, prior authorisation requirements,
+    and ICD-10 clinical coding references into a vector knowledge base.
+    The AI Analyst cites specific policy clauses when explaining denials.
+
+  Phase 3 — Batch scoring API (next 6 months)
+    /predict/batch endpoint for RCM system integration.
+    Score entire claim runs overnight or via real-time webhook.
+    Results written to a reporting dashboard with trend analytics.
+
+  Phase 4 — Appeal letter generation (next 9 months)
+    Auto-draft denial appeal letters using SHAP evidence + Gemini reasoning.
+    Pre-populate with the clinical justification specific to each denied
+    activity, referenced to payer policy codes.
+
+
+  SECTION C — Business Case Summary
+
+  For every 1,000 claims submitted per month:
+  - At a typical denial rate of 15–20%, that is 150–200 denials
+  - At an average cost of AED 500–1,000 to rework each denial, that is
+    AED 75,000–200,000 per month in avoidable administrative cost
+  - A 30% reduction in preventable denials (conservative estimate based on
+    75% model recall) would recover AED 22,500–60,000 per month per facility
+
+  The platform pays for itself at the scale of a single mid-size hospital.
+
+
+  CLOSING LINE (full width, centred):
+  "ClaimAI does not replace clinical judgment.
+   It makes sure every claim that leaves your facility is defended by evidence."
+
+
+================================================================================
+  END OF PRESENTATION CONTENT
+================================================================================

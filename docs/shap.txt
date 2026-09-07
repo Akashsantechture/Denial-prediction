@@ -1,0 +1,536 @@
+================================================================================
+  ClaimAI — SHAP Analysis, ICD Drill-Down & Interactions
+  Data Source Reference
+================================================================================
+
+
+────────────────────────────────────────────────────────────────────────────────
+SECTION 1 — WHERE ALL DATA ORIGINATES
+────────────────────────────────────────────────────────────────────────────────
+
+There are exactly TWO data sources in the entire frontend:
+
+  SOURCE A — predictionapi.py  (POST /predict)
+  ──────────────────────────────────────────────
+  Real, live model output. Called once per form submission.
+  Every SHAP value shown on the SHAP Analysis tab comes from here.
+
+  SOURCE B — icd.js / interactions.js  (hardcoded static datasets)
+  ─────────────────────────────────────────────────────────────────
+  Population-level reference data baked into the JS files themselves.
+  The ICD Drill-Down and Interactions tabs draw entirely from this
+  static dataset — they do NOT call the prediction API again.
+
+This distinction is important: the SHAP tab shows what the model computed
+for THIS specific claim. The ICD and Interactions tabs show population-level
+patterns from the training distribution.
+
+
+────────────────────────────────────────────────────────────────────────────────
+SECTION 2 — SHAP ANALYSIS TAB
+────────────────────────────────────────────────────────────────────────────────
+
+2.1  How SHAP values are produced (backend)
+───────────────────────────────────────────
+
+  predictionapi.py  →  ShapEngine.explain(df_encoded)
+                          │
+                          ▼
+                    explainability/shap_engine.py
+
+  ShapEngine wraps a TreeExplainer or equivalent SHAP calculation on the
+  trained XGBoost model. For each activity row in df_encoded it produces
+  a list of per-feature SHAP contributions:
+
+    shap_results[activity_index] = [
+      { "feature": "activity_gross",  "shap_value": +0.3821, "impact": "increase_risk" },
+      { "feature": "cpt_category",    "shap_value": +0.2144, "impact": "increase_risk" },
+      { "feature": "billing_lag_days","shap_value": -0.0912, "impact": "decrease_risk" },
+      ...
+    ]
+
+  These are the TRUE model SHAP values — not estimated, not approximated.
+
+  The API response includes them under:
+    predictions[i].top_drivers  →  list of { feature, shap_value, impact }
+
+  The number of drivers returned depends on ShapEngine's top-K cutoff
+  (typically the top 5–10 by absolute SHAP magnitude for each activity).
+
+
+2.2  How SHAP values reach the frontend
+────────────────────────────────────────
+
+  api.js  →  POST /predict  →  receives { claim_id, claim_summary, predictions[] }
+
+  The predictions array is passed untouched to:
+    app.js  →  renderSHAPTab(payload, result)
+             →  initSHAPActivitySelector(result)   builds the dropdown
+             →  _renderSHAPForActivity(idx)         renders charts for chosen activity
+
+  shap.js  SHAP.fromActivityIndex(result, idx)
+    Reads result.predictions[idx].top_drivers directly.
+    Maps each driver to a contribution object:
+      {
+        name:        human-readable display name (e.g. "Activity Gross Amount")
+        feature:     raw feature name            (e.g. "activity_gross")
+        value:       shap_value                  (signed float, log-odds units)
+        direction:   "increases_denial_likelihood" | "reduces_denial_likelihood"
+        impactLevel: "HIGH" | "MODERATE" | "LOW"  (based on abs magnitude)
+        shareP:      percentage share of total absolute SHAP for this activity
+        explanation: plain-English sentence
+      }
+    Sorted descending by |value|.
+
+  NO cross-activity averaging occurs in this path.
+  Every chart on the SHAP tab shows the selected activity's drivers only.
+
+
+2.3  Activity Selector
+──────────────────────
+
+  The dropdown at the top of the SHAP tab is built by
+  initSHAPActivitySelector(result) in app.js.
+
+  It iterates result.predictions[] and creates one <option> per activity:
+    format:  "#1 · 99213 · Evaluation and Management · 78.3% ⚠ ★ Highest risk"
+
+  The ★ marker is placed on the activity with the highest denial_probability.
+  That activity is selected by default when results are first displayed.
+
+  On change:
+    → _selectedActIdx updated
+    → _renderSHAPForActivity(newIdx) re-runs
+    → All 4 KPI cards, badge row, waterfall, scatter, dependence, and
+      the all-activities table are all re-rendered for the new activity.
+
+
+2.4  KPI Cards (Denial Probability / Net SHAP / High-Impact Drivers / If Top Fixed)
+────────────────────────────────────────────────────────────────────────────────────
+
+  All four KPI cards reflect the SELECTED activity, not the claim as a whole.
+
+  Denial Probability
+    Source: result.predictions[idx].denial_probability × 100
+    This is the raw XGBoost predict_proba output for that activity row.
+
+  Net SHAP Log-Odds
+    Source: SHAP.finalLogOddsForActivity(result, idx) − SHAP.baseLogOdds()
+    finalLogOddsForActivity = logit(denial_probability)
+                            = log(p / (1 − p))
+    BASE_LOG_ODDS = −0.32  (logit of ~42%, the population average)
+    Net SHAP = how far this activity's log-odds are from the baseline.
+
+  High-Impact Drivers
+    Count of features in contributions[] where |shap_value| ≥ 0.05.
+    The sub-label shows the first 3 feature names.
+
+  If Top Driver Fixed
+    Simulates removing the top driver's contribution:
+      revised_log_odds = finalVal − |top_driver.shap_value|
+      revised_prob     = sigmoid(revised_log_odds)
+    This is an approximation — real remediation depends on claim specifics.
+
+
+2.5  SHAP Waterfall Chart
+─────────────────────────
+
+  Rendered by:  Charts.waterfall('shap-waterfall-chart', contributions, baseVal, finalVal)
+  Data source:  SHAP.fromActivityIndex(result, selectedIdx)
+
+  What it shows:
+    A horizontal waterfall starting at the base log-odds (−0.32).
+    Each feature bar shifts the running total left or right.
+    Red bars  = positive SHAP = feature pushes this activity toward denial.
+    Green bars = negative SHAP = feature pushes toward approval.
+    Final grey bar = the activity's actual log-odds output.
+
+  The x-axis is in log-odds units (not probability).
+  Hover over any bar to see the exact SHAP value.
+
+  The labels on the y-axis come from SHAP.DISPLAY_NAMES lookup in shap.js —
+  raw feature names like "activity_gross" are shown as "Activity Gross Amount".
+
+
+2.6  Feature Value vs SHAP Value  (Scatter Chart)
+──────────────────────────────────────────────────
+
+  Rendered by:  Charts.featureScatter('shap-scatter-chart', contributions)
+  Data source:  Same contributions[] from SHAP.fromActivityIndex()
+
+  What it shows:
+    One dot per feature in the selected activity's top_drivers list.
+    X-axis  = SHAP value (signed, log-odds units)
+              Right of zero  →  feature pushed this activity toward denial
+              Left of zero   →  feature pushed toward approval
+    Colour  = impact strength (blue = weak → red = strong)
+              Driven by  abs(shap_value) / max(abs(all shap_values))
+              Rendered via a continuous colorscale: blue → yellow-green → amber → red.
+    Hover   = feature name, exact SHAP value, direction text, raw feature value
+              (raw value is null for this API because shap_engine.py only returns
+               feature + shap_value + impact, not the raw cell value)
+
+  The colour colorbar on the right shows Weak / Medium / Strong labels.
+  A vertical dotted line at x=0 marks the neutral boundary.
+
+  IMPORTANT: The dots represent the SHAP values from the model for this
+  specific activity — not population averages, not estimates.
+  They are the actual TreeExplainer output for this one activity row.
+
+
+2.7  SHAP Dependence — Activity Gross
+──────────────────────────────────────
+
+  Rendered by:  Charts.dependence('shap-dependence-chart', actGross, actGrossShap)
+  Data source:  PARTIALLY real + PARTIALLY synthetic
+
+  The diamond (★ This activity):
+    x = Math.log1p(actGross)   — log-transformed gross amount from the form
+                                  (payload.activities[idx].activity_gross)
+    y = actual SHAP value for 'activity_gross' from the selected activity's
+        top_drivers (SHAP.fromActivityIndex result, feature === 'activity_gross')
+    This point is 100% real model output.
+
+  The background dots (Similar claims):
+    These are SYNTHETIC — generated deterministically in charts.js using a
+    curve formula:
+      logVals  = log1p(xs)   where xs = range from lo to hi around actGross
+      shapVals = logVal / 8 − 0.4 + 0.04 × sin(i × 1.7)
+      mismatch = (sin(i × 0.9 + 1) + 1) / 2   ← ICD-CPT mismatch proxy
+
+    They are NOT real claims from the database. They illustrate the general
+    trend of how activity_gross correlates with SHAP contribution.
+    The coloring (blue = good match, red = mismatch) is also synthetic.
+
+  Why synthetic?
+    The frontend has no access to the training dataset. The background dots
+    exist solely to give the user intuition about the feature's behaviour
+    across a range of claim amounts — the diamond is what matters clinically.
+
+  X-axis:  activity_gross on log scale (log1p transform, larger = higher value)
+  Y-axis:  SHAP contribution of activity_gross in log-odds units
+  Above zero line = this gross amount is pushing the activity toward denial
+  Below zero line = this gross amount is reducing denial likelihood
+
+
+2.8  All-Activities Comparison Table
+─────────────────────────────────────
+
+  Rendered by:  _renderSHAPAllActivitiesTable(predictions, activeIdx) in app.js
+  Data source:  result.predictions[]  — all activities in the API response
+
+  Each row = one activity on the claim.
+  Columns:  #, Activity Code, CPT Category, Denial Prob, Verdict,
+            Top SHAP Driver (name + SHAP value), 2nd Driver, 3rd Driver.
+
+  Active row (currently selected in dropdown) is highlighted amber.
+  Denied rows have a red left border.
+  Clicking any row switches the dropdown and re-renders all charts for that activity.
+
+  Data flow:
+    result.predictions[i].top_drivers[0,1,2]
+      → feature name looked up in SHAP.DISPLAY_NAMES
+      → shap_value formatted with sign
+
+
+────────────────────────────────────────────────────────────────────────────────
+SECTION 3 — ICD DRILL-DOWN TAB
+────────────────────────────────────────────────────────────────────────────────
+
+3.1  Data source
+────────────────
+
+  ALL data on the ICD Drill-Down tab comes from a STATIC DATASET
+  hardcoded inside  frontend/js/icd.js.
+
+  No API call is made. No database query happens.
+  The data represents population-level statistics from the training dataset,
+  pre-computed and baked into the JavaScript file at build time.
+
+  The dataset contains one entry per ICD code:
+    {
+      code:      "I10",
+      desc:      "Essential (primary) hypertension",
+      group:     "Circulatory",
+      claims:    12847,
+      denyRate:  0.423,       ← population denial rate for this ICD code
+      meanShap:  0.183,       ← average SHAP contribution across training claims
+      modelProb: 0.512        ← average model prediction for this ICD code
+    }
+
+  The heatmap data (Denial Rate by ICD Group × Encounter Type) is also
+  hardcoded in icd.js as a 2D matrix — rows = ICD groups, columns = OP/IP/EM.
+
+
+3.2  Active claim highlighting
+────────────────────────────────
+
+  When a claim is submitted, app.js calls:
+    ICD.groupFromCode(payload.diagnosis_code)
+
+  This maps the ICD prefix letter to a group (e.g. "I10" → "Circulatory").
+  The ICD table then highlights matching rows with an amber background
+  (class "active-row") so you can see where the current claim's ICD code
+  sits in the population data.
+
+  The caption above the table says:
+    "ICD I10 → Circulatory. Matching rows highlighted."
+
+
+3.3  Filter and sort controls
+──────────────────────────────
+
+  The group filter dropdown is populated by ICD.populateGroupFilter()
+  reading the distinct group values from the static dataset.
+
+  Sort options:
+    Mean SHAP ↓   — sorts by meanShap descending
+    Deny Rate ↓   — sorts by denyRate descending
+    Claims ↓      — sorts by claims descending
+
+  These are all client-side sorts on the static dataset, no server call.
+
+
+3.4  Denial Rate Heatmap
+─────────────────────────
+
+  Rendered by:  Charts.heatmap(elId, zData, xLabels, yLabels)
+  Data source:  static 2D array in icd.js
+
+  Each cell = observed denial rate % for that ICD Group × Encounter Type
+  combination in the training data.
+  Colour scale: light green (low denial) → yellow → orange → red (high denial).
+
+  The active claim's ICD group column is NOT separately highlighted on the
+  heatmap — but it can be inferred from the ICD group the filter is set to.
+
+
+────────────────────────────────────────────────────────────────────────────────
+SECTION 4 — INTERACTIONS TAB
+────────────────────────────────────────────────────────────────────────────────
+
+4.1  Data source
+────────────────
+
+  ALL data on the Interactions tab comes from a STATIC DATASET
+  hardcoded inside  frontend/js/interactions.js.
+
+  No API call is made.
+  This data represents population-level ICD × CPT interaction patterns
+  pre-computed from the training dataset and compiled into the JS file.
+
+  The dataset has two parts:
+
+  PART A — Interaction pairs table
+    Each entry = one ICD category × CPT category combination observed
+    in training:
+      {
+        icd:      "Circulatory",
+        cpt:      "Evaluation and Management",
+        claims:   4821,
+        avgIcd:   0.183,    ← average ICD category SHAP contribution
+        avgCpt:   0.241,    ← average CPT category SHAP contribution
+        combined: 0.424     ← avgIcd + avgCpt (combined signal)
+      }
+
+  PART B — Heatmap matrices
+    Two pre-built 2D matrices:
+      shapMatrix  — mean combined SHAP for each ICD × CPT group pair
+      denialMatrix — actual denial rate % for each ICD × CPT group pair
+
+
+4.2  Active claim highlighting
+────────────────────────────────
+
+  When a claim is submitted, app.js calls:
+    ICD.groupFromCode(payload.diagnosis_code)
+    Interactions.cptGroupFromCode(payload.activities[0].activity_code)
+
+  The interactions pairs table highlights the row matching the active claim's
+  ICD group × CPT group combination with amber background (class "active-row").
+
+  The caption above the table shows:
+    "ICD: Circulatory | CPT: Evaluation and Management"
+
+
+4.3  Top Interaction Pairs Table
+──────────────────────────────────
+
+  Rendered by:  Interactions.renderPairsTable(activeIcd, activeCpt)
+  Data source:  static pairs array in interactions.js
+
+  Ranked by combined SHAP descending (avgIcd + avgCpt).
+  Active claim row (matching ICD × CPT) is highlighted amber.
+  Columns: #, ICD Category, CPT Category, Claims, Avg ICD Impact,
+           Avg CPT Impact, Combined Likelihood.
+
+
+4.4  Mean SHAP Interaction Heatmap
+────────────────────────────────────
+
+  Rendered by:  Interactions.renderSHAPHeatmap()
+                → Charts.heatmap(elId, shapMatrix, cptLabels, icdLabels)
+  Data source:  static shapMatrix in interactions.js
+
+  Each cell = mean combined SHAP contribution for that ICD × CPT pair
+  across all training claims with that combination.
+  Darker red = stronger combined push toward denial.
+
+
+4.5  Denial Rate Heatmap
+─────────────────────────
+
+  Rendered by:  Interactions.renderDenialHeatmap()
+                → Charts.heatmap(elId, denialMatrix, cptLabels, icdLabels)
+  Data source:  static denialMatrix in interactions.js
+
+  Each cell = actual observed denial rate % for that ICD × CPT combination
+  in the training population.
+  This is a historical fact from the dataset, not a model prediction.
+
+
+────────────────────────────────────────────────────────────────────────────────
+SECTION 5 — DATA FLOW SUMMARY TABLE
+────────────────────────────────────────────────────────────────────────────────
+
+  CHART / TABLE                        DATA SOURCE        REAL OR STATIC?
+  ──────────────────────────────────────────────────────────────────────────────
+  SHAP Waterfall                       POST /predict       REAL  (model SHAP)
+  Feature Value vs SHAP Value          POST /predict       REAL  (model SHAP)
+  SHAP Dependence — diamond point      POST /predict       REAL  (model SHAP)
+  SHAP Dependence — background dots    charts.js formula   SYNTHETIC (illustrative)
+  All-activities comparison table      POST /predict       REAL  (model SHAP)
+  Activity-level KPI cards             POST /predict       REAL  (model output)
+  ──────────────────────────────────────────────────────────────────────────────
+  ICD Drill-Down table                 icd.js static data  STATIC (training stats)
+  ICD Denial Rate Heatmap              icd.js static data  STATIC (training stats)
+  ──────────────────────────────────────────────────────────────────────────────
+  Interactions Pairs Table             interactions.js     STATIC (training stats)
+  SHAP Interaction Heatmap             interactions.js     STATIC (training stats)
+  Denial Rate Heatmap (Interactions)   interactions.js     STATIC (training stats)
+  ──────────────────────────────────────────────────────────────────────────────
+  Overview Gauge                       POST /predict       REAL  (model output)
+  Overview Activity Predictions Table  POST /predict       REAL  (model output)
+  Claim Score Hero + KPI strip         POST /predict       REAL  (model output)
+  ──────────────────────────────────────────────────────────────────────────────
+
+
+────────────────────────────────────────────────────────────────────────────────
+SECTION 6 — SHAP VALUE UNITS EXPLAINED
+────────────────────────────────────────────────────────────────────────────────
+
+  All SHAP values in this system are in LOG-ODDS units (raw margin space).
+
+  What this means:
+    The XGBoost model outputs raw log-odds before the sigmoid function.
+    SHAP TreeExplainer decomposes that raw output into per-feature contributions.
+
+    base_log_odds  =  −0.32   (approximately logit(0.42) — population average)
+    final_log_odds =  base + sum(all SHAP values for this activity)
+    probability    =  sigmoid(final_log_odds)  =  1 / (1 + exp(−final_log_odds))
+
+  A SHAP value of +0.38 means:
+    This feature shifted the log-odds up by 0.38 units toward denial.
+
+  A SHAP value of −0.09 means:
+    This feature shifted the log-odds down by 0.09 units toward approval.
+
+  The magnitude (absolute value) indicates strength.
+  The sign indicates direction.
+  They are ADDITIVE — they sum to the total deviation from the base.
+
+  To convert the activity's log-odds back to probability:
+    sigmoid(−0.32 + sum_of_all_shap_values)
+
+
+────────────────────────────────────────────────────────────────────────────────
+SECTION 7 — CLAIM SCORE vs ACTIVITY SHAP
+────────────────────────────────────────────────────────────────────────────────
+
+  The CLAIM SCORE shown on the Overview tab is NOT the same as any
+  individual activity's SHAP output.
+
+  Claim score formula (predictionapi.py):
+    claim_prob = 0.7 × max(activity_probabilities)
+               + 0.3 × mean(activity_probabilities)
+
+  This is a WEIGHTED AGGREGATE of activity-level probabilities.
+  There are no claim-level SHAP values — SHAP only runs per activity row.
+
+  The SHAP Analysis tab always shows per-activity SHAP values.
+  The "aggregated claim-level view" shown in chat.js is a frontend
+  approximation: mean signed SHAP per feature across all activities.
+  It is used only for the chat greeting context — not displayed as a chart.
+
+
+────────────────────────────────────────────────────────────────────────────────
+SECTION 8 — HOW TO READ THE FEATURE VALUE vs SHAP VALUE CHART
+────────────────────────────────────────────────────────────────────────────────
+
+  X-axis: SHAP value (log-odds contribution of that feature for this activity)
+    Right of 0 = this feature is pushing the activity toward denial
+    Left  of 0 = this feature is pushing the activity toward approval
+
+  Y-axis: feature labels (display names from SHAP.DISPLAY_NAMES in shap.js)
+    Sorted by |SHAP value| descending — strongest impact at the top
+
+  Dot colour: impact strength
+    Blue   = weak   (|shap| near 0)
+    Green  = moderate
+    Amber  = strong
+    Red    = very strong (|shap| near the max for this activity)
+    Scale = abs(shap_value) / max(abs(all shap_values for this activity))
+
+  Colourbar on the right:
+    Labelled "Weak / Medium / Strong"
+    Driven by the normalised ratio above, not an absolute threshold
+
+  Dotted vertical line at x=0:
+    The neutral boundary. Features to the right are denial-pushing for
+    this specific activity. Features to the left are approval-pushing.
+
+  Key insight:
+    A feature being denial-pushing does NOT mean it is "bad" in isolation.
+    It means that for THIS activity, the model's learned behaviour assigned
+    a positive log-odds contribution to that feature value.
+    E.g. if activity_gross = AED 5,000, the model may assign +0.38 SHAP
+    because high gross amounts correlate with denial in the training data.
+
+
+────────────────────────────────────────────────────────────────────────────────
+SECTION 9 — HOW TO READ THE SHAP DEPENDENCE — ACTIVITY GROSS CHART
+────────────────────────────────────────────────────────────────────────────────
+
+  X-axis: activity_gross on log scale (log1p transform)
+    Larger x = higher gross amount
+    E.g. AED 250 → log1p(250) ≈ 5.52
+         AED 5000 → log1p(5000) ≈ 8.52
+
+  Y-axis: SHAP contribution of activity_gross (log-odds units)
+    Above zero = this gross amount is pushing the activity toward denial
+    Below zero = this gross amount is reducing denial likelihood
+    The zero line is the neutral boundary
+
+  Diamond (★):
+    The ACTUAL data point for the selected activity.
+    x = log1p(payload.activities[idx].activity_gross)
+    y = shap_value of 'activity_gross' from top_drivers (real model output)
+    This is the only point that is fully trustworthy.
+
+  Background dots:
+    Synthetic — illustrate the general trend.
+    Coloured by a proxy ICD-CPT mismatch score (blue = good match, red = mismatch).
+    Do NOT treat these as real historical claims.
+
+  How to use this chart:
+    Look at where the diamond sits relative to the background curve.
+    If the diamond is high (above zero) it means the activity's gross amount
+    is a denial driver for this claim.
+    If it is low (below zero) the amount is actually helping approval odds.
+    The curve shows the general direction — lower amounts tend to sit below
+    zero (approval push) and higher amounts tend to sit above zero (denial push).
+
+
+================================================================================
+  END OF DOCUMENT
+================================================================================

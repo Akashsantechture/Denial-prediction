@@ -58,7 +58,7 @@
         },
         {
           "feature": "activity_code",
-          "display_name": "Activity / CPT Code",
+          "display_name": "Activity code",
           "raw_value": "99213",
           "shap_value": -0.064046,
           "absolute_shap": 0.064046,
@@ -92,13 +92,13 @@
         },
         {
           "feature_1": "activity_code",
-          "feature_1_display_name": "Activity / CPT Code",
+          "feature_1_display_name": "Activity code",
           "feature_2": "cpt_category",
           "feature_2_display_name": "CPT Category",
           "interaction_value": 0.103051,
           "absolute_interaction": 0.103051,
           "direction": "increases_denial_risk",
-          "explanation": "The combined interaction between Activity / CPT Code and CPT Category pushes the model prediction toward higher denial risk."
+          "explanation": "The combined interaction between Activity code and CPT Category pushes the model prediction toward higher denial risk."
         }
       ]
     }
