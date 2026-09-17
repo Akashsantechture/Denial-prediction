@@ -383,8 +383,7 @@
       const topPred = [...preds].sort((a, b) =>
         b.denial_probability - a.denial_probability)[0];
       ab.className = `action-banner ${level}`;
-      ab.innerHTML = `<strong>${cs.claim_risk_level} Denial Likelihood (${pct.toFixed(1)}%)</strong>` +
-        (topPred?.recommendation ? ` — ${topPred.recommendation}` : '');
+      ab.innerHTML = `<strong>${cs.claim_risk_level} Denial Likelihood (${pct.toFixed(1)}%)</strong>`;
     }
 
     _renderActivityTable(preds, payload.activities ?? []);
@@ -427,7 +426,6 @@
             ${denied ? '⚠ Likely Denied' : '✓ Likely Approved'}
           </span></td>
           <td class="driver-pills-cell">${pills || '<span class="text-muted">—</span>'}</td>
-          <td class="rec-cell">${pred.recommendation || '—'}</td>
         </tr>`;
     }).join('');
   }

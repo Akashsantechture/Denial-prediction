@@ -312,3 +312,132 @@
     }
   ]
 }
+
+
+
+{
+  "claim_id": "157995",
+  "patient_age": 45,
+  "gender": "Male",
+  "nationality": "EMIRATI",
+  "encounter_type": "OP",
+  "length_of_stay": 0,
+  "claim_gross": 23.8,
+  "claim_net": 21.4,
+  "clinician_profession": "Internal Medicine",
+  "clinician_category": "Internal Medicine",
+  "facility_type": "Hospital",
+  "payer_classification": "Insurance",
+  "primary_diagnosis_code": "L30.9",
+  "activities": [
+    {
+      "activity_code": "111805",
+      "activity_quantity": 1.0,
+      "activity_gross": 1.8,
+      "diagnoses": [
+        {
+          "diagnosis_code": "R21",
+          "diagnosis_type": "Secondary"
+        },
+        {
+          "diagnosis_code": "B35.4",
+          "diagnosis_type": "Secondary"
+        }
+      ]
+    },
+    {
+      "activity_code": "96372",
+      "activity_quantity": 1.0,
+      "activity_gross": 10.0,
+      "diagnoses": [
+        {
+          "diagnosis_code": "R21",
+          "diagnosis_type": "Secondary"
+        },
+        {
+          "diagnosis_code": "B35.4",
+          "diagnosis_type": "Secondary"
+        }
+      ]
+    },
+    {
+      "activity_code": "9.02",
+      "activity_quantity": 1.0,
+      "activity_gross": 9.6,
+      "diagnoses": [
+        {
+          "diagnosis_code": "R21",
+          "diagnosis_type": "Secondary"
+        },
+        {
+          "diagnosis_code": "B35.4",
+          "diagnosis_type": "Secondary"
+        }
+      ]
+    }
+  ]
+}
+
+
+{
+  "claim_id": "DHA-F-0002531-INS026-1782740831793-278023-157995",
+  "patient_age": null,
+  "gender": null,
+  "nationality": null,
+  "encounter_type": 1,
+  "length_of_stay": 0,
+  "claim_gross": 23.8,
+  "claim_net": 21.4,
+  "clinician_profession": null,
+  "clinician_category": null,
+  "facility_type": null,
+  "payer_classification": null,
+  "primary_diagnosis_code": "L30.9",
+  "activities": [
+    {
+      "activity_code": "0005-111805-1021",
+      "activity_quantity": 1.0,
+      "activity_gross": 1.8,
+      "diagnoses": [
+        {
+          "diagnosis_code": "R21",
+          "diagnosis_type": "Secondary"
+        },
+        {
+          "diagnosis_code": "B35.4",
+          "diagnosis_type": "Secondary"
+        }
+      ]
+    },
+    {
+      "activity_code": "96372",
+      "activity_quantity": 1.0,
+      "activity_gross": 10.0,
+      "diagnoses": [
+        {
+          "diagnosis_code": "R21",
+          "diagnosis_type": "Secondary"
+        },
+        {
+          "diagnosis_code": "B35.4",
+          "diagnosis_type": "Secondary"
+        }
+      ]
+    },
+    {
+      "activity_code": "9.02",
+      "activity_quantity": 1.0,
+      "activity_gross": 9.6,
+      "diagnoses": [
+        {
+          "diagnosis_code": "R21",
+          "diagnosis_type": "Secondary"
+        },
+        {
+          "diagnosis_code": "B35.4",
+          "diagnosis_type": "Secondary"
+        }
+      ]
+    }
+  ]
+}

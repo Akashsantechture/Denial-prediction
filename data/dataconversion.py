@@ -7,9 +7,9 @@ engine = create_engine('postgresql://postgres:2004@localhost:5432/Denial-predict
 
 print("Fetching data and converting to Parquet...")
 # df = pd.read_sql("SELECT * FROM public.denialclaims_features;", engine)
-df = pd.read_sql("SELECT * FROM public.claim_activity_denial_model_v3;", engine)
+df = pd.read_sql("SELECT * FROM public.claim_denial_reason_model_v2;", engine)
 print("current working directory",os.getcwd())
 
 # 2. Save locally as compressed Parquet
-df.to_parquet("claim_activity_denial_model_v3.parquet", index=False)
-print("Done! Check your working folder for 'claim_activity_denial_model_v3.parquet'.")
+df.to_parquet("claim_denial_reason_model_v2.parquet", index=False)
+print("Done! Check your working folder for 'claim_denial_reason_model_v2.parquet'.")
