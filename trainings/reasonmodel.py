@@ -66,18 +66,6 @@ print(
 
 TARGET = "denial_category"
 
-# DROP_COLS = [
-#     TARGET,
-#     "haad_claim_line_id",
-#     "claim_ref_no",
-#     "mrn",
-#     "provider_id",
-#     "payer_id",
-#     "payment_reference",
-#     "activity_denial_code",
-#     "denial_description",
-#     "denial_type",
-# ]
 DROP_COLS = [
 
     TARGET,

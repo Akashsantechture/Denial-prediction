@@ -25,6 +25,7 @@ SHAP_ENGINE = None
 REASON_MODEL = None
 REASON_ENCODER = None
 REASON_LABEL_ENCODER = None
+REASON_SHAP_ENGINE = None
 
 
 # ============================================================
@@ -80,7 +81,7 @@ FEATURE_ORDER = [
 @asynccontextmanager
 async def lifespan(app: FastAPI):
 
-    global MODEL, ENCODER, SHAP_ENGINE, REASON_MODEL, REASON_ENCODER, REASON_LABEL_ENCODER
+    global MODEL, ENCODER, SHAP_ENGINE, REASON_MODEL, REASON_ENCODER, REASON_LABEL_ENCODER, REASON_SHAP_ENGINE
 
     print("=" * 60)
     print("Loading Claim Denial Prediction Service")
@@ -94,10 +95,13 @@ async def lifespan(app: FastAPI):
         "models/xgboost/target_encoder.joblib"
     )
 
-    SHAP_ENGINE = ShapEngine(MODEL)
+    
 
     REASON_MODEL = joblib.load(
     "models/denial_reason/model.joblib"
+    )
+    REASON_SHAP_ENGINE = ShapEngine(
+    REASON_MODEL
     )
 
     REASON_ENCODER = joblib.load(
@@ -125,6 +129,7 @@ async def lifespan(app: FastAPI):
     REASON_MODEL = None
     REASON_ENCODER = None
     REASON_LABEL_ENCODER = None
+    REASON_SHAP_ENGINE=None
 
 
 # ============================================================
@@ -241,9 +246,9 @@ def predict(request: ClaimRequest):
         # SHAP
         # =====================================================
 
-        shap_results = SHAP_ENGINE.explain(
-            df_encoded
-        )
+        # 2  shap_results = SHAP_ENGINE.explain(
+        #     df_encoded
+        # )
 
         # =====================================================
         # INTERACTIONS
@@ -278,6 +283,14 @@ def predict(request: ClaimRequest):
         reason_predictions = (
             REASON_MODEL.predict(
                 reason_df_encoded
+            )
+        )
+
+        reason_shap_results = (
+            REASON_SHAP_ENGINE.explain_multiclass(
+                reason_df_encoded,
+                reason_predictions,
+                original_df=df
             )
         )
 
@@ -344,8 +357,8 @@ def predict(request: ClaimRequest):
                         4
                     ) if predicted_reason else None,
 
-                "top_drivers":
-                    shap_results[idx]
+                "reason_drivers":
+                    reason_shap_results[idx]
             })
         # =====================================================
         # CLAIM LEVEL SCORE

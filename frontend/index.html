@@ -440,6 +440,121 @@
     }
     .live-placeholder .placeholder-icon { font-size: 2rem; opacity: .4; }
 
+    /* ── Reason model SHAP elements ─────────────────────────────────── */
+    .reason-label-badge {
+      display: inline-block;
+      margin-left: .6rem;
+      font-size: .72rem;
+      font-weight: 700;
+      padding: .2rem .6rem;
+      border-radius: var(--radius-sm);
+      background: #1E3A5F;
+      color: #93C5FD;
+      border: 1px solid #3B82F6;
+      letter-spacing: .03em;
+      vertical-align: middle;
+    }
+
+    .shap-reason-approved-msg {
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+      padding: 1.5rem 1rem;
+      color: var(--color-text-muted);
+      font-size: .85rem;
+    }
+    .shap-reason-approved-msg .approved-icon {
+      font-size: 1.4rem;
+      color: var(--color-low);
+    }
+
+    .reason-strip {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border-light);
+      border-radius: var(--radius-md);
+      padding: .75rem 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+    .reason-strip-left, .reason-strip-right {
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+      flex-wrap: wrap;
+    }
+    .reason-strip-label {
+      font-size: .7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      color: var(--color-text-muted);
+      white-space: nowrap;
+    }
+    .reason-strip-value {
+      font-size: .88rem;
+      font-weight: 700;
+      color: #FCD34D;
+      background: #78350F;
+      border: 1px solid #F59E0B;
+      border-radius: var(--radius-sm);
+      padding: .2rem .6rem;
+      white-space: nowrap;
+    }
+    .reason-strip-confidence {
+      font-size: .88rem;
+      font-weight: 700;
+      color: var(--color-text-primary);
+    }
+    .reason-conf-bar-track {
+      width: 120px;
+      height: 6px;
+      background: var(--color-chart-bg);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .reason-conf-bar {
+      height: 100%;
+      background: linear-gradient(90deg, #3B82F6, #8B5CF6);
+      border-radius: 3px;
+      transition: width .4s ease;
+    }
+
+    /* Denial reason cell in tables */
+    .denial-reason-cell {
+      font-size: .75rem;
+      max-width: 180px;
+    }
+    .denial-reason-tag {
+      display: inline-block;
+      background: #78350F;
+      color: #FCD34D;
+      border: 1px solid #F59E0B;
+      border-radius: var(--radius-sm);
+      padding: .15rem .45rem;
+      font-size: .7rem;
+      font-weight: 600;
+      white-space: nowrap;
+      max-width: 170px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .denial-reason-na {
+      color: var(--color-text-muted);
+      font-size: .75rem;
+    }
+    .reason-conf-pill {
+      display: inline-block;
+      font-size: .72rem;
+      font-weight: 600;
+      padding: .15rem .4rem;
+      border-radius: var(--radius-sm);
+      background: var(--color-chart-bg);
+      border: 1px solid var(--color-border-light);
+      color: var(--color-text-primary);
+    }
+
     /* Chat is now a floating panel triggered from nav */
     .chat-float-btn {
       /* Santechture brand gradient: pink → orange → yellow → teal */
@@ -878,11 +993,13 @@
                     <th>Gross (AED)</th>
                     <th style="min-width:160px;">Denial Likelihood</th>
                     <th>Verdict</th>
-                    <th>Top SHAP Drivers</th>
+                    <th>Denial Reason</th>
+                    <th>Confidence</th>
+                    <th>Reason Drivers</th>
                   </tr>
                 </thead>
                 <tbody id="activity-predictions-body">
-                  <tr><td colspan="8" class="no-data-row">No predictions yet.</td></tr>
+                  <tr><td colspan="9" class="no-data-row">No predictions yet.</td></tr>
                 </tbody>
               </table>
             </div>
@@ -946,11 +1063,41 @@
             </div>
           </div>
 
-          <!-- ── Waterfall ─────────────────────────────────────── -->
+          <!-- ── Waterfall — Reason Model SHAP ────────────────── -->
           <div class="chart-card" style="margin-bottom:1.25rem;">
-            <div class="chart-title">SHAP Waterfall — Selected Activity</div>
-            <div class="chart-caption">Each bar shows how a feature shifts the prediction away from the base (−0.32). Red = pushes toward denial · Green = pushes toward approval.</div>
-            <div id="shap-waterfall-chart" class="plotly-container" style="min-height:400px;"></div>
+            <div class="chart-title">
+              Reason Model SHAP Waterfall — Selected Activity
+              <span id="shap-reason-label-badge" class="reason-label-badge" style="display:none;"></span>
+            </div>
+            <div class="chart-caption">
+              Each bar shows how a feature shifts the <strong>predicted denial reason</strong> probability away from the base.
+              Red = pushes toward this denial reason · Green = pushes away from it.
+              Only shown when activity is predicted to be denied.
+            </div>
+            <!-- Denied: show waterfall -->
+            <div id="shap-reason-content">
+              <div id="shap-waterfall-chart" class="plotly-container" style="min-height:400px;"></div>
+            </div>
+            <!-- Approved: show placeholder -->
+            <div id="shap-reason-approved" class="shap-reason-approved-msg" style="display:none;">
+              <span class="approved-icon">✓</span>
+              This activity is predicted to be <strong>approved</strong> — no denial reason SHAP available.
+            </div>
+          </div>
+
+          <!-- ── Reason confidence + label strip ───────────────── -->
+          <div id="shap-reason-strip" class="reason-strip" style="display:none;margin-bottom:1.25rem;">
+            <div class="reason-strip-left">
+              <span class="reason-strip-label">Predicted Denial Reason</span>
+              <span id="reason-strip-value" class="reason-strip-value">—</span>
+            </div>
+            <div class="reason-strip-right">
+              <span class="reason-strip-label">Model Confidence</span>
+              <span id="reason-strip-confidence" class="reason-strip-confidence">—</span>
+              <div class="reason-conf-bar-track">
+                <div id="reason-conf-bar" class="reason-conf-bar" style="width:0%"></div>
+              </div>
+            </div>
           </div>
 
           <!-- ── Scatter + Dependence ──────────────────────────── -->
@@ -980,8 +1127,9 @@
                     <th>CPT Category</th>
                     <th>Denial Prob</th>
                     <th>Verdict</th>
-                    <th>Top SHAP Driver</th>
-                    <th>SHAP Value</th>
+                    <th>Denial Reason</th>
+                    <th>Confidence</th>
+                    <th>Top Reason Driver</th>
                     <th>2nd Driver</th>
                     <th>3rd Driver</th>
                   </tr>
@@ -995,11 +1143,12 @@
           <div class="expander">
             <button class="expander-trigger">How to read these charts <span class="expander-arrow">▼</span></button>
             <div class="expander-body">
-              <p><strong>Activity selector</strong> — choose any activity line from the claim. All charts and KPIs update to show that activity's individual SHAP values from the model.</p>
-              <p><strong>Waterfall</strong> — shows how each of the 38 model features pushed the selected activity's score away from the base (−0.32 log-odds). Red bars push toward denial; green bars push toward approval.</p>
-              <p><strong>Feature Value vs SHAP Value</strong> — each dot is one feature. Position right of zero = pushes toward denial for this activity. Colour intensity = strength of impact.</p>
-              <p><strong>Dependence chart</strong> — shows how the activity gross amount (log-scaled) correlates with its SHAP contribution across similar claims. The diamond marks this activity.</p>
-              <p><strong>All-activities table</strong> — side-by-side comparison of the top 3 SHAP drivers for every activity on the claim. Click a row to switch the selector above.</p>
+              <p><strong>Activity selector</strong> — choose any activity line from the claim. All charts and KPIs update to show that activity's individual SHAP values from the reason model.</p>
+              <p><strong>Waterfall</strong> — shows how each of the 38 model features shifted the predicted denial reason probability for the selected activity. Red bars push toward this denial reason; green bars push away from it. Only available when the activity is predicted to be denied.</p>
+              <p><strong>Feature Value vs SHAP Value</strong> — each dot is one feature. Position right of zero = pushes toward the predicted denial reason for this activity. Colour intensity = strength of impact.</p>
+              <p><strong>Dependence chart</strong> — shows how the activity gross amount (log-scaled) correlates with its SHAP contribution. The diamond marks this activity.</p>
+              <p><strong>All-activities table</strong> — side-by-side comparison of the predicted denial reason, model confidence, and top 3 reason SHAP drivers for every activity. Click a row to switch the selector above.</p>
+              <p><strong>Denial Reason</strong> — produced by the second (multiclass) model trained specifically on denial reason codes. Confidence is the model's max class probability for the predicted reason.</p>
             </div>
           </div>
 
@@ -1164,13 +1313,13 @@
 <!-- ================================================================
      SCRIPTS  — v=2 forces browser to bypass cache and fetch fresh files
      ================================================================ -->
-<script src="js/api.js?v=7"></script>
-<script src="js/shap.js?v=7"></script>
+<script src="js/api.js?v=8"></script>
+<script src="js/shap.js?v=9"></script>
 <script src="js/charts.js?v=8"></script>
 <script src="js/icd.js?v=7"></script>
-<script src="js/interactions.js?v=8"></script>
-<script src="js/chat.js?v=7"></script>
-<script src="js/app.js?v=11"></script>
+<script src="js/interactions.js?v=10"></script>
+<script src="js/chat.js?v=8"></script>
+<script src="js/app.js?v=13"></script>
 
 <script>
   /* ── Top-nav tab sync ─────────────────────────────────────────── */

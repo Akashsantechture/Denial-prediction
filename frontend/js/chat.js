@@ -159,12 +159,14 @@ const Chat = (() => {
     return null;
   }
 
-  // Format an activity's SHAP drivers as a readable list
+  // Format an activity's reason drivers as a readable list
   function _formatDrivers(pred, maxDrivers = 5) {
-    const drivers = (pred.top_drivers || []).slice(0, maxDrivers);
+    const drivers = (pred.reason_drivers ?? pred.top_drivers ?? []).slice(0, maxDrivers);
     if (drivers.length === 0) return 'No SHAP driver data available.';
     return drivers.map((d, i) => {
-      const dir  = d.impact === 'increase_risk' ? '↑ pushes toward denial' : '↓ pushes toward approval';
+      const dir  = (d.impact === 'increase_reason_probability' || d.impact === 'increase_risk')
+        ? '↑ pushes toward this denial reason'
+        : '↓ pushes away from this denial reason';
       const name = SHAP.DISPLAY_NAMES[d.feature] || d.feature;
       const sign = d.shap_value >= 0 ? '+' : '';
       return `${i + 1}. **${name}** — SHAP ${sign}${d.shap_value.toFixed(4)} · ${dir}`;
@@ -187,18 +189,23 @@ const Chat = (() => {
       .join(', ') || '—';
 
     const drivers = _formatDrivers(pred, 5);
-    const rec     = pred.recommendation || 'No specific recommendation.';
+    const reasonLine = pred.predicted_denial && pred.predicted_denial_reason
+      ? `Predicted denial reason: **${pred.predicted_denial_reason}** (confidence: ${
+          pred.reason_confidence != null
+            ? `${(pred.reason_confidence * 100).toFixed(1)}%`
+            : '—'
+        })`
+      : '';
 
     return `**Activity #${idx + 1}: \`${pred.activity_code}\`** (${pred.cpt_category || 'CPT'})
 
 Denial probability: **${pct}%** — ${verdict}
 Gross amount: ${gross} · Quantity: ${qty}
 Secondary diagnoses: ${secDx}
+${reasonLine}
 
-**SHAP drivers (what the model saw):**
-${drivers}
-
-**Recommendation:** ${rec}`;
+**Reason model SHAP drivers (what drove this denial reason):**
+${drivers}`;
   }
 
   // ── Claim intelligence for LLM ───────────────────────────────────────
@@ -229,12 +236,13 @@ ${drivers}
         average_activity_risk_pct:    (cs.average_activity_risk  ?? 0) * 100,
         activity_count:               cs.activity_count,
         activity_predictions:         preds.map(p => ({
-          activity_code:      p.activity_code,
-          cpt_category:       p.cpt_category,
-          denial_probability: p.denial_probability,
-          predicted_denial:   p.predicted_denial,
-          recommendation:     p.recommendation,
-          top_drivers:        p.top_drivers,
+          activity_code:              p.activity_code,
+          cpt_category:               p.cpt_category,
+          denial_probability:         p.denial_probability,
+          predicted_denial:           p.predicted_denial,
+          predicted_denial_reason:    p.predicted_denial_reason ?? null,
+          reason_confidence:          p.reason_confidence ?? null,
+          reason_drivers:             p.reason_drivers ?? [],
         })),
       },
       top_shap_contributions: _contributions.slice(0, 10).map(c => ({

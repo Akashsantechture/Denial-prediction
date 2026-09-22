@@ -47,13 +47,15 @@
  *       activity_count:               int,
  *     },
  *     predictions: [{
- *       activity_code:      string,
- *       denial_probability: float,    0–1
- *       predicted_denial:   bool,
- *       top_drivers: [{
+ *       activity_code:           string,
+ *       denial_probability:      float,    0–1
+ *       predicted_denial:        bool,
+ *       predicted_denial_reason: string|null,   — reason label (only when predicted_denial=true)
+ *       reason_confidence:       float|null,    — max class probability from reason model
+ *       reason_drivers: [{                      — SHAP from reason model (multiclass, for predicted class)
  *         feature:    string,
  *         shap_value: float,
- *         impact:     "increase_risk"|"decrease_risk"
+ *         impact:     "increase_reason_probability"|"decrease_reason_probability"
  *       }],
  *     }]
  *   }

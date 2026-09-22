@@ -1,7 +1,7 @@
 /**
  * js/app.js
  * ---------
- * Main application controller — wired to predictionapi.py v4.0
+ * Main application controller — wired to main.py v4.0 (multimodal)
  *
  * API request shape (POST /predict — ClaimRequest in validators/schemas.py):
  * {
@@ -16,7 +16,7 @@
  *   }]
  * }
  *
- * API response shape (POST /predict):
+ * API response shape (POST /predict — multimodal main.py):
  * {
  *   claim_id,
  *   claim_summary: {
@@ -26,15 +26,20 @@
  *   },
  *   predictions: [{                  ← normalised from activity_predictions by api.js
  *     activity_code,
- *     denial_probability,
+ *     denial_probability,            ← from denial prediction model
  *     predicted_denial,
- *     top_drivers: [{ feature, shap_value, impact }]
+ *     predicted_denial_reason,       ← string|null  (reason model, only when denied)
+ *     reason_confidence,             ← float|null   (max class prob from reason model)
+ *     reason_drivers: [{             ← SHAP from reason model for predicted class
+ *       feature, shap_value,
+ *       impact: "increase_reason_probability"|"decrease_reason_probability"
+ *     }]
  *   }]
  * }
  *
- * Note: cpt_category and recommendation are NOT returned by the API.
+ * Note: top_drivers is NOT present in main.py (denial model SHAP commented out).
+ * All SHAP charts use reason_drivers from the multiclass reason model.
  * cpt_category is derived client-side from activity_code.
- * recommendation is generated client-side from top_drivers.
  */
 
 (() => {
@@ -65,45 +70,13 @@
   }
 
   // ------------------------------------------------------------------ //
-  // Recommendation generator — client-side, based on top SHAP drivers
+  // Enrich predictions — client-side cpt_category only
+  // recommendation removed — top_drivers not present in main.py multimodal response
   // ------------------------------------------------------------------ //
-  function _buildRecommendation(pred, primaryDiagnosisCode) {
-    const drivers = pred.top_drivers || [];
-    if (drivers.length === 0) return 'Review claim documentation before resubmission.';
-
-    const topRisk = drivers
-      .filter(d => d.impact === 'increase_risk')
-      .sort((a, b) => b.shap_value - a.shap_value)[0];
-
-    if (!topRisk) return 'Claim appears well-supported. Verify documentation is complete.';
-
-    const recs = {
-      activity_code:          `Verify CPT \`${pred.activity_code}\` is correctly coded for the service rendered.`,
-      activity_gross:         'Review the billed amount for this activity — high values increase denial likelihood.',
-      activity_quantity:      'Check if the activity quantity is clinically justified and documented.',
-      primary_diagnosis_code: `Ensure ICD \`${primaryDiagnosisCode}\` is the most specific code for the condition.`,
-      primary_diagnosis_category: 'Verify the primary diagnosis category aligns with the procedure type.',
-      claim_gross:            'High claim gross increases scrutiny. Confirm all line items are necessary.',
-      claim_net:              'Verify net claim amount and applied discounts are accurate.',
-      encounter_type:         'Confirm the encounter type (OP/IP/EM) matches the care setting.',
-      length_of_stay:         'Ensure length of stay is medically justified and documented.',
-      clinician_profession:   'Check that the clinician specialty is appropriate for the procedure.',
-      facility_type:          'Verify the facility type is consistent with the procedure performed.',
-      payer_classification:   'Review payer-specific requirements and pre-authorisation rules.',
-      payer_classification:   'Review payer-specific requirements and pre-authorisation rules.',
-      secondary_dx_count:     'Review secondary diagnoses — additional diagnoses affect model scoring.',
-    };
-
-    return recs[topRisk.feature]
-      || `Address high SHAP driver: \`${topRisk.feature}\` (${topRisk.shap_value >= 0 ? '+' : ''}${topRisk.shap_value.toFixed(3)}).`;
-  }
-
-  // Enrich predictions with client-side cpt_category and recommendation
-  function _enrichPredictions(predictions, activities, primaryDiagnosisCode) {
+  function _enrichPredictions(predictions, activities, _primaryDiagnosisCode) {
     return predictions.map((pred, idx) => ({
       ...pred,
-      cpt_category:    _deriveCptCategory(activities[idx]?.activity_code ?? pred.activity_code),
-      recommendation:  _buildRecommendation(pred, primaryDiagnosisCode),
+      cpt_category: _deriveCptCategory(activities[idx]?.activity_code ?? pred.activity_code),
     }));
   }
 
@@ -400,11 +373,32 @@
       const act    = activities[idx] ?? {};
       const gross  = act.activity_gross ?? '—';
       const qty    = act.activity_quantity ?? '—';
-      const pills  = (pred.top_drivers || []).slice(0, 3).map(d => {
-        const cls  = d.impact === 'increase_risk' ? 'pos' : 'neg';
+
+      // Denial reason cell
+      const reasonCell = denied && pred.predicted_denial_reason
+        ? `<td class="denial-reason-cell">
+             <span class="denial-reason-tag" title="${pred.predicted_denial_reason}">
+               ${pred.predicted_denial_reason}
+             </span>
+           </td>`
+        : `<td><span class="denial-reason-na">—</span></td>`;
+
+      // Confidence cell
+      const confPct  = pred.reason_confidence != null
+        ? `${(pred.reason_confidence * 100).toFixed(1)}%`
+        : '—';
+      const confCell = denied && pred.reason_confidence != null
+        ? `<td><span class="reason-conf-pill">${confPct}</span></td>`
+        : `<td><span class="denial-reason-na">—</span></td>`;
+
+      // Reason drivers pills (top 3 from reason model)
+      const drivers = pred.reason_drivers ?? [];
+      const pills   = drivers.slice(0, 3).map(d => {
+        const cls  = d.impact === 'increase_reason_probability' ? 'pos' : 'neg';
         const sign = d.shap_value >= 0 ? '+' : '';
         return `<span class="shap-pill ${cls}" title="${d.feature}">${sign}${d.shap_value.toFixed(3)}</span>`;
       }).join(' ');
+
       return `
         <tr class="${denied ? 'row-denied' : ''}">
           <td><code>${pred.activity_code}</code></td>
@@ -425,7 +419,11 @@
           <td><span class="denial-verdict ${denied ? 'denied' : 'approved'}">
             ${denied ? '⚠ Likely Denied' : '✓ Likely Approved'}
           </span></td>
-          <td class="driver-pills-cell">${pills || '<span class="text-muted">—</span>'}</td>
+          ${reasonCell}
+          ${confCell}
+          <td class="driver-pills-cell">
+            ${denied && pills ? pills : '<span class="denial-reason-na">—</span>'}
+          </td>
         </tr>`;
     }).join('');
   }
@@ -472,47 +470,113 @@
     const pred   = preds[idx];
     if (!pred) return;
 
+    // reason_drivers drives all SHAP charts in the multimodal setup
     const contributions = SHAP.fromActivityIndex(_lastResult, idx);
     const baseVal       = SHAP.baseLogOdds(_lastResult);
     const finalVal      = SHAP.finalLogOddsForActivity(_lastResult, idx);
     const netShap       = parseFloat((finalVal - baseVal).toFixed(4));
     const HIGH_THRESHOLD = 0.05;
 
-    const actPct     = parseFloat((pred.denial_probability * 100).toFixed(1));
-    const riskClass  = actPct >= 70 ? 'high' : actPct >= 40 ? 'medium' : 'low';
+    const actPct    = parseFloat((pred.denial_probability * 100).toFixed(1));
+    const riskClass = actPct >= 70 ? 'high' : actPct >= 40 ? 'medium' : 'low';
 
+    // KPI — denial probability
     _setKPI('kpi-prob',
       `${actPct.toFixed(1)}%`, riskClass,
       pred.predicted_denial ? '⚠ Predicted denied' : '✓ Predicted approved'
     );
-    _setKPI('kpi-shap',
-      `${netShap >= 0 ? '+' : ''}${netShap.toFixed(3)}`,
-      netShap > 0 ? 'high' : 'green',
-      `Base: ${baseVal.toFixed(3)}`
-    );
 
+    // KPI — reason confidence (replaces raw net SHAP when available)
+    if (pred.predicted_denial && pred.reason_confidence != null) {
+      _setKPI('kpi-shap',
+        `${(pred.reason_confidence * 100).toFixed(1)}%`,
+        pred.reason_confidence >= 0.70 ? 'high' : pred.reason_confidence >= 0.40 ? 'medium' : 'green',
+        'Reason model confidence'
+      );
+    } else {
+      _setKPI('kpi-shap',
+        `${netShap >= 0 ? '+' : ''}${netShap.toFixed(3)}`,
+        netShap > 0 ? 'high' : 'green',
+        'Net SHAP log-odds'
+      );
+    }
+
+    // KPI — high-impact reason drivers
     const highFlags  = contributions.filter(c => Math.abs(c.value) >= HIGH_THRESHOLD);
     const flagLabels = highFlags.slice(0, 3).map(c => c.name.split(' ')[0]).join(' · ') || '—';
-    _setKPI('kpi-flags', String(highFlags.length), highFlags.length > 0 ? 'high' : 'neutral', flagLabels);
+    _setKPI('kpi-flags',
+      String(highFlags.length),
+      highFlags.length > 0 ? 'high' : 'neutral',
+      flagLabels
+    );
 
+    // KPI — revised probability if top reason driver resolved
     const topVal    = contributions[0]?.value ?? 0;
     const revisedLO = finalVal - Math.abs(topVal);
     const revisedP  = Math.round(100 / (1 + Math.exp(-revisedLO)));
     _setKPI('kpi-revised', `~${Math.max(revisedP, 2)}%`, 'green', '↓ If top driver resolved');
 
+    // Activity badge row
     const badgeRow = document.getElementById('shap-activity-badge-row');
     if (badgeRow) {
+      const reasonBadge = pred.predicted_denial && pred.predicted_denial_reason
+        ? `<span class="reason-label-badge" style="display:inline-block;">
+             ${pred.predicted_denial_reason}
+           </span>`
+        : '';
       badgeRow.innerHTML = `
-        <span class="cpt-badge">${pred.cpt_category}</span>
+        <span class="cpt-badge">${pred.cpt_category || '—'}</span>
         <span class="denial-verdict ${pred.predicted_denial ? 'denied' : 'approved'}">
           ${pred.predicted_denial ? '⚠ Likely Denied' : '✓ Likely Approved'}
         </span>
+        ${reasonBadge}
         <span class="kpi-sub" style="font-size:.78rem;">
           Claim-level score: <strong>${_lastResult.claim_summary.claim_denial_probability_pct.toFixed(1)}%</strong>
         </span>`;
     }
 
-    Charts.waterfall('shap-waterfall-chart', contributions, baseVal, finalVal);
+    // Waterfall title badge + show/hide reason section
+    const reasonLabelBadge = document.getElementById('shap-reason-label-badge');
+    const reasonContent    = document.getElementById('shap-reason-content');
+    const reasonApproved   = document.getElementById('shap-reason-approved');
+    const reasonStrip      = document.getElementById('shap-reason-strip');
+
+    if (pred.predicted_denial && contributions.length > 0) {
+      // Show waterfall for denied activity
+      if (reasonContent)  reasonContent.style.display  = '';
+      if (reasonApproved) reasonApproved.style.display = 'none';
+      if (reasonStrip)    reasonStrip.style.display    = '';
+
+      // Reason label badge in chart title
+      if (reasonLabelBadge && pred.predicted_denial_reason) {
+        reasonLabelBadge.textContent = pred.predicted_denial_reason;
+        reasonLabelBadge.style.display = 'inline-block';
+      } else if (reasonLabelBadge) {
+        reasonLabelBadge.style.display = 'none';
+      }
+
+      // Reason strip values
+      const stripVal  = document.getElementById('reason-strip-value');
+      const stripConf = document.getElementById('reason-strip-confidence');
+      const confBar   = document.getElementById('reason-conf-bar');
+      if (stripVal)  stripVal.textContent  = pred.predicted_denial_reason ?? '—';
+      if (stripConf) stripConf.textContent = pred.reason_confidence != null
+        ? `${(pred.reason_confidence * 100).toFixed(1)}%` : '—';
+      if (confBar) confBar.style.width =
+        pred.reason_confidence != null ? `${(pred.reason_confidence * 100).toFixed(1)}%` : '0%';
+
+      // Render reason model SHAP waterfall
+      Charts.waterfall('shap-waterfall-chart', contributions, baseVal, finalVal);
+
+    } else {
+      // Approved — hide waterfall, show approved message
+      if (reasonContent)  reasonContent.style.display  = 'none';
+      if (reasonApproved) reasonApproved.style.display = '';
+      if (reasonStrip)    reasonStrip.style.display    = 'none';
+      if (reasonLabelBadge) reasonLabelBadge.style.display = 'none';
+    }
+
+    // Scatter + dependence always render (use whatever contributions are available)
     Charts.featureScatter('shap-scatter-chart', contributions);
 
     const actGross        = _lastPayload.activities?.[idx]?.activity_gross ?? 250;
@@ -532,13 +596,30 @@
       const pct    = (pred.denial_probability * 100).toFixed(1);
       const lvl    = pred.denial_probability >= 0.70 ? 'high'
                    : pred.denial_probability >= 0.40 ? 'medium' : 'low';
-      const denied = pred.predicted_denial;
-      const drivers = pred.top_drivers || [];
+      const denied  = pred.predicted_denial;
+      const drivers = pred.reason_drivers ?? [];
 
+      // Denial reason cell
+      const reasonCell = denied && pred.predicted_denial_reason
+        ? `<td class="denial-reason-cell">
+             <span class="denial-reason-tag" title="${pred.predicted_denial_reason}">
+               ${pred.predicted_denial_reason}
+             </span>
+           </td>`
+        : `<td><span class="denial-reason-na">—</span></td>`;
+
+      // Confidence cell
+      const confCell = denied && pred.reason_confidence != null
+        ? `<td><span class="reason-conf-pill">
+             ${(pred.reason_confidence * 100).toFixed(1)}%
+           </span></td>`
+        : `<td><span class="denial-reason-na">—</span></td>`;
+
+      // Reason driver cell helper
       const driverCell = (i) => {
         const d = drivers[i];
-        if (!d) return '<td class="text-muted">—</td>';
-        const cls  = d.impact === 'increase_risk' ? 'pos' : 'neg';
+        if (!d) return '<td class="denial-reason-na" style="color:var(--color-text-muted)">—</td>';
+        const cls  = d.impact === 'increase_reason_probability' ? 'pos' : 'neg';
         const sign = d.shap_value >= 0 ? '+' : '';
         return `<td>
           <span class="shap-pill ${cls}">${sign}${d.shap_value.toFixed(3)}</span>
@@ -559,12 +640,9 @@
           <td><span class="denial-verdict ${denied ? 'denied' : 'approved'}">
             ${denied ? '⚠ Denied' : '✓ Approved'}
           </span></td>
+          ${reasonCell}
+          ${confCell}
           ${driverCell(0)}
-          <td>${drivers[0]
-            ? `<span class="shap-pill ${drivers[0].impact === 'increase_risk' ? 'pos' : 'neg'}">
-                ${drivers[0].shap_value >= 0 ? '+' : ''}${drivers[0].shap_value.toFixed(3)}
-               </span>`
-            : '—'}</td>
           ${driverCell(1)}
           ${driverCell(2)}
         </tr>`;
@@ -572,7 +650,7 @@
 
     tbody.querySelectorAll('tr[data-act-idx]').forEach(row => {
       row.addEventListener('click', () => {
-        const i  = parseInt(row.dataset.actIdx, 10);
+        const i   = parseInt(row.dataset.actIdx, 10);
         const sel = document.getElementById('shap-activity-select');
         if (sel) sel.value = String(i);
         _selectedActIdx = i;

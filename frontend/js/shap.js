@@ -1,45 +1,43 @@
 /**
  * js/shap.js
  * ----------
- * SHAP bridge — converts predictionapi.py top_drivers[] into the
+ * SHAP bridge — converts main.py multimodal response into the
  * contribution arrays that charts.js, app.js, and chat.js expect.
  *
- * predictionapi.py / shap_engine.py output shape (per activity):
- *   top_drivers: [{
- *     feature:    string,   e.g. "claim_gross"
- *     shap_value: float,    signed SHAP value
- *     impact:     "increase_risk" | "decrease_risk"
- *   }]
+ * main.py response shape (per activity):
+ *   {
+ *     activity_code:           string,
+ *     denial_probability:      float,     0–1  (from denial prediction model)
+ *     predicted_denial:        bool,
+ *     predicted_denial_reason: string|null,    (from reason model, only when denied)
+ *     reason_confidence:       float|null,     (max class probability from reason model)
+ *     reason_drivers: [{                       (SHAP from reason model for predicted class)
+ *       feature:    string,
+ *       shap_value: float,
+ *       impact:     "increase_reason_probability"|"decrease_reason_probability"
+ *     }]
+ *   }
  *
- * Feature set mirrors FEATURE_ORDER in predictionapi.py (38 features):
- *   activity_code, activity_quantity, activity_gross,
- *   patient_age, gender, nationality,
- *   claim_gross, claim_net, encounter_type, length_of_stay,
- *   clinician_profession, facility_type, payer_classification,
- *   primary_diagnosis_code, primary_diagnosis_category,
- *   secondary_dx_count,
- *   secondary_infectious, secondary_oncology, secondary_oncology_hematology,
- *   secondary_endocrinology, secondary_psychiatry, secondary_neurology,
- *   secondary_eye_ear, secondary_cardiology, secondary_pulmonology,
- *   secondary_gastroenterology_dental, secondary_dermatology,
- *   secondary_musculoskeletal, secondary_genitourinary, secondary_obgyn,
- *   secondary_pediatrics, secondary_congenital, secondary_general_symptoms,
- *   secondary_trauma_burns_poisoning, secondary_external_causes,
- *   secondary_factors_influencing_health_status,
- *   secondary_unknown_icd_category,
- *   cpt_category
+ * NOTE: top_drivers (from denial model SHAP) is NOT present in main.py.
+ * The denial model SHAP engine is commented out. All SHAP charts now
+ * use reason_drivers from the multiclass reason model.
+ *
+ * Feature set mirrors FEATURE_ORDER in main.py (38 features).
  *
  * Exports (global SHAP object)
  * ----------------------------
  *   SHAP.fromActivityIndex(result, idx)
- *     → true per-activity contributions from predictions[idx].top_drivers
+ *     → reason_drivers for predictions[idx] as contribution objects
+ *
+ *   SHAP.fromReasonDrivers(prediction)
+ *     → reason_drivers for a single prediction object
  *
  *   SHAP.fromApiResult(result)
- *     → aggregated claim-level view (mean across all activities)
- *       used only for chat.js claim-level summaries
+ *     → aggregated claim-level view (mean across denied activities)
+ *       used by chat.js claim-level summaries
  *
  *   SHAP.fromActivity(prediction)
- *     → contributions for a single prediction object
+ *     → alias for fromReasonDrivers (backward compat for chat.js)
  *
  *   SHAP.baseLogOdds(result)     — fixed population constant −0.32
  *   SHAP.finalLogOddsForActivity(result, idx)
@@ -57,7 +55,7 @@ const SHAP = (() => {
   // ── Display names — covers all 38 features in FEATURE_ORDER ─────────
   const DISPLAY_NAMES = {
     // Activity features
-    activity_code:          'Activity code',
+    activity_code:          'Activity Code',
     activity_quantity:      'Activity Quantity',
     activity_gross:         'Activity Gross Amount',
 
@@ -116,16 +114,21 @@ const SHAP = (() => {
       || feature.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
   }
 
+  // ── Reason model impact → direction ─────────────────────────────────
+  // reason model uses "increase_reason_probability" / "decrease_reason_probability"
+  // denial model used "increase_risk" / "decrease_risk"
+  // Both map to the same display direction — positive SHAP = pushes toward this outcome
   function _direction(impact) {
-    return impact === 'increase_risk'
-      ? 'increases_denial_likelihood'
-      : 'reduces_denial_likelihood';
+    if (impact === 'increase_reason_probability' || impact === 'increase_risk') {
+      return 'increases_denial_likelihood';
+    }
+    return 'reduces_denial_likelihood';
   }
 
   function _explanation(feature, shap_value, activityCode) {
     const dir = shap_value > 0 ? 'increasing' : 'reducing';
     const act = activityCode ? ` for activity \`${activityCode}\`` : '';
-    return `${_displayName(feature)} is ${dir} denial likelihood${act}.`;
+    return `${_displayName(feature)} is ${dir} the predicted denial reason probability${act}.`;
   }
 
   function _toContribution(d, totalAbs, activityCode) {
@@ -142,45 +145,61 @@ const SHAP = (() => {
                      : 0,
       rawValue:    null,
       explanation: _explanation(d.feature, d.shap_value, activityCode),
+      // preserve original impact string so downstream code can check it
+      impact:      d.impact,
     };
   }
 
-  // ── True per-activity SHAP by index ─────────────────────────────────
-  // Primary method used by the SHAP tab selector.
-  // Returns top_drivers for predictions[idx] with no aggregation.
+  // ── Reason drivers for a specific activity by index ──────────────────
+  // Primary method used by SHAP tab selector.
+  // Uses reason_drivers (multiclass reason model SHAP).
   function fromActivityIndex(result, idx) {
     const pred = result?.predictions?.[idx];
-    if (!pred || !Array.isArray(pred.top_drivers) || pred.top_drivers.length === 0) return [];
-    const drivers  = pred.top_drivers;
+    if (!pred) return [];
+    const drivers = pred.reason_drivers ?? pred.top_drivers ?? [];
+    if (drivers.length === 0) return [];
     const totalAbs = drivers.reduce((s, d) => s + Math.abs(d.shap_value), 0) || 1;
     return drivers
       .map(d => _toContribution(d, totalAbs, pred.activity_code))
       .sort((a, b) => Math.abs(b.value) - Math.abs(a.value));
   }
 
-  // ── Single prediction object → contributions ─────────────────────────
-  function fromActivity(prediction) {
-    if (!prediction || !Array.isArray(prediction.top_drivers)) return [];
-    const drivers  = prediction.top_drivers;
+  // ── Reason drivers for a single prediction object ────────────────────
+  function fromReasonDrivers(prediction) {
+    if (!prediction) return [];
+    const drivers = prediction.reason_drivers ?? prediction.top_drivers ?? [];
+    if (drivers.length === 0) return [];
     const totalAbs = drivers.reduce((s, d) => s + Math.abs(d.shap_value), 0) || 1;
     return drivers
       .map(d => _toContribution(d, totalAbs, prediction.activity_code))
       .sort((a, b) => Math.abs(b.value) - Math.abs(a.value));
   }
 
-  // ── Aggregated claim-level view (mean across activities) ─────────────
-  // Used by chat.js for claim-level summaries only.
+  // ── Backward-compat alias used by chat.js ────────────────────────────
+  const fromActivity = fromReasonDrivers;
+
+  // ── Aggregated claim-level view ──────────────────────────────────────
+  // Mean reason_drivers across denied activities only.
+  // Used by chat.js for claim-level summaries.
   function fromApiResult(result) {
     const predictions = result?.predictions;
     if (!Array.isArray(predictions) || predictions.length === 0) return [];
 
+    // Use denied activities first; fall back to all if none denied
+    const source = predictions.filter(p => p.predicted_denial);
+    const pool   = source.length > 0 ? source : predictions;
+
     const acc = {};
-    for (const pred of predictions) {
-      for (const d of (pred.top_drivers || [])) {
+    for (const pred of pool) {
+      const drivers = pred.reason_drivers ?? pred.top_drivers ?? [];
+      for (const d of drivers) {
         if (!acc[d.feature]) acc[d.feature] = { sum: 0, count: 0, impact: d.impact };
         acc[d.feature].sum   += d.shap_value;
         acc[d.feature].count += 1;
-        if (d.impact === 'increase_risk') acc[d.feature].impact = 'increase_risk';
+        // keep the dominant impact direction
+        if (d.impact === 'increase_reason_probability' || d.impact === 'increase_risk') {
+          acc[d.feature].impact = d.impact;
+        }
       }
     }
 
@@ -201,14 +220,12 @@ const SHAP = (() => {
     return parseFloat(Math.log(p / (1 - p)).toFixed(4));
   }
 
-  // Log-odds for a specific activity (uses denial_probability 0–1)
   function finalLogOddsForActivity(result, idx) {
     const prob = result?.predictions?.[idx]?.denial_probability;
     if (prob == null) return BASE_LOG_ODDS;
     return _probToLogOdds(prob * 100);
   }
 
-  // Claim-level log-odds
   function finalLogOdds(result) {
     return _probToLogOdds(result?.claim_summary?.claim_denial_probability_pct);
   }
@@ -217,7 +234,8 @@ const SHAP = (() => {
 
   return {
     fromActivityIndex,
-    fromActivity,
+    fromReasonDrivers,
+    fromActivity,        // alias → fromReasonDrivers
     fromApiResult,
     finalLogOddsForActivity,
     finalLogOdds,

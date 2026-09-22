@@ -85,7 +85,7 @@ const Interactions = (() => {
    * Main entry point.
    * Called by app.js whenever result / actIdx / depth changes.
    *
-   * @param {object} result   — full API result (predictions[].top_drivers)
+   * @param {object} result   — full API result (predictions[].reason_drivers)
    * @param {number} actIdx   — selected activity index (0-based)
    * @param {number} depth    — 2, 3, or 4
    */
@@ -93,15 +93,27 @@ const Interactions = (() => {
     const pred = result?.predictions?.[actIdx];
     if (!pred) { _showLivePlaceholder(); return; }
 
-    const drivers = (pred.top_drivers || [])
+    // reason_drivers is always returned by main.py for every activity.
+    // For approved activities the denial reason is null but the SHAP
+    // values from the reason model are still valid for interaction analysis.
+    const drivers = (pred.reason_drivers ?? pred.top_drivers ?? [])
       .slice()
       .sort((a, b) => Math.abs(b.shap_value) - Math.abs(a.shap_value))
       .slice(0, 5);                              // always top-5 source pool
 
+    if (drivers.length === 0) {
+      _showLivePlaceholder(
+        `No SHAP drivers returned for Activity #${actIdx + 1} (${pred.activity_code}). ` +
+        `Ensure the backend loaded the reason model correctly.`
+      );
+      return;
+    }
+
     if (drivers.length < depth) {
       _showLivePlaceholder(
-        `Not enough SHAP drivers for ${depth}-way interactions. ` +
-        `This activity returned ${drivers.length} driver(s).`
+        `Only ${drivers.length} SHAP driver(s) available for Activity #${actIdx + 1} — ` +
+        `need at least ${depth} for a ${depth}-way interaction. ` +
+        `Try a shallower depth (1:1) or select a different activity.`
       );
       return;
     }
@@ -221,10 +233,10 @@ const Interactions = (() => {
                   <tr class="${i === 0 ? 'dominant-pair-row' : ''}">
                     <td>${i + 1}</td>
                     <td><span class="feat-label">${p.labelA}</span></td>
-                    <td><span class="shap-pill ${p.impactA === 'increase_risk' ? 'pos' : 'neg'}">
+                    <td><span class="shap-pill ${p.impactA === 'increase_risk' || p.impactA === 'increase_reason_probability' ? 'pos' : 'neg'}">
                       ${p.shapA >= 0 ? '+' : ''}${p.shapA.toFixed(3)}</span></td>
                     <td><span class="feat-label">${p.labelB}</span></td>
-                    <td><span class="shap-pill ${p.impactB === 'increase_risk' ? 'pos' : 'neg'}">
+                    <td><span class="shap-pill ${p.impactB === 'increase_risk' || p.impactB === 'increase_reason_probability' ? 'pos' : 'neg'}">
                       ${p.shapB >= 0 ? '+' : ''}${p.shapB.toFixed(3)}</span></td>
                     <td><strong class="${p.combined >= 0 ? 'text-risk' : 'text-safe'}">
                       ${p.combined >= 0 ? '+' : ''}${p.combined.toFixed(3)}</strong></td>
@@ -327,7 +339,7 @@ const Interactions = (() => {
                   <td>${i + 1}</td>
                   <td><span class="feat-label-triple">${t.label}</span></td>
                   ${t.shaps.map((s, si) => `
-                    <td><span class="shap-pill ${t.impacts[si] === 'increase_risk' ? 'pos' : 'neg'}">
+                    <td><span class="shap-pill ${t.impacts[si] === 'increase_risk' || t.impacts[si] === 'increase_reason_probability' ? 'pos' : 'neg'}">
                       ${s >= 0 ? '+' : ''}${s.toFixed(3)}</span></td>`).join('')}
                   <td><strong class="${t.combined >= 0 ? 'text-risk' : 'text-safe'}">
                     ${t.combined >= 0 ? '+' : ''}${t.combined.toFixed(3)}</strong></td>
@@ -419,7 +431,7 @@ const Interactions = (() => {
             ${top.features.map((f, i) => `
               <div class="quad-factor">
                 <span class="quad-feat-name">${_shortLabel(f)}</span>
-                <span class="shap-pill ${top.impacts[i] === 'increase_risk' ? 'pos' : 'neg'}">
+                <span class="shap-pill ${top.impacts[i] === 'increase_risk' || top.impacts[i] === 'increase_reason_probability' ? 'pos' : 'neg'}">
                   ${top.shaps[i] >= 0 ? '+' : ''}${top.shaps[i].toFixed(3)}
                 </span>
               </div>`).join('')}
@@ -445,7 +457,7 @@ const Interactions = (() => {
                   <td>${i + 1}</td>
                   <td><span class="feat-label-triple">${q.label}</span></td>
                   ${q.shaps.map((s, si) => `
-                    <td><span class="shap-pill ${q.impacts[si] === 'increase_risk' ? 'pos' : 'neg'}">
+                    <td><span class="shap-pill ${q.impacts[si] === 'increase_risk' || q.impacts[si] === 'increase_reason_probability' ? 'pos' : 'neg'}">
                       ${s >= 0 ? '+' : ''}${s.toFixed(3)}</span></td>`).join('')}
                   <td><strong class="${q.combined >= 0 ? 'text-risk' : 'text-safe'}">
                     ${q.combined >= 0 ? '+' : ''}${q.combined.toFixed(3)}</strong></td>
