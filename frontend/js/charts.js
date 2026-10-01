@@ -23,18 +23,18 @@
 
 const Charts = (() => {
 
-  const FONT     = { family: 'Inter, system-ui, sans-serif', size: 12 };
+  const FONT     = { family: 'Inter, system-ui, sans-serif', size: 12, color: '#F0EEFF' };
   const PAPER_BG = 'rgba(0,0,0,0)';
-  const PLOT_BG  = '#F8FAFC';
+  const PLOT_BG  = '#161323';
 
   const COLORS = {
-    high:     '#EF4444',
+    high:     '#F43F5E',
     medium:   '#F59E0B',
     low:      '#10B981',
-    accent:   '#3B82F6',
-    dark:     '#1E293B',
-    muted:    '#94A3B8',
-    gridline: '#E2E8F0',
+    accent:   '#8B5CF6',
+    dark:     '#F0EEFF',
+    muted:    '#A89FC4',
+    gridline: '#2E2A40',
   };
 
   const PLOTLY_CFG = { responsive: true, displayModeBar: false };
@@ -71,20 +71,20 @@ const Charts = (() => {
       gauge: {
         axis: {
           range: [0, 100],
-          tickwidth: 1, tickcolor: '#CBD5E1',
-          tickfont: { size: 10 },
+          tickwidth: 1, tickcolor: '#6B6384',
+          tickfont: { size: 10, color: '#A89FC4' },
           ticksuffix: '%',
         },
-        bar:       { color: COLORS.dark, thickness: 0.28 },
-        bgcolor:   'white',
+        bar:       { color: '#8B5CF6', thickness: 0.28 },
+        bgcolor:   '#1C1928',
         borderwidth: 0,
         steps: [
-          { range: [0,  35],  color: 'rgba(16,185,129,0.12)' },
-          { range: [35, 50],  color: 'rgba(245,158,11,0.12)' },
-          { range: [50, 100], color: 'rgba(239,68,68,0.12)'  },
+          { range: [0,  35],  color: 'rgba(16,185,129,0.15)' },
+          { range: [35, 50],  color: 'rgba(245,158,11,0.15)' },
+          { range: [50, 100], color: 'rgba(244,63,94,0.15)'  },
         ],
         threshold: {
-          line:      { color: COLORS.dark, width: 3 },
+          line:      { color: '#F43F5E', width: 3 },
           thickness: 0.8,
           value:     prob_pct,
         },

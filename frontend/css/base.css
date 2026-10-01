@@ -9,39 +9,42 @@
 }
 
 :root {
-  /* --- Brand palette --- */
-  --color-bg:           #F1F5F9;
-  --color-surface:      #FFFFFF;
-  --color-surface-alt:  #F8FAFC;
-  --color-border:       #E2E8F0;
-  --color-border-light: #F1F5F9;
+  /* --- Brand palette (dark theme — Insight-inspired) --- */
+  --color-bg:           #13111A;
+  --color-surface:      #1C1928;
+  --color-surface-alt:  #221F30;
+  --color-border:       #2E2A40;
+  --color-border-light: #252235;
 
   /* --- Text --- */
-  --color-text-primary:   #0F172A;
-  --color-text-secondary: #475569;
-  --color-text-muted:     #94A3B8;
+  --color-text-primary:   #F0EEFF;
+  --color-text-secondary: #A89FC4;
+  --color-text-muted:     #6B6384;
 
   /* --- risk colours --- */
-  --color-high:        #EF4444;
-  --color-high-bg:     #FEE2E2;
-  --color-high-border: #FECACA;
+  --color-high:        #F43F5E;
+  --color-high-bg:     #2D1120;
+  --color-high-border: #5C1E33;
   --color-medium:      #F59E0B;
-  --color-medium-bg:   #FEF3C7;
-  --color-medium-border:#FDE68A;
+  --color-medium-bg:   #2A1F08;
+  --color-medium-border:#5C4010;
   --color-low:         #10B981;
-  --color-low-bg:      #D1FAE5;
-  --color-low-border:  #A7F3D0;
+  --color-low-bg:      #0A2318;
+  --color-low-border:  #134D30;
 
-  /* --- Accent --- */
-  --color-accent:      #3B82F6;
-  --color-accent-dark: #1D4ED8;
+  /* --- Accent (violet — cohesive with dark purple base) --- */
+  --color-accent:      #8B5CF6;
+  --color-accent-dark: #6D28D9;
+
+  /* --- Chart background (slightly darker than surface) --- */
+  --color-chart-bg:    #161323;
 
   /* --- Sidebar --- */
   --sidebar-width: 320px;
 
   /* --- Shadows --- */
-  --shadow-sm: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.05);
-  --shadow-md: 0 4px 6px -1px rgba(0,0,0,.08), 0 2px 4px -1px rgba(0,0,0,.05);
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.35), 0 1px 2px rgba(0,0,0,.25);
+  --shadow-md: 0 4px 6px -1px rgba(0,0,0,.4), 0 2px 4px -1px rgba(0,0,0,.25);
 
   /* --- Radii --- */
   --radius-sm: 6px;
