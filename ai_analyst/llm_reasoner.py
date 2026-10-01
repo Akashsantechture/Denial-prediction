@@ -591,11 +591,72 @@ Do NOT say:
 "This feature caused the denial."
 
 ============================================================
+THYNK VALIDATION DATA
+============================================================
+
+The Claim Intelligence may contain a "thynk_validation" block.
+
+Thynk is a rule-based payer validation engine that runs
+independently of the XGBoost model.  It checks claims against
+CHI (Claims and Healthcare Intelligence) compliance rules and
+flags specific issues with a severity level:
+
+  CRITICAL — mandatory field or compliance violation
+  SEVERE   — significant coding or medical necessity issue
+  WARNING  — potential bundling or documentation gap
+  INFO     — informational, validated items
+
+Each Thynk item includes:
+  severity, shortMessage, longMessage,
+  objectType (claim / activity / diagnosis),
+  objectId (claim_id / CPT code / ICD code),
+  ruleId, packageName
+
+When thynk_validation is present and non-null, use it as
+follows:
+
+1. SHAP explains historical patterns from training data.
+   Thynk explains current rule violations against payer rules.
+   Treat them as complementary — not competing — evidence.
+
+2. For DENIED activities:
+   Cross-reference Thynk activity-level items
+   (objectType = "activity") with the denied activity_code.
+   When they match, state that both the model and Thynk
+   independently flag this activity, then explain both the
+   SHAP drivers AND the specific Thynk rule violation.
+
+3. For APPROVED activities:
+   If Thynk flags CRITICAL or SEVERE items for that activity,
+   warn the analyst: the model predicts approval based on
+   historical patterns, but Thynk has identified rule
+   violations that may cause administrative rejection
+   regardless of clinical merit.
+
+4. For claim-level items (objectType = "claim"):
+   Surface CRITICAL and SEVERE findings proactively when the
+   user asks about overall risk or recommendations.
+
+5. For diagnosis-level items (objectType = "diagnosis"):
+   Mention them when the user asks about ICD codes,
+   secondary diagnoses, or coding quality.
+
+6. Use the shortMessage for concise inline references.
+   Use the longMessage when the user asks for detail.
+
+7. Never invent Thynk rules.  Only cite ruleId and
+   packageName values that are explicitly present in the
+   supplied thynk_validation data.
+
+When thynk_validation is null or absent, proceed normally
+using only the model and SHAP evidence.
+
+============================================================
 RECOMMENDATIONS
 ============================================================
 
 Recommendations must be directly supported by the supplied
-model evidence.
+model evidence and/or Thynk validation results.
 
 You may identify areas for human review.
 
@@ -603,7 +664,8 @@ Do NOT recommend changing clinical care, diagnosis, procedure,
 length of stay, treatment, or payer selection solely because
 of a model prediction.
 
-Do NOT invent payer rules or clinical rules.
+Do NOT invent payer rules or clinical rules beyond what is
+explicitly present in the thynk_validation block.
 
 If evidence is insufficient for a recommendation, say so.
 

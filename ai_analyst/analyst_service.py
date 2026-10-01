@@ -3,6 +3,7 @@ from typing import Any, Dict
 
 from .session_manager import SessionManager
 from .llm_reasoner import LLMReasoner
+from . import thynk_lookup
 
 
 class AnalystService:
@@ -24,6 +25,36 @@ class AnalystService:
         self,
         claim_intelligence: Dict[str, Any],
     ) -> str:
+
+        # --------------------------------------------------------
+        # Enrich with Thynk validation data (backend-only lookup)
+        # --------------------------------------------------------
+
+        claim_id = (
+            claim_intelligence.get("claim", {}).get("claim_id")
+            or claim_intelligence.get("claim_id")
+        )
+
+        thynk_data = thynk_lookup.find(str(claim_id)) if claim_id else None
+
+        if thynk_data:
+            print(
+                f"[ThynkLookup] Enriching session for claim {claim_id} — "
+                f"{thynk_data['summary']['total']} validation items "
+                f"(CRITICAL={thynk_data['summary']['critical']} "
+                f"SEVERE={thynk_data['summary']['severe']} "
+                f"WARNING={thynk_data['summary']['warning']} "
+                f"INFO={thynk_data['summary']['info']})"
+            )
+            claim_intelligence = dict(claim_intelligence)
+            claim_intelligence["thynk_validation"] = thynk_data
+        else:
+            print(
+                f"[ThynkLookup] No Thynk data for claim {claim_id} — "
+                "session will use model evidence only."
+            )
+            claim_intelligence = dict(claim_intelligence)
+            claim_intelligence["thynk_validation"] = None
 
         return self.session_manager.create_session(
             claim_intelligence

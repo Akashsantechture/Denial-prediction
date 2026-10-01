@@ -352,6 +352,7 @@
 .chat-messages {
   flex: 1;
   overflow-y: auto;
+  overflow-x: hidden;
   padding: .75rem 1rem;
   display: flex;
   flex-direction: column;
@@ -365,23 +366,38 @@
   border-radius: var(--radius-md);
   font-size: .8rem;
   line-height: 1.5;
+  /* Prevent long unbroken strings (ruleIds, codes) from overflowing */
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  min-width: 0;
+  box-sizing: border-box;
 }
 .chat-bubble.assistant {
   background: var(--color-surface-alt);
   border: 1px solid var(--color-border);
   align-self: flex-start;
   border-bottom-left-radius: 2px;
+  /* Constrain to parent width so bubble never escapes the drawer */
+  width: fit-content;
+  max-width: min(92%, 100%);
 }
 .chat-bubble.user {
   background: var(--color-accent);
   color: #fff;
   align-self: flex-end;
   border-bottom-right-radius: 2px;
+  width: fit-content;
+  max-width: min(92%, 100%);
 }
 .chat-bubble p { margin-bottom: .3rem; color: inherit; }
 .chat-bubble p:last-child { margin-bottom: 0; }
 .chat-bubble strong { font-weight: 700; }
-.chat-bubble code { background: rgba(0,0,0,.07); }
+.chat-bubble code {
+  background: rgba(0,0,0,.07);
+  /* Allow code tokens to wrap rather than stretch the bubble */
+  word-break: break-all;
+  white-space: normal;
+}
 
 .chat-idle {
   padding: 1rem 1.25rem;

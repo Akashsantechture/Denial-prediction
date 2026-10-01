@@ -1,7 +1,7 @@
 {
   "claim_id": "100036",
   "patient_age": 31,
-  "gender": "Male",
+  "gender": "Male",                                                       1
   "nationality": "EMIRATI",
   "encounter_type": "OP",
   "length_of_stay": 0,
@@ -36,7 +36,7 @@ predicted:eligibility
   "claim_id": "100063",
   "patient_age": 26,
   "gender": "Male",
-  "nationality": "EMIRATI",
+  "nationality": "EMIRATI",                                                2
   "encounter_type": "OP",
   "length_of_stay": 0,
   "claim_gross": 250.38,
@@ -72,7 +72,7 @@ prdicted:eligibility
   "nationality": "EMIRATI",
   "encounter_type": "OP",
   "length_of_stay": 0,
-  "claim_gross": 209.72,
+  "claim_gross": 209.72,                                                   3
   "claim_net": 209.72,
   "clinician_profession": "General Surgery",
   "clinician_category": "General Surgery",
@@ -113,7 +113,7 @@ predicted :coding
   "claim_id": "100039",
   "patient_age": 18,
   "gender": "Male",
-  "nationality": "EMIRATI",
+  "nationality": "EMIRATI",                                                       4
   "encounter_type": "OP",
   "length_of_stay": 0,
   "claim_gross": 450.0,
@@ -146,7 +146,7 @@ predicted:medical necessacity
   "claim_id": "310598",
   "patient_age": 67,
   "gender": "Female",
-  "nationality": "EMIRATI",
+  "nationality": "EMIRATI",                                                       5
   "encounter_type": "OP",
   "length_of_stay": 0,
   "claim_gross": 442.0,
@@ -204,7 +204,7 @@ prdicted:documentation,documentation,documentation
   "nationality": "JORDANIAN",
   "encounter_type": "OP",
   "length_of_stay": 0,
-  "claim_gross": 604.8,
+  "claim_gross": 604.8,                                                            6
   "claim_net": 604.8,
   "clinician_profession": "FAMILY/GENERAL PRACTICE",
   "clinician_category": "General Medical Practice",
@@ -412,7 +412,7 @@ pred: timely filling,approved, medical_necessacity,medical_necessacity,medical_n
   "gender": "Male",
   "nationality": "EMIRATI",
   "encounter_type": "OP",
-  "length_of_stay": 0,
+  "length_of_stay": 0,                                                        7
   "claim_gross": 1578.0,
   "claim_net": 1420.2,
   "clinician_profession": "PSYCHIATRY",
