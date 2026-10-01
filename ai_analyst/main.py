@@ -65,7 +65,7 @@ async def lifespan(app: FastAPI):
             llm_reasoner=llm_reasoner,
         )
 
-        print("✅ AI Analyst initialized successfully.")
+        print(" AI Analyst initialized successfully.")
 
     except Exception as exc:
 

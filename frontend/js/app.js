@@ -721,9 +721,9 @@
         const flag = pred.predicted_denial ? ' ⚠' : ' ✓';
         return `<option value="${idx}">#${idx + 1} · ${pred.activity_code} · ${pct}%${flag}</option>`;
       }).join('');
-      // Default to highest-risk activity
-      const topIdx = [...preds]
-        .map((p, i) => ({ p, i }))
+      // Default to highest-risk DENIED activity; fall back to highest-risk overall
+      const deniedPreds = preds.map((p, i) => ({ p, i })).filter(x => x.p.predicted_denial);
+      const topIdx = (deniedPreds.length > 0 ? deniedPreds : preds.map((p, i) => ({ p, i })))
         .sort((a, b) => b.p.denial_probability - a.p.denial_probability)[0]?.i ?? 0;
       sel.value = String(topIdx);
       _intActIdx = topIdx;

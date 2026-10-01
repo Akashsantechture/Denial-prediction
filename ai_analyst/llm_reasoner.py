@@ -482,26 +482,20 @@
 import os
 import json
 from typing import Any, Dict, List
-
-from dotenv import load_dotenv
-from google import genai
-from google.auth import default
-
-
-import os
 from pathlib import Path
 
 from dotenv import load_dotenv
+from google import genai
+from google.genai import types
 
+
+# ============================================================
+# LOAD ENVIRONMENT
+# ============================================================
 
 BASE_DIR = Path(__file__).resolve().parent
+load_dotenv(dotenv_path=BASE_DIR / ".env", override=True)
 
-ENV_FILE = BASE_DIR / ".env"
-
-load_dotenv(
-    dotenv_path=ENV_FILE,
-    override=True,
-)
 
 SYSTEM_PROMPT = """
 You are an AI Healthcare Claims Analyst operating as a
@@ -605,11 +599,6 @@ model evidence.
 
 You may identify areas for human review.
 
-For example:
-
-"Review the claim amount because it is one of the strongest
-positive SHAP contributors."
-
 Do NOT recommend changing clinical care, diagnosis, procedure,
 length of stay, treatment, or payer selection solely because
 of a model prediction.
@@ -626,35 +615,8 @@ The user may ask follow-up questions about the same claim.
 
 Use the supplied conversation history to understand context.
 
-If the user asks:
-
-"Why is this high risk?"
-
-Explain the strongest available risk-increasing drivers.
-
-If the user asks:
-
-"What is reducing the risk?"
-
-Explain the strongest negative SHAP contributors.
-
-If the user asks:
-
-"How do CPT and ICD interact?"
-
-Only explain the supplied CPT/ICD interaction evidence.
-
 If interaction evidence is not supplied, say that it is not
 currently available.
-
-If the user asks:
-
-"How can I overcome the risk?"
-
-Do NOT invent corrective actions.
-
-Instead identify the model-driven areas that should be reviewed
-and clearly distinguish model evidence from operational action.
 
 ============================================================
 OUTPUT STYLE
@@ -676,71 +638,37 @@ class LLMReasoner:
 
     def __init__(self):
 
-        self.location = os.getenv(
-            "GOOGLE_CLOUD_LOCATION",
-            "us-central1"
-        )
+        # --------------------------------------------------------
+        # Load Gemini API key from environment
+        # --------------------------------------------------------
 
-        self.model = os.getenv(
+        api_key = os.getenv("GEMINI_API")
+
+        if not api_key:
+            raise RuntimeError(
+                "GEMINI_API is not set in ai_analyst/.env. "
+                "Add: GEMINI_API=your_api_key"
+            )
+
+        self.model_name = os.getenv(
             "GEMINI_MODEL",
             "gemini-2.5-flash"
         )
 
-        self.project_id = os.getenv(
-            "GOOGLE_CLOUD_PROJECT"
-        )
-
-        if not self.project_id:
-            raise RuntimeError(
-                "GOOGLE_CLOUD_PROJECT is not configured."
-            )
-
         # --------------------------------------------------------
-        # Load Google Application Default Credentials
+        # Create Gemini client using API key (no Vertex AI)
         # --------------------------------------------------------
 
         try:
-
-            credentials, detected_project = default(
-                scopes=[
-                    "https://www.googleapis.com/auth/cloud-platform"
-                ]
-            )
-
+            self.client = genai.Client(api_key=api_key)
         except Exception as exc:
-
-            raise RuntimeError(
-                "Google Cloud authentication failed: "
-                f"{exc}"
-            ) from exc
-
-        # Use the explicitly configured project when available.
-        if not self.project_id:
-            self.project_id = detected_project
-
-        # --------------------------------------------------------
-        # Create Vertex AI Gemini client
-        # --------------------------------------------------------
-
-        try:
-
-            self.client = genai.Client(
-                vertexai=True,
-                project=self.project_id,
-                location=self.location,
-                credentials=credentials,
-            )
-
-        except Exception as exc:
-
             raise RuntimeError(
                 f"Failed to initialize Gemini client: {exc}"
             ) from exc
 
         print("✅ Gemini AI Analyst configured successfully.")
-        print(f"   Project : {self.project_id}")
-        print(f"   Location: {self.location}")
-        print(f"   Model   : {self.model}")
+        print(f"   Model   : {self.model_name}")
+        print(f"   Auth    : API key (GEMINI_API)")
 
     # ============================================================
     # BUILD PROMPT
@@ -836,8 +764,6 @@ Distinguish clearly between:
         user_message: str,
     ) -> str:
 
-        print("\n" + "=" * 80)
- 
         prompt = self.build_prompt(
             claim_intelligence=claim_intelligence,
             conversation=conversation,
@@ -847,27 +773,20 @@ Distinguish clearly between:
         try:
 
             response = self.client.models.generate_content(
-                model=self.model,
+                model=self.model_name,
                 contents=prompt,
-                config={
-                    "system_instruction": SYSTEM_PROMPT,
-                    "temperature": 0.1,
-                },
+                config=types.GenerateContentConfig(
+                    system_instruction=SYSTEM_PROMPT,
+                    temperature=0.1,
+                ),
             )
 
-            if not response:
-                raise RuntimeError(
-                    "Gemini returned no response."
-                )
-
-            answer = response.text
-
-            if not answer:
+            if not response or not response.text:
                 raise RuntimeError(
                     "Gemini returned an empty response."
                 )
 
-            return answer.strip()
+            return response.text.strip()
 
         except Exception as exc:
 

@@ -93,13 +93,49 @@ const Interactions = (() => {
     const pred = result?.predictions?.[actIdx];
     if (!pred) { _showLivePlaceholder(); return; }
 
-    // reason_drivers is always returned by main.py for every activity.
-    // For approved activities the denial reason is null but the SHAP
-    // values from the reason model are still valid for interaction analysis.
+    // Approved activity — reason model SHAP values exist but belong to
+    // a suppressed reason class and carry no meaningful denial signal.
+    // Show the same approved message pattern as the SHAP tab.
+    if (!pred.predicted_denial) {
+      const header  = document.getElementById('live-interaction-header');
+      const content = document.getElementById('live-depth-content');
+      if (header) {
+        header.className = 'live-interaction-header low';
+        header.innerHTML = `
+          <div class="live-header-left">
+            <span class="live-badge" style="background:var(--color-low);">✓ APPROVED</span>
+            <span class="live-act-label">
+              Activity #${actIdx + 1} · <code>${pred.activity_code}</code> ·
+              ${(pred.denial_probability * 100).toFixed(1)}% denial risk
+            </span>
+          </div>
+          <div class="live-header-right">
+            <span style="font-size:.8rem;color:var(--color-text-muted);">
+              No interaction analysis — activity predicted approved
+            </span>
+          </div>`;
+      }
+      if (content) {
+        content.innerHTML = `
+          <div class="shap-reason-approved-msg" style="padding:2.5rem 1rem;">
+            <span class="approved-icon">✓</span>
+            <div>
+              <strong>Activity #${actIdx + 1} (${pred.activity_code}) is predicted to be approved.</strong><br>
+              <span style="font-size:.8rem;color:var(--color-text-muted);">
+                Interaction analysis is only meaningful for denied activities where a denial
+                reason has been predicted. Select a denied activity from the selector above.
+              </span>
+            </div>
+          </div>`;
+      }
+      return;
+    }
+
+    // Denied activity — use reason_drivers from the reason model
     const drivers = (pred.reason_drivers ?? pred.top_drivers ?? [])
       .slice()
       .sort((a, b) => Math.abs(b.shap_value) - Math.abs(a.shap_value))
-      .slice(0, 5);                              // always top-5 source pool
+      .slice(0, 5);
 
     if (drivers.length === 0) {
       _showLivePlaceholder(

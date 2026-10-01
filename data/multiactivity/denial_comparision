@@ -1,0 +1,30 @@
+{
+  "claim_id": "100036",
+  "patient_age": 31,
+  "gender": "Male",
+  "nationality": "EMIRATI",
+  "encounter_type": "OP",
+  "length_of_stay": 0,
+  "claim_gross": 209.72,
+  "claim_net": 209.72,
+  "clinician_profession": "Family Medicine",
+  "clinician_category": "Family Medicine",
+  "facility_type": "Hospital",
+  "payer_classification": "Insurance",
+  "primary_diagnosis_code": "Z02.9",
+  "activities": [
+    {
+      "activity_code": "99202",
+      "activity_quantity": 1.0,
+      "activity_gross": 209.72,
+      "diagnoses": [
+        {
+          "diagnosis_code": "Z02.9",
+          "diagnosis_type": "Principal"
+        }
+      ]
+    }
+  ]
+}
+
+or

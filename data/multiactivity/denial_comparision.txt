@@ -1,0 +1,440 @@
+{
+  "claim_id": "100036",
+  "patient_age": 31,
+  "gender": "Male",
+  "nationality": "EMIRATI",
+  "encounter_type": "OP",
+  "length_of_stay": 0,
+  "claim_gross": 209.72,
+  "claim_net": 209.72,
+  "clinician_profession": "Family Medicine",
+  "clinician_category": "Family Medicine",
+  "facility_type": "Hospital",
+  "payer_classification": "Insurance",
+  "primary_diagnosis_code": "Z02.9",
+  "activities": [
+    {
+      "activity_code": "99202",
+      "activity_quantity": 1.0,
+      "activity_gross": 209.72,
+      "diagnoses": [
+        {
+          "diagnosis_code": "Z02.9",
+          "diagnosis_type": "Principal"
+        }
+      ]
+    }
+  ]
+}
+
+actual: eligibility
+predicted:eligibility
+
+
+
+{
+  "claim_id": "100063",
+  "patient_age": 26,
+  "gender": "Male",
+  "nationality": "EMIRATI",
+  "encounter_type": "OP",
+  "length_of_stay": 0,
+  "claim_gross": 250.38,
+  "claim_net": 250.38,
+  "clinician_profession": "Family Medicine",
+  "clinician_category": "Family Medicine",
+  "facility_type": "Hospital",
+  "payer_classification": "Insurance",
+  "primary_diagnosis_code": "Z02.9",
+  "activities": [
+    {
+      "activity_code": "99203",
+      "activity_quantity": 1.0,
+      "activity_gross": 303.88,
+      "diagnoses": [
+        {
+          "diagnosis_code": "Z02.9",
+          "diagnosis_type": "Principal"
+        }
+      ]
+    }
+  ]
+}
+
+actual:medical necssacity
+prdicted:eligibility
+
+
+{
+  "claim_id": "100021",
+  "patient_age": 20,
+  "gender": "Male",
+  "nationality": "EMIRATI",
+  "encounter_type": "OP",
+  "length_of_stay": 0,
+  "claim_gross": 209.72,
+  "claim_net": 209.72,
+  "clinician_profession": "General Surgery",
+  "clinician_category": "General Surgery",
+  "facility_type": "Hospital",
+  "payer_classification": "Insurance",
+  "primary_diagnosis_code": "V86.06XS",
+  "activities": [
+    {
+      "activity_code": "99202",
+      "activity_quantity": 1.0,
+      "activity_gross": 209.72,
+      "diagnoses": [
+        {
+          "diagnosis_code": "V86.06XS",
+          "diagnosis_type": "Principal"
+        },
+        {
+          "diagnosis_code": "R10.9",
+          "diagnosis_type": "Secondary"
+        },
+        {
+          "diagnosis_code": "R23.3",
+          "diagnosis_type": "Secondary"
+        },
+        {
+          "diagnosis_code": "Z02.9",
+          "diagnosis_type": "Secondary"
+        }
+      ]
+    }
+  ]
+}
+
+actual:coding
+predicted :coding
+
+{
+  "claim_id": "100039",
+  "patient_age": 18,
+  "gender": "Male",
+  "nationality": "EMIRATI",
+  "encounter_type": "OP",
+  "length_of_stay": 0,
+  "claim_gross": 450.0,
+  "claim_net": 450.0,
+  "clinician_profession": "Psychiatry",
+  "clinician_category": "Psychiatry",
+  "facility_type": "Hospital",
+  "payer_classification": "Insurance",
+  "primary_diagnosis_code": "Z02.3",
+  "activities": [
+    {
+      "activity_code": "90792",
+      "activity_quantity": 1.0,
+      "activity_gross": 450.0,
+      "diagnoses": [
+        {
+          "diagnosis_code": "Z02.3",
+          "diagnosis_type": "Principal"
+        }
+      ]
+    }
+  ]
+}
+
+actual:OTHER | PRCE
+predicted:medical necessacity
+
+
+{
+  "claim_id": "310598",
+  "patient_age": 67,
+  "gender": "Female",
+  "nationality": "EMIRATI",
+  "encounter_type": "OP",
+  "length_of_stay": 0,
+  "claim_gross": 442.0,
+  "claim_net": 397.8,
+  "clinician_profession": "ALLIED HEALTH",
+  "clinician_category": "Physiotherapy And Rehabilitation",
+  "facility_type": "Hospital",
+  "payer_classification": "Insurance",
+  "primary_diagnosis_code": "I69.359",
+  "activities": [
+    {
+      "activity_code": "97110",
+      "activity_quantity": 1.0,
+      "activity_gross": 116.0,
+      "diagnoses": [
+        {
+          "diagnosis_code": "I69.359",
+          "diagnosis_type": "Principal"
+        }
+      ]
+    },
+    {
+      "activity_code": "97140",
+      "activity_quantity": 1.0,
+      "activity_gross": 200.0,
+      "diagnoses": [
+        {
+          "diagnosis_code": "I69.359",
+          "diagnosis_type": "Principal"
+        }
+      ]
+    },
+    {
+      "activity_code": "97530",
+      "activity_quantity": 1.0,
+      "activity_gross": 126.0,
+      "diagnoses": [
+        {
+          "diagnosis_code": "I69.359",
+          "diagnosis_type": "Principal"
+        }
+      ]
+    }
+  ]
+}
+
+actual:medical necessacity, medical_necessacity,documentation
+prdicted:documentation,documentation,documentation
+
+
+{
+  "claim_id": "105210",
+  "patient_age": 35,
+  "gender": "Female",
+  "nationality": "JORDANIAN",
+  "encounter_type": "OP",
+  "length_of_stay": 0,
+  "claim_gross": 604.8,
+  "claim_net": 604.8,
+  "clinician_profession": "FAMILY/GENERAL PRACTICE",
+  "clinician_category": "General Medical Practice",
+  "facility_type": "Hospital",
+  "payer_classification": "Insurance",
+  "primary_diagnosis_code": "O99.013",
+  "activities": [
+    {
+      "activity_code": "84443",
+      "activity_quantity": 1.0,
+      "activity_gross": 168.0,
+      "diagnoses": [
+        {
+          "diagnosis_code": "O99.013",
+          "diagnosis_type": "Principal"
+        },
+        {
+          "diagnosis_code": "D64.9",
+          "diagnosis_type": "Secondary"
+        },
+        {
+          "diagnosis_code": "E83.42",
+          "diagnosis_type": "Secondary"
+        },
+        {
+          "diagnosis_code": "O26.899",
+          "diagnosis_type": "Secondary"
+        },
+        {
+          "diagnosis_code": "R00.2",
+          "diagnosis_type": "Secondary"
+        },
+        {
+          "diagnosis_code": "Z3A.33",
+          "diagnosis_type": "Secondary"
+        }
+      ]
+    },
+    {
+      "activity_code": "85025",
+      "activity_quantity": 1.0,
+      "activity_gross": 78.4,
+      "diagnoses": [
+        {
+          "diagnosis_code": "O99.013",
+          "diagnosis_type": "Principal"
+        },
+        {
+          "diagnosis_code": "D64.9",
+          "diagnosis_type": "Secondary"
+        },
+        {
+          "diagnosis_code": "E83.42",
+          "diagnosis_type": "Secondary"
+        },
+        {
+          "diagnosis_code": "O26.899",
+          "diagnosis_type": "Secondary"
+        },
+        {
+          "diagnosis_code": "R00.2",
+          "diagnosis_type": "Secondary"
+        },
+        {
+          "diagnosis_code": "Z3A.33",
+          "diagnosis_type": "Secondary"
+        }
+      ]
+    },
+    {
+      "activity_code": "83550",
+      "activity_quantity": 1.0,
+      "activity_gross": 89.6,
+      "diagnoses": [
+        {
+          "diagnosis_code": "O99.013",
+          "diagnosis_type": "Principal"
+        },
+        {
+          "diagnosis_code": "D64.9",
+          "diagnosis_type": "Secondary"
+        },
+        {
+          "diagnosis_code": "E83.42",
+          "diagnosis_type": "Secondary"
+        },
+        {
+          "diagnosis_code": "O26.899",
+          "diagnosis_type": "Secondary"
+        },
+        {
+          "diagnosis_code": "R00.2",
+          "diagnosis_type": "Secondary"
+        },
+        {
+          "diagnosis_code": "Z3A.33",
+          "diagnosis_type": "Secondary"
+        }
+      ]
+    },
+    {
+      "activity_code": "82728",
+      "activity_quantity": 1.0,
+      "activity_gross": 137.2,
+      "diagnoses": [
+        {
+          "diagnosis_code": "O99.013",
+          "diagnosis_type": "Principal"
+        },
+        {
+          "diagnosis_code": "D64.9",
+          "diagnosis_type": "Secondary"
+        },
+        {
+          "diagnosis_code": "E83.42",
+          "diagnosis_type": "Secondary"
+        },
+        {
+          "diagnosis_code": "O26.899",
+          "diagnosis_type": "Secondary"
+        },
+        {
+          "diagnosis_code": "R00.2",
+          "diagnosis_type": "Secondary"
+        },
+        {
+          "diagnosis_code": "Z3A.33",
+          "diagnosis_type": "Secondary"
+        }
+      ]
+    },
+    {
+      "activity_code": "83735",
+      "activity_quantity": 1.0,
+      "activity_gross": 67.2,
+      "diagnoses": [
+        {
+          "diagnosis_code": "O99.013",
+          "diagnosis_type": "Principal"
+        },
+        {
+          "diagnosis_code": "D64.9",
+          "diagnosis_type": "Secondary"
+        },
+        {
+          "diagnosis_code": "E83.42",
+          "diagnosis_type": "Secondary"
+        },
+        {
+          "diagnosis_code": "O26.899",
+          "diagnosis_type": "Secondary"
+        },
+        {
+          "diagnosis_code": "R00.2",
+          "diagnosis_type": "Secondary"
+        },
+        {
+          "diagnosis_code": "Z3A.33",
+          "diagnosis_type": "Secondary"
+        }
+      ]
+    },
+    {
+      "activity_code": "83540",
+      "activity_quantity": 1.0,
+      "activity_gross": 64.4,
+      "diagnoses": [
+        {
+          "diagnosis_code": "O99.013",
+          "diagnosis_type": "Principal"
+        },
+        {
+          "diagnosis_code": "D64.9",
+          "diagnosis_type": "Secondary"
+        },
+        {
+          "diagnosis_code": "E83.42",
+          "diagnosis_type": "Secondary"
+        },
+        {
+          "diagnosis_code": "O26.899",
+          "diagnosis_type": "Secondary"
+        },
+        {
+          "diagnosis_code": "R00.2",
+          "diagnosis_type": "Secondary"
+        },
+        {
+          "diagnosis_code": "Z3A.33",
+          "diagnosis_type": "Secondary"
+        }
+      ]
+    }
+  ]
+}
+
+actual: approved,approved,approve,approved,Medical necessacity,approved
+pred: timely filling,approved, medical_necessacity,medical_necessacity,medical_necessacity,approved
+
+
+
+{
+  "claim_id": "100007",
+  "patient_age": 34,
+  "gender": "Male",
+  "nationality": "EMIRATI",
+  "encounter_type": "OP",
+  "length_of_stay": 0,
+  "claim_gross": 1578.0,
+  "claim_net": 1420.2,
+  "clinician_profession": "PSYCHIATRY",
+  "clinician_category": "Psychiatry",
+  "facility_type": "Hospital",
+  "payer_classification": "Insurance",
+  "primary_diagnosis_code": "F33.1",
+  "activities": [
+    {
+      "activity_code": "90837",
+      "activity_quantity": 1.0,
+      "activity_gross": 1578.0,
+      "diagnoses": [
+        {
+          "diagnosis_code": "F33.1",
+          "diagnosis_type": "Principal"
+        }
+      ]
+    }
+  ]
+}
+
+actual: documentation
+pred: timely_filling
+
