@@ -22,8 +22,10 @@ class AnalystSessionResponse(BaseModel):
 class AnalystChatRequest(BaseModel):
     session_id: str
     message: str
+    use_rag: bool = True   # frontend toggle — False skips RAG retrieval for this turn
 
 
 class AnalystChatResponse(BaseModel):
     session_id: str
     answer: str
+    rag_used: bool = False   # True when RAG retrieved rules for this response

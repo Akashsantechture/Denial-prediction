@@ -124,9 +124,10 @@
         badge.className = 'health-badge loading';
         const missing = [
           !h.encoder_loaded && 'Encoder',
-          !h.shap_loaded    && 'SHAP',
         ].filter(Boolean).join(', ');
-        badge.innerHTML = `<span class="health-dot"></span> Backend online · Model loaded · ${missing} NOT loaded`;
+        badge.innerHTML = missing
+          ? `<span class="health-dot"></span> Backend online · Model loaded · ${missing} NOT loaded`
+          : `<span class="health-dot"></span> Backend online · Model loaded`;
       } else if (h.status === 'healthy') {
         badge.className = 'health-badge loading';
         badge.innerHTML = '<span class="health-dot"></span> Backend online · Model NOT loaded';

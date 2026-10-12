@@ -269,16 +269,16 @@ const AnalystAPI = (() => {
     }
   }
 
-  async function chat(sessionId, message) {
+  async function chat(sessionId, message, useRag = true) {
     try {
       const response = await _fetchTimeout(CHAT_URL, {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ session_id: sessionId, message }),
+        body:    JSON.stringify({ session_id: sessionId, message, use_rag: useRag }),
       });
       if (response.status === 200) {
         const data = await response.json();
-        return { ok: true, answer: data.answer };
+        return { ok: true, answer: data.answer, rag_used: data.rag_used ?? false };
       }
       const body = await response.json().catch(() => ({}));
       return { ok: false, detail: body.detail ?? `HTTP ${response.status}` };

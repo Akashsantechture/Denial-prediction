@@ -741,6 +741,7 @@ class LLMReasoner:
         claim_intelligence: Dict[str, Any],
         conversation: List[Dict[str, str]],
         user_message: str,
+        retrieved_rules: str = None,
     ) -> str:
 
         evidence_json = json.dumps(
@@ -754,6 +755,17 @@ class LLMReasoner:
             indent=2,
             default=str,
         )
+
+        # --------------------------------------------------------
+        # RAG block — only included when rules were retrieved
+        # --------------------------------------------------------
+
+        rag_section = ""
+        if retrieved_rules:
+            rag_section = f"""
+
+{retrieved_rules}
+"""
 
         return f"""
 ============================================================
@@ -769,7 +781,7 @@ You may ONLY use information contained in this section
 when discussing the claim.
 
 {evidence_json}
-
+{rag_section}
 
 ============================================================
 CONVERSATION HISTORY
@@ -792,6 +804,24 @@ TASK
 Answer the user's question using the claim intelligence
 and conversation history.
 
+When RETRIEVED THYNK RULEBOOK CONTEXT is present above,
+use it to provide detailed rule-level explanations and
+specific fix recommendations. Only cite rule IDs that
+appear in the retrieved context.
+
+If RETRIEVED THYNK RULEBOOK CONTEXT is present and was
+used in your answer, begin your response with a single
+short line such as:
+  "**[CHI Rulebook]** Based on CHI rule <ruleId>..."
+or
+  "**[Knowledge Base]** Per CHI guidelines..."
+so the analyst knows the response draws from the rule
+knowledge base, not just the model prediction.
+
+If no RETRIEVED THYNK RULEBOOK CONTEXT is present, do NOT
+add any such prefix — just answer normally from the claim
+intelligence.
+
 IMPORTANT:
 
 Do not invent missing information.
@@ -812,7 +842,9 @@ Distinguish clearly between:
 1. Claim facts
 2. Model prediction
 3. SHAP/model evidence
-4. Analyst review recommendations
+4. Thynk rule violations (from thynk_validation block)
+5. Rulebook context (from retrieved rules)
+6. Analyst review recommendations
 """
 
     # ============================================================
@@ -824,12 +856,14 @@ Distinguish clearly between:
         claim_intelligence: Dict[str, Any],
         conversation: List[Dict[str, str]],
         user_message: str,
+        retrieved_rules: str = None,
     ) -> str:
 
         prompt = self.build_prompt(
             claim_intelligence=claim_intelligence,
             conversation=conversation,
             user_message=user_message,
+            retrieved_rules=retrieved_rules,
         )
 
         try:

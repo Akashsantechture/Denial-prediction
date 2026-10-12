@@ -401,6 +401,22 @@ prdicted:documentation,documentation,documentation
   ]
 }
 
+
+
+RAG QUESTIONS
+
+Queries on THIS claim that would trigger RAG:
+
+"why does maternity diagnosis need a grid flag?" → CHI_MATERNITY_001_Grid_Flag
+"how do I fix D64.9 anemia code?" → CHI_CODING_001_Unspecified_Codes
+"explain the lab bundling issue for 82728" → CHI_BUNDLING_002_Lab_Panel
+"what is the appeal process?" → CHI_GENERAL_001_Denial_Appeal_Process
+"does 83735 need prior auth?" → CHI_GENERAL_002_Prior_Authorization
+"how do I fix the encounter status?" → CHI_MDS_001_Encounter_Status
+"what is medical necessity for 83735?" → CHI_MED_NEC_001_Diagnosis_Procedure_Mismatch
+
+
+
 actual: approved,approved,approve,approved,Medical necessacity,approved
 pred: timely filling,approved, medical_necessacity,medical_necessacity,medical_necessacity,approved
 

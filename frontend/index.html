@@ -14,7 +14,7 @@
   <script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
 
   <!-- Styles -->
-  <link rel="stylesheet" href="css/base.css?v=5" />
+  <link rel="stylesheet" href="css/base.css?v=6" />
   <link rel="stylesheet" href="css/layout.css?v=5" />
   <link rel="stylesheet" href="css/components.css?v=6" />
 
@@ -43,11 +43,27 @@
       flex-shrink: 0;
     }
     .top-nav-logo img {
-      height: 38px;
+      height: 26px;
       width: auto;
       display: block;
-      filter: brightness(0) invert(1);
-      opacity: 0.92;
+    }
+    .top-nav-logo-sep {
+      color: var(--color-border);
+      font-size: .85rem;
+      font-weight: 300;
+      margin: 0 .6rem;
+      user-select: none;
+      opacity: 0.6;
+    }
+    .top-nav-insights-logo {
+      height: 34px !important;
+      width: auto;
+      display: block;
+      opacity: 0.95;
+      background: linear-gradient(135deg, #6d28d9, #7c3aed);
+      padding: 5px 9px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(109, 40, 217, 0.4);
     }
 
     /* Divider between logo and tabs */
@@ -559,8 +575,43 @@
     }
 
     /* Chat is now a floating panel triggered from nav */
+    /* ── Theme toggle button ─────────────────────────────────── */
+    .theme-toggle-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 1px solid var(--color-border);
+      background: var(--color-surface-alt);
+      cursor: pointer;
+      transition: background 150ms ease, border-color 150ms ease,
+                  transform 150ms ease;
+      flex-shrink: 0;
+      margin-right: .25rem;
+    }
+    .theme-toggle-btn:hover {
+      background: var(--color-border);
+      border-color: var(--color-accent);
+      transform: rotate(20deg);
+    }
+    .theme-toggle-icon {
+      font-size: .95rem;
+      line-height: 1;
+      display: block;
+      transition: transform 300ms ease;
+    }
+    [data-theme="light"] .theme-toggle-btn {
+      background: #EDE9FE;
+      border-color: #A78BFA;
+    }
+    [data-theme="light"] .theme-toggle-btn:hover {
+      background: #DDD6FE;
+    }
+
+    /* ── Chat float button ───────────────────────────────────── */
     .chat-float-btn {
-      /* Violet accent */
       background: linear-gradient(135deg, #8B5CF6 0%, #6D28D9 100%);
       color: #fff;
       border: none;
@@ -622,6 +673,66 @@
       padding: .2rem .4rem;
     }
     .chat-close-btn:hover { color: var(--color-text-primary); }
+
+    /* RAG rule lookup toggle */
+    .rag-toggle-wrap {
+      display: flex;
+      align-items: center;
+      gap: .45rem;
+      cursor: pointer;
+      user-select: none;
+    }
+    .rag-toggle-label {
+      font-size: .68rem;
+      color: var(--color-text-muted);
+      white-space: nowrap;
+      transition: color 150ms;
+    }
+    .rag-toggle-wrap.rag-active .rag-toggle-label {
+      color: #a78bfa;
+    }
+    /* The switch track */
+    .rag-switch {
+      position: relative;
+      width: 32px;
+      height: 17px;
+      flex-shrink: 0;
+    }
+    .rag-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+      position: absolute;
+    }
+    .rag-slider {
+      position: absolute;
+      inset: 0;
+      background: var(--color-border);
+      border-radius: 17px;
+      transition: background 200ms ease;
+      cursor: pointer;
+    }
+    .rag-slider::before {
+      content: '';
+      position: absolute;
+      width: 11px;
+      height: 11px;
+      left: 3px;
+      top: 3px;
+      background: #fff;
+      border-radius: 50%;
+      transition: transform 200ms ease;
+    }
+    .rag-switch input:checked + .rag-slider {
+      background: linear-gradient(135deg, #6d28d9, #7c3aed);
+    }
+    .rag-switch input:checked + .rag-slider::before {
+      transform: translateX(15px);
+    }
+    .rag-switch.rag-loading .rag-slider {
+      opacity: .5;
+      cursor: not-allowed;
+    }
   </style>
 </head>
 
@@ -643,6 +754,8 @@
   <!-- Santechture logo -->
   <a class="top-nav-logo" href="#">
     <img src="assets/Logo + Slogan.png" alt="Santechture — Smart Solutions. Proven Results." />
+    <span class="top-nav-logo-sep">×</span>
+    <img src="assets/insights.png" alt="Insights" class="top-nav-insights-logo" />
   </a>
 
   <div class="top-nav-divider"></div>
@@ -670,6 +783,11 @@
   <div id="top-health-badge" class="top-nav-health loading">
     <span class="health-dot"></span> Checking…
   </div>
+
+  <!-- Dark / Light mode toggle -->
+  <button id="theme-toggle-btn" class="theme-toggle-btn" title="Toggle dark / light mode" aria-label="Toggle theme">
+    <span id="theme-toggle-icon" class="theme-toggle-icon">☀️</span>
+  </button>
 
   <!-- AI Chat toggle -->
   <button class="chat-float-btn" id="chat-toggle-btn">
@@ -1297,10 +1415,22 @@
     <div class="chat-drawer-title">
       <img src="assets/bot.png" alt="" style="width:20px;height:20px;object-fit:contain;"> AI Claims Analyst
     </div>
-    <button class="chat-close-btn" id="chat-close-btn" title="Close">✕</button>
+    <div style="display:flex;align-items:center;gap:.5rem;">
+      <label class="rag-toggle-wrap" id="rag-toggle-wrap" title="Rule Lookup — semantic search over Thynk CHI rules">
+        <span class="rag-toggle-label">Rule Lookup</span>
+        <span class="rag-switch" id="rag-switch">
+          <input type="checkbox" id="rag-checkbox" />
+          <span class="rag-slider"></span>
+        </span>
+      </label>
+      <button class="chat-close-btn" id="chat-close-btn" title="Close">✕</button>
+    </div>
   </div>
   <div style="padding:.4rem 1rem .35rem;border-bottom:1px solid var(--color-border-light);display:flex;align-items:center;justify-content:space-between;gap:.5rem;">
-    <div style="font-size:.7rem;color:var(--color-text-muted);">Powered by XGBoost + SHAP · Context-aware</div>
+    <div style="font-size:.7rem;color:var(--color-text-muted);">
+      Powered by XGBoost + SHAP · Context-aware
+      <span id="rag-status-pill" style="display:none;margin-left:.5rem;background:linear-gradient(135deg,#6d28d9,#7c3aed);color:#fff;font-size:.62rem;padding:.1rem .45rem;border-radius:10px;letter-spacing:.02em;">✦ Rule Lookup ON</span>
+    </div>
     <span id="chat-mode-badge" class="chat-mode-badge"></span>
   </div>
   <div id="chat-messages" class="chat-messages" style="max-height:none;flex:1;"></div>
@@ -1325,6 +1455,37 @@
 <script src="js/app.js?v=15"></script>
 
 <script>
+  /* ── Dark / Light theme toggle ────────────────────────────────── */
+  (() => {
+    const html = document.documentElement;
+    const btn  = document.getElementById('theme-toggle-btn');
+    const icon = document.getElementById('theme-toggle-icon');
+
+    // Apply a theme and persist it
+    function applyTheme(theme) {
+      if (theme === 'light') {
+        html.setAttribute('data-theme', 'light');
+        if (icon) icon.textContent = '🌙';
+        if (btn)  btn.title = 'Switch to dark mode';
+      } else {
+        html.removeAttribute('data-theme');
+        if (icon) icon.textContent = '☀️';
+        if (btn)  btn.title = 'Switch to light mode';
+      }
+      localStorage.setItem('dp-theme', theme);
+    }
+
+    // Initialise from saved preference, fallback to dark
+    const saved = localStorage.getItem('dp-theme') || 'dark';
+    applyTheme(saved);
+
+    // Toggle on click
+    btn?.addEventListener('click', () => {
+      const current = html.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
+      applyTheme(current === 'light' ? 'dark' : 'light');
+    });
+  })();
+
   /* ── Top-nav tab sync ─────────────────────────────────────────── */
   document.querySelectorAll('.top-nav-tab').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -1363,6 +1524,98 @@
   document.getElementById('chat-close-btn').addEventListener('click', () => {
     document.getElementById('chat-drawer').classList.remove('open');
   });
+
+  /* ── RAG Rule Lookup toggle ───────────────────────────────────── */
+  (() => {
+    const wrap     = document.getElementById('rag-toggle-wrap');
+    const sw       = document.getElementById('rag-switch');
+    const checkbox = document.getElementById('rag-checkbox');
+    const label    = wrap?.querySelector('.rag-toggle-label');
+    if (!wrap || !checkbox) return;
+
+    const ANALYST_URL = 'http://127.0.0.1:8060';
+    let _indexed = false;
+    let _loading = false;
+
+    function _setOn(on) {
+      checkbox.checked = on;
+      wrap.classList.toggle('rag-active', on);
+      if (label) label.textContent = on ? 'Rule Lookup ON' : 'Rule Lookup';
+      const pill = document.getElementById('rag-status-pill');
+      if (pill) pill.style.display = on ? 'inline' : 'none';
+      if (typeof Chat !== 'undefined' && Chat.setRag) Chat.setRag(on);
+    }
+
+    function _setLoading(loading) {
+      _loading = loading;
+      sw.classList.toggle('rag-loading', loading);
+      checkbox.disabled = loading;
+    }
+
+    async function _runIngest() {
+      _setLoading(true);
+      if (label) label.textContent = 'Indexing…';
+      try {
+        const res  = await fetch(`${ANALYST_URL}/analyst/ingest-rules`, { method: 'POST' });
+        const data = res.ok ? await res.json() : null;
+        if (data?.status === 'ok') {
+          _indexed = true;
+          _setLoading(false);
+          _setOn(true);
+          wrap.title = `Rule Lookup — ${data.total_in_store} rules indexed (${data.from_rag_file} from knowledge base, ${data.from_claim_lookup} from claim lookup)`;
+          return true;
+        }
+        throw new Error(data?.detail || 'Ingest failed');
+      } catch (err) {
+        _setLoading(false);
+        _setOn(false);
+        wrap.title = `Rule Lookup — ingest failed: ${err.message}`;
+        console.warn('[RAG] Ingest failed:', err);
+        return false;
+      }
+    }
+
+    // ── Check status on page load ──────────────────────────────
+    fetch(`${ANALYST_URL}/health`, { method: 'GET' })
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (data?.rag_rules_indexed > 0) {
+          _indexed = true;
+          if (data.rag_enabled) _setOn(true);
+          wrap.title = `Rule Lookup — ${data.rag_rules_indexed} rules indexed · Long-press to re-index`;
+        }
+      })
+      .catch(() => {});
+
+    // ── Single click — toggle on/off ───────────────────────────
+    checkbox.addEventListener('change', async () => {
+      if (_loading) { checkbox.checked = !checkbox.checked; return; }
+      const wantOn = checkbox.checked;
+      if (!wantOn) { _setOn(false); return; }
+      if (_indexed) { _setOn(true); return; }
+      // First time — run ingest
+      checkbox.checked = false;
+      await _runIngest();
+    });
+
+    // ── Long-press on label — force re-index ──────────────────
+    // Useful after adding new rules to thynk-rag-rules.json
+    let _pressTimer = null;
+    wrap.addEventListener('mousedown', () => {
+      _pressTimer = setTimeout(async () => {
+        if (_loading) return;
+        const confirmed = confirm(
+          'Re-index all Thynk rules from JSON files?\n\nDo this after adding new rules to thynk-rag-rules.json.'
+        );
+        if (!confirmed) return;
+        _setOn(false);
+        _indexed = false;
+        await _runIngest();
+      }, 800);
+    });
+    wrap.addEventListener('mouseup',   () => clearTimeout(_pressTimer));
+    wrap.addEventListener('mouseleave',() => clearTimeout(_pressTimer));
+  })();
 
   /* ── Input mode toggle (Form ↔ JSON) ─────────────────────────── */
   const modeFormBtn   = document.getElementById('mode-form-btn');

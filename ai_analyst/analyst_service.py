@@ -1,5 +1,5 @@
 import json
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 from .session_manager import SessionManager
 from .llm_reasoner import LLMReasoner
@@ -12,10 +12,12 @@ class AnalystService:
         self,
         session_manager: SessionManager,
         llm_reasoner: LLMReasoner,
+        retriever=None,          # rag.retriever.Retriever — optional
     ):
 
         self.session_manager = session_manager
-        self.llm_reasoner = llm_reasoner
+        self.llm_reasoner    = llm_reasoner
+        self.retriever       = retriever   # None when RAG is not available
 
     # ============================================================
     # CREATE SESSION
@@ -68,10 +70,11 @@ class AnalystService:
         self,
         session_id: str,
         user_message: str,
+        use_rag: bool = True,
     ) -> str:
 
         # --------------------------------------------------------
-        # Validate session and retrieve claim intelligence
+        # Retrieve claim intelligence for this session
         # --------------------------------------------------------
 
         claim_intelligence = (
@@ -80,7 +83,41 @@ class AnalystService:
         )
 
         # --------------------------------------------------------
-        # Store current user message
+        # RAG — retrieve relevant Thynk rules from ChromaDB
+        # Skipped when use_rag=False (toggle OFF) or retriever
+        # is not initialised.  Failures never block the response.
+        # --------------------------------------------------------
+
+        retrieved_rules: Optional[str] = None
+        rag_used = False
+
+        if use_rag and self.retriever is not None:
+            try:
+                query_text = self.retriever.build_query(
+                    user_message=user_message,
+                    claim_intelligence=claim_intelligence,
+                )
+                retrieved_rules = self.retriever.query(query_text, top_k=4)
+
+                if retrieved_rules:
+                    rag_used = True
+                    print(
+                        f"[RAG] Retrieved relevant rulebook context "
+                        f"for session {session_id}."
+                    )
+                else:
+                    print(
+                        f"[RAG] No rules above similarity threshold "
+                        f"for session {session_id}."
+                    )
+            except Exception as exc:
+                print(f"[RAG] Retrieval failed silently: {exc}")
+                retrieved_rules = None
+        elif not use_rag:
+            print(f"[RAG] Skipped — toggle OFF for session {session_id}.")
+
+        # --------------------------------------------------------
+        # Store user message
         # --------------------------------------------------------
 
         self.session_manager.add_message(
@@ -90,7 +127,7 @@ class AnalystService:
         )
 
         # --------------------------------------------------------
-        # Retrieve conversation AFTER adding current message
+        # Retrieve full conversation (includes message just added)
         # --------------------------------------------------------
 
         conversation = (
@@ -105,41 +142,26 @@ class AnalystService:
         print("\n" + "=" * 80)
         print("ANALYST SERVICE → LLM")
         print("=" * 80)
-
         print("\nSESSION:")
         print(session_id)
-
         print("\nUSER QUESTION:")
         print(user_message)
-
+        print("\nRAG RULES RETRIEVED:", "YES" if retrieved_rules else "NO")
         print("\nCLAIM INTELLIGENCE:")
-        print(
-            json.dumps(
-                claim_intelligence,
-                indent=2,
-                default=str,
-            )
-        )
-
+        print(json.dumps(claim_intelligence, indent=2, default=str))
         print("\nCONVERSATION:")
-        print(
-            json.dumps(
-                conversation,
-                indent=2,
-                default=str,
-            )
-        )
-
+        print(json.dumps(conversation, indent=2, default=str))
         print("=" * 80 + "\n")
 
         # --------------------------------------------------------
-        # Ask Gemini
+        # Generate LLM response
         # --------------------------------------------------------
 
         answer = self.llm_reasoner.generate_response(
             claim_intelligence=claim_intelligence,
             conversation=conversation,
             user_message=user_message,
+            retrieved_rules=retrieved_rules,
         )
 
         # --------------------------------------------------------
@@ -152,4 +174,4 @@ class AnalystService:
             content=answer,
         )
 
-        return answer
+        return answer, rag_used

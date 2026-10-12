@@ -54,6 +54,7 @@ const Chat = (() => {
   let _contributions = [];  // aggregated claim-level SHAP from SHAP.fromApiResult()
   let _sessionId     = null;
   let _mode          = 'INACTIVE';
+  let _ragEnabled    = false; // controlled by the UI toggle
 
   // ── DOM helpers ──────────────────────────────────────────────────────
   const _el    = id => document.getElementById(id);
@@ -102,9 +103,12 @@ const Chat = (() => {
     const el = _badge();
     if (!el) return;
     if (_mode === 'LLM') {
-      el.textContent = 'Intelligence connected';
-      el.className   = 'chat-mode-badge llm';
-      el.title       = 'Powered by Gemini via the AI Analyst microservice';
+      const ragNote = _ragEnabled ? ' · ✦ Rule Lookup' : '';
+      el.textContent = `Intelligence connected${ragNote}`;
+      el.className   = _ragEnabled ? 'chat-mode-badge llm rag-on' : 'chat-mode-badge llm';
+      el.title       = _ragEnabled
+        ? 'Gemini + ChromaDB rule retrieval active'
+        : 'Powered by Gemini via the AI Analyst microservice';
     } else if (_mode === 'RULE_BASED') {
       el.textContent = '⚡ Rule-based';
       el.className   = 'chat-mode-badge rule';
@@ -600,11 +604,11 @@ ${drivers}`;
   // ── LLM + fallback ───────────────────────────────────────────────────
   async function _respond(userMessage) {
     if (_mode === 'LLM' && _sessionId) {
-      const r = await AnalystAPI.chat(_sessionId, userMessage);
-      if (r.ok) return { text: r.answer, source: 'llm' };
+      const r = await AnalystAPI.chat(_sessionId, userMessage, _ragEnabled);
+      if (r.ok) return { text: r.answer, source: 'llm', ragUsed: r.rag_used === true };
       console.warn('[Chat] LLM fallback:', r.detail);
     }
-    return { text: _rule(userMessage), source: 'fallback' };
+    return { text: _rule(userMessage), source: 'fallback', ragUsed: false };
   }
 
   // ── Public API ───────────────────────────────────────────────────────
@@ -677,13 +681,16 @@ ${drivers}`;
 
     _appendBubble('user', _wrap(userMessage));
     const thinking = _appendThinking();
-    const { text, source } = await _respond(userMessage);
+    const { text, source, ragUsed } = await _respond(userMessage);
 
     if (thinking && thinking.parentNode) {
       thinking.className = 'chat-bubble assistant';
       let html = _wrap(text);
       if (source === 'fallback' && _mode === 'LLM') {
         html += `<p class="chat-fallback-notice">⚡ Local response — AI Analyst temporarily unavailable.</p>`;
+      }
+      if (ragUsed) {
+        html += `<p class="chat-rag-notice">✦ Response enhanced with CHI rule knowledge base</p>`;
       }
       thinking.innerHTML = html;
       _msgs().scrollTop = _msgs().scrollHeight;
@@ -705,5 +712,5 @@ ${drivers}`;
     _updateBadge();
   }
 
-  return { init, send, clear };
+  return { init, send, clear, setRag: (on) => { _ragEnabled = on; _updateBadge(); } };
 })();

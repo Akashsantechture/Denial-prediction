@@ -16,6 +16,23 @@ from sqlalchemy.orm import relationship
 
 from .database import Base
 
+# ============================================================
+# NOTE — Thynk RAG store (ChromaDB)
+# ============================================================
+# Thynk rule embeddings are stored in ChromaDB — a local
+# persistent vector store that requires no PostgreSQL extension.
+#
+# Store location:
+#   ai_analyst/rag/chroma_store/   (default)
+#   Override via CHROMA_STORE_PATH environment variable.
+#
+# All ChromaDB operations are managed in:
+#   ai_analyst/rag/rule_store.py
+#
+# The store is initialised at startup via init_rule_store()
+# called from ai_analyst/main.py lifespan.
+# ============================================================
+
 
 # ============================================================
 # ANALYST SESSIONS

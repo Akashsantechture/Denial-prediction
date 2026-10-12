@@ -459,10 +459,25 @@
   color: #93C5FD;
   border: 1px solid #3B82F6;
 }
+.chat-mode-badge.llm.rag-on {
+  background: linear-gradient(135deg, #1e1a4a, #2d1b69);
+  color: #c4b5fd;
+  border: 1px solid #7c3aed;
+}
 .chat-mode-badge.rule {
   background: #2A1F08;
   color: #FCD34D;
   border: 1px solid #F59E0B;
+}
+
+/* RAG source notice appended on bubbles when rule retrieval was used */
+.chat-rag-notice {
+  margin-top: .45rem;
+  padding-top: .35rem;
+  border-top: 1px solid rgba(124, 58, 237, .25);
+  font-size: .66rem;
+  color: #a78bfa;
+  font-style: normal;
 }
 
 /* Thinking animation inside chat bubbles */

@@ -114,3 +114,101 @@ hr {
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 99px; }
+
+/* ============================================================
+   LIGHT THEME — applied when <html data-theme="light">
+   ============================================================ */
+
+[data-theme="light"] {
+  /* --- Brand palette --- */
+  --color-bg:           #F4F3F8;
+  --color-surface:      #FFFFFF;
+  --color-surface-alt:  #F0EEF8;
+  --color-border:       #DDD9EE;
+  --color-border-light: #E8E5F2;
+
+  /* --- Text --- */
+  --color-text-primary:   #1A1730;
+  --color-text-secondary: #4B4568;
+  --color-text-muted:     #8B82AA;
+
+  /* --- Risk colours (unchanged — same semantics) --- */
+  --color-high:         #DC2626;
+  --color-high-bg:      #FEE2E2;
+  --color-high-border:  #FCA5A5;
+  --color-medium:       #D97706;
+  --color-medium-bg:    #FEF3C7;
+  --color-medium-border:#FCD34D;
+  --color-low:          #059669;
+  --color-low-bg:       #D1FAE5;
+  --color-low-border:   #6EE7B7;
+
+  /* --- Accent --- */
+  --color-accent:       #7C3AED;
+  --color-accent-dark:  #5B21B6;
+
+  /* --- Chart background --- */
+  --color-chart-bg:     #F8F7FD;
+
+  /* --- Shadows (softer on light) --- */
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.05);
+  --shadow-md: 0 4px 6px -1px rgba(0,0,0,.10), 0 2px 4px -1px rgba(0,0,0,.06);
+}
+
+/* Light theme adjustments for elements that use hardcoded dark colours */
+
+[data-theme="light"] .shap-pill.pos {
+  background: #FEE2E2;
+  color: #991B1B;
+  border: 1px solid #EF4444;
+}
+[data-theme="light"] .shap-pill.neg {
+  background: #D1FAE5;
+  color: #065F46;
+  border: 1px solid #22C55E;
+}
+
+[data-theme="light"] .chat-mode-badge.llm {
+  background: #DBEAFE;
+  color: #1D4ED8;
+  border: 1px solid #93C5FD;
+}
+[data-theme="light"] .chat-mode-badge.llm.rag-on {
+  background: #EDE9FE;
+  color: #5B21B6;
+  border: 1px solid #A78BFA;
+}
+[data-theme="light"] .chat-mode-badge.rule {
+  background: #FEF3C7;
+  color: #92400E;
+  border: 1px solid #F59E0B;
+}
+
+[data-theme="light"] .chat-rag-notice { color: #6D28D9; }
+[data-theme="light"] .chat-bubble.user { background: #7C3AED; }
+[data-theme="light"] .chat-bubble code { background: rgba(0,0,0,.06); }
+
+[data-theme="light"] .cpt-badge {
+  background: #DBEAFE;
+  color: #1D4ED8;
+  border: 1px solid #93C5FD;
+}
+
+[data-theme="light"] .data-table tbody tr:hover {
+  background: rgba(124,58,237,0.06);
+}
+[data-theme="light"] .data-table tbody tr:nth-child(even) {
+  background: var(--color-surface-alt);
+}
+
+[data-theme="light"] .verdict-banner.high   { background: #FEE2E2; color: #991B1B; }
+[data-theme="light"] .verdict-banner.medium { background: #FEF3C7; color: #92400E; }
+[data-theme="light"] .verdict-banner.low    { background: #D1FAE5; color: #065F46; }
+
+[data-theme="light"] .spinner-overlay {
+  background: rgba(244,243,248,.80);
+}
+
+[data-theme="light"] ::-webkit-scrollbar-thumb {
+  background: #C4BEDD;
+}
