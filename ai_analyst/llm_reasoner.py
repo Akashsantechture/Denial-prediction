@@ -809,18 +809,25 @@ use it to provide detailed rule-level explanations and
 specific fix recommendations. Only cite rule IDs that
 appear in the retrieved context.
 
-If RETRIEVED THYNK RULEBOOK CONTEXT is present and was
-used in your answer, begin your response with a single
-short line such as:
-  "**[CHI Rulebook]** Based on CHI rule <ruleId>..."
-or
-  "**[Knowledge Base]** Per CHI guidelines..."
-so the analyst knows the response draws from the rule
-knowledge base, not just the model prediction.
+SOURCE LABELLING — use these prefixes consistently:
 
-If no RETRIEVED THYNK RULEBOOK CONTEXT is present, do NOT
-add any such prefix — just answer normally from the claim
-intelligence.
+**[RAG · Rule Lookup]** — use this prefix ONLY when
+RETRIEVED THYNK RULEBOOK CONTEXT is present in this prompt
+AND you drew from it to answer. This means the answer
+came from the semantic knowledge base retrieval.
+
+**[Thynk]** — use this prefix when you are citing a ruleId
+or finding that came from the thynk_validation block inside
+the claim intelligence (not from retrieved rules). This
+means the answer came from the claim's own Thynk validation.
+
+No prefix — use when the answer comes purely from the
+model prediction, SHAP evidence, or claim facts.
+
+NEVER use [RAG · Rule Lookup] when RETRIEVED THYNK RULEBOOK
+CONTEXT is absent from this prompt. NEVER mix up the two
+prefixes. The analyst needs to know exactly where each
+piece of information came from.
 
 IMPORTANT:
 

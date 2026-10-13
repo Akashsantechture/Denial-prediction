@@ -28,11 +28,11 @@ logger = logging.getLogger(__name__)
 _BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(dotenv_path=_BASE_DIR / ".env", override=False)
 
-# Gemini embedding model — 768 dimensions, best for semantic retrieval
-_EMBEDDING_MODEL = "models/text-embedding-004"
+# Gemini embedding model — 3072 dimensions
+_EMBEDDING_MODEL = "models/gemini-embedding-001"
 
-# Dimension produced by text-embedding-004
-EMBEDDING_DIM = 768
+# Dimension produced by gemini-embedding-001
+EMBEDDING_DIM = 3072
 
 
 class Embedder:

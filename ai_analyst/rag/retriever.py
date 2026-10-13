@@ -29,7 +29,7 @@ from .rule_store import similarity_search, count_rules
 logger = logging.getLogger(__name__)
 
 # Minimum similarity threshold — below this rules are too off-topic
-_MIN_SIMILARITY = 0.50
+_MIN_SIMILARITY = 0.40
 
 
 class Retriever:

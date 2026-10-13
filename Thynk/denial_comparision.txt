@@ -415,6 +415,14 @@ Queries on THIS claim that would trigger RAG:
 "how do I fix the encounter status?" → CHI_MDS_001_Encounter_Status
 "what is medical necessity for 83735?" → CHI_MED_NEC_001_Diagnosis_Procedure_Mismatch
 
+CHI_MDS_001	"How to fix encounter status", "How do I fix the encounter status"
+CHI_MED_NEC_001	"What is medical necessity for this activity", "Why was this activity denied for medical necessity"
+CHI_CODING_001	"How to fix D64.9 unspecified anemia code", "Fix D64.9"
+CHI_MATERNITY_001	"Why does maternity diagnosis need a grid flag", "What is the grid maternity flag"
+CHI_BUNDLING_002	"Explain the lab bundling issue for 82728", "Why are multiple iron lab tests flagged"
+CHI_GENERAL_001	"What is the appeal process", "What is the CHI appeal timeline", "How long do I have to appeal"
+CHI_GENERAL_002	"Does this activity need prior authorization", "Does 83735 need prior auth"
+
 
 
 actual: approved,approved,approve,approved,Medical necessacity,approved

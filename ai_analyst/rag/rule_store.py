@@ -59,6 +59,20 @@ def _get_collection():
     _STORE_PATH.mkdir(parents=True, exist_ok=True)
     _client = chromadb.PersistentClient(path=str(_STORE_PATH))
 
+    # Delete stale collection if it exists with wrong dimension
+    try:
+        existing = _client.get_collection(name=_COLLECTION)
+        # Probe dimension by checking metadata
+        sample = existing.peek(limit=1)
+        if sample and sample.get("embeddings") and len(sample["embeddings"]) > 0:
+            dim = len(sample["embeddings"][0])
+            from .embedder import EMBEDDING_DIM
+            if dim != EMBEDDING_DIM:
+                _client.delete_collection(name=_COLLECTION)
+                existing = None
+    except Exception:
+        existing = None
+
     # cosine distance — matches what the embedder optimises for
     _collection = _client.get_or_create_collection(
         name=_COLLECTION,
@@ -81,6 +95,10 @@ def init_rule_store() -> None:
     Ensure the ChromaDB store and collection exist.
     Call once at application startup.
     """
+    global _client, _collection
+    # Reset cache so _get_collection() reinitialises fresh
+    _client = None
+    _collection = None
     _get_collection()
     logger.info("[RuleStore] ChromaDB rule store initialised.")
 
