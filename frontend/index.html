@@ -1115,12 +1115,11 @@
                     <th style="min-width:160px;">Denial Likelihood</th>
                     <th>Verdict</th>
                     <th>Denial Reason</th>
-                    <th>Confidence</th>
-                    <th>Reason Drivers</th>
+                    <th>Top Drivers</th>
                   </tr>
                 </thead>
                 <tbody id="activity-predictions-body">
-                  <tr><td colspan="9" class="no-data-row">No predictions yet.</td></tr>
+                  <tr><td colspan="8" class="no-data-row">No predictions yet.</td></tr>
                 </tbody>
               </table>
             </div>
@@ -1206,18 +1205,11 @@
             </div>
           </div>
 
-          <!-- ── Reason confidence + label strip ───────────────── -->
+          <!-- ── Reason label strip ─────────────────────────── -->
           <div id="shap-reason-strip" class="reason-strip" style="display:none;margin-bottom:1.25rem;">
             <div class="reason-strip-left">
               <span class="reason-strip-label">Predicted Denial Reason</span>
               <span id="reason-strip-value" class="reason-strip-value">—</span>
-            </div>
-            <div class="reason-strip-right">
-              <span class="reason-strip-label">Model Confidence</span>
-              <span id="reason-strip-confidence" class="reason-strip-confidence">—</span>
-              <div class="reason-conf-bar-track">
-                <div id="reason-conf-bar" class="reason-conf-bar" style="width:0%"></div>
-              </div>
             </div>
           </div>
 
@@ -1249,7 +1241,6 @@
                     <th>Denial Prob</th>
                     <th>Verdict</th>
                     <th>Denial Reason</th>
-                    <th>Confidence</th>
                     <th>Top Reason Driver</th>
                     <th>2nd Driver</th>
                     <th>3rd Driver</th>

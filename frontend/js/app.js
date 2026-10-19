@@ -384,20 +384,12 @@
            </td>`
         : `<td><span class="denial-reason-na">—</span></td>`;
 
-      // Confidence cell
-      const confPct  = pred.reason_confidence != null
-        ? `${(pred.reason_confidence * 100).toFixed(1)}%`
-        : '—';
-      const confCell = denied && pred.reason_confidence != null
-        ? `<td><span class="reason-conf-pill">${confPct}</span></td>`
-        : `<td><span class="denial-reason-na">—</span></td>`;
-
-      // Reason drivers pills (top 3 from reason model)
+      // Reason drivers pills — show feature name, direction colour only (no raw scores)
       const drivers = pred.reason_drivers ?? [];
       const pills   = drivers.slice(0, 3).map(d => {
-        const cls  = d.impact === 'increase_reason_probability' ? 'pos' : 'neg';
-        const sign = d.shap_value >= 0 ? '+' : '';
-        return `<span class="shap-pill ${cls}" title="${d.feature}">${sign}${d.shap_value.toFixed(3)}</span>`;
+        const cls   = d.impact === 'increase_reason_probability' ? 'pos' : 'neg';
+        const label = SHAP.DISPLAY_NAMES?.[d.feature] || d.feature.replace(/_/g, ' ');
+        return `<span class="shap-pill ${cls}" title="SHAP ${d.shap_value >= 0 ? '+' : ''}${d.shap_value.toFixed(3)}">${label}</span>`;
       }).join(' ');
 
       return `
@@ -421,7 +413,6 @@
             ${denied ? '⚠ Likely Denied' : '✓ Likely Approved'}
           </span></td>
           ${reasonCell}
-          ${confCell}
           <td class="driver-pills-cell">
             ${denied && pills ? pills : '<span class="denial-reason-na">—</span>'}
           </td>
@@ -487,19 +478,17 @@
       pred.predicted_denial ? '⚠ Predicted denied' : '✓ Predicted approved'
     );
 
-    // KPI — reason confidence (replaces raw net SHAP when available)
-    if (pred.predicted_denial && pred.reason_confidence != null) {
+    // KPI — top reason driver name (replaces confidence)
+    const topDriver = contributions[0];
+    if (topDriver) {
+      const topName = SHAP.DISPLAY_NAMES?.[topDriver.feature] || topDriver.feature.replace(/_/g, ' ');
       _setKPI('kpi-shap',
-        `${(pred.reason_confidence * 100).toFixed(1)}%`,
-        pred.reason_confidence >= 0.70 ? 'high' : pred.reason_confidence >= 0.40 ? 'medium' : 'green',
-        'Reason model confidence'
+        topName,
+        topDriver.value > 0 ? 'high' : 'green',
+        topDriver.value > 0 ? '↑ Top denial driver' : '↓ Top approval driver'
       );
     } else {
-      _setKPI('kpi-shap',
-        `${netShap >= 0 ? '+' : ''}${netShap.toFixed(3)}`,
-        netShap > 0 ? 'high' : 'green',
-        'Net SHAP log-odds'
-      );
+      _setKPI('kpi-shap', '—', 'neutral', 'No SHAP data');
     }
 
     // KPI — high-impact reason drivers
@@ -556,15 +545,9 @@
         reasonLabelBadge.style.display = 'none';
       }
 
-      // Reason strip values
-      const stripVal  = document.getElementById('reason-strip-value');
-      const stripConf = document.getElementById('reason-strip-confidence');
-      const confBar   = document.getElementById('reason-conf-bar');
-      if (stripVal)  stripVal.textContent  = pred.predicted_denial_reason ?? '—';
-      if (stripConf) stripConf.textContent = pred.reason_confidence != null
-        ? `${(pred.reason_confidence * 100).toFixed(1)}%` : '—';
-      if (confBar) confBar.style.width =
-        pred.reason_confidence != null ? `${(pred.reason_confidence * 100).toFixed(1)}%` : '0%';
+      // Reason strip — just the denial reason label
+      const stripVal = document.getElementById('reason-strip-value');
+      if (stripVal) stripVal.textContent = pred.predicted_denial_reason ?? '—';
 
       // Render reason model SHAP waterfall
       Charts.waterfall('shap-waterfall-chart', contributions, baseVal, finalVal);
@@ -616,17 +599,15 @@
            </span></td>`
         : `<td><span class="denial-reason-na">—</span></td>`;
 
-      // Reason driver cell helper
+      // Reason driver cell helper — show feature name prominently, SHAP value in muted subtitle
       const driverCell = (i) => {
         const d = drivers[i];
         if (!d) return '<td class="denial-reason-na" style="color:var(--color-text-muted)">—</td>';
-        const cls  = d.impact === 'increase_reason_probability' ? 'pos' : 'neg';
-        const sign = d.shap_value >= 0 ? '+' : '';
+        const cls   = d.impact === 'increase_reason_probability' ? 'pos' : 'neg';
+        const name  = SHAP.DISPLAY_NAMES?.[d.feature] || d.feature.replace(/_/g, ' ');
+        const sign  = d.shap_value >= 0 ? '+' : '';
         return `<td>
-          <span class="shap-pill ${cls}">${sign}${d.shap_value.toFixed(3)}</span>
-          <span style="font-size:.72rem;color:var(--color-text-muted);margin-left:.25rem;">
-            ${SHAP.DISPLAY_NAMES[d.feature] || d.feature}
-          </span>
+          <span class="shap-pill ${cls}" title="SHAP ${sign}${d.shap_value.toFixed(3)}">${name}</span>
         </td>`;
       };
 
@@ -642,7 +623,6 @@
             ${denied ? '⚠ Denied' : '✓ Approved'}
           </span></td>
           ${reasonCell}
-          ${confCell}
           ${driverCell(0)}
           ${driverCell(1)}
           ${driverCell(2)}

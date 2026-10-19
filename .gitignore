@@ -82,3 +82,11 @@ credentials.json
 # --- AI Analyst Local Storage & Caches ---
 ai_analyst/cache/
 ai_analyst/db/
+
+# --- ChromaDB Vector Stores (by region) ---
+# Original store (preserved for backward compatibility)
+ai_analyst/rag/chroma_store/
+
+# Region-specific stores
+ai_analyst/rag/chroma_store_uae/
+ai_analyst/rag/chroma_store_ksa/

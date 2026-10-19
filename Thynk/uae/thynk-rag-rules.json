@@ -1,0 +1,292 @@
+[
+  {
+    "ruleId": "CHI_MDS_001_Encounter_Status",
+    "packageName": "Core_validation",
+    "severity": "CRITICAL",
+    "objectType": "claim",
+    "code": null,
+    "activityType": null,
+    "shortMessage": "Encounter Status is a mandatory field under Encounter Info.",
+    "longMessage": "How to fix encounter status error. Encounter Status missing from claim submission. How do I fix the encounter status? What is encounter status in CHI claims? As per the Minimum Data Set (MDS) by CHI, Encounter Status must be provided for every claim. Accepted values: Planned, Arrived, Triaged, In Progress, On Leave, Finished, Cancelled, Entered in Error, Unknown. Claims missing this field are rejected at intake before clinical review. Fix: add the Encounter Status field with the value matching the actual patient encounter state at time of submission."
+  },
+  {
+    "ruleId": "CHI_MDS_002_Coverage_Class_Type",
+    "packageName": "Code_guidelines",
+    "severity": "CRITICAL",
+    "objectType": "claim",
+    "code": null,
+    "activityType": null,
+    "shortMessage": "Coverage Class Type is a mandatory field under Patient Info.",
+    "longMessage": "As per the Minimum Data Set (MDS) by CHI, Coverage Class Type must be submitted for every claim. Accepted values are: Group, SubGroup, Plan, SubPlan, Class, SubClass, Sequence, RX BIN, RX PCN, RX Id, RX Group. Missing this field causes mandatory data set rejection."
+  },
+  {
+    "ruleId": "CHI_MDS_003_Clinician_Info",
+    "packageName": "Core_validation",
+    "severity": "SEVERE",
+    "objectType": "claim",
+    "code": null,
+    "activityType": null,
+    "shortMessage": "Clinician Profession and Category are required mandatory fields.",
+    "longMessage": "Clinician details including Clinician Profession and Clinician Category must be populated for all claims processed under CHI regulations. Missing clinician information prevents payer validation of specialty-procedure alignment and will result in rejection."
+  },
+  {
+    "ruleId": "CHI_MED_NEC_001_Diagnosis_Procedure_Mismatch",
+    "packageName": "Code_guidelines",
+    "severity": "SEVERE",
+    "objectType": "activity",
+    "code": null,
+    "activityType": "CPT",
+    "shortMessage": "Medical necessity requires primary diagnosis to clinically support the billed procedure.",
+    "longMessage": "What is medical necessity for this activity? Why was this activity denied for medical necessity? How to prove medical necessity for a lab test or procedure. Medical necessity means the primary diagnosis must directly support the clinical need for every billed CPT activity. CHI rule K210 series: the primary diagnosis must justify each activity. How to establish medical necessity: add a secondary diagnosis that clinically supports the procedure, or attach a medical necessity certificate. Common medical necessity denials: symptom-only ICD codes (R00-R99) as primary diagnosis, procedure category does not match diagnosis, lab tests ordered without a relevant supporting condition. Fix: identify the correct supporting secondary diagnosis for each denied activity and add it to the claim."
+  },
+  {
+    "ruleId": "CHI_MED_NEC_002_Symptom_Code_Primary",
+    "packageName": "Code_guidelines",
+    "severity": "SEVERE",
+    "objectType": "diagnosis",
+    "code": null,
+    "activityType": null,
+    "shortMessage": "Symptom-only ICD codes as primary diagnosis weaken medical necessity.",
+    "longMessage": "Using symptom codes (ICD-10 R-chapter: R00-R99) as the primary diagnosis instead of a confirmed condition weakens medical necessity for most procedures. Payers expect a definitive diagnosis when one is established. Symptom codes are acceptable only when the definitive diagnosis is not yet confirmed. When a confirmed diagnosis exists, it should replace or supplement the symptom code."
+  },
+  {
+    "ruleId": "CHI_CODING_001_Unspecified_Codes",
+    "packageName": "Code_guidelines",
+    "severity": "WARNING",
+    "objectType": "diagnosis",
+    "code": null,
+    "activityType": null,
+    "shortMessage": "Unspecified diagnosis codes should be replaced with specific codes where available.",
+    "longMessage": "How to fix D64.9 unspecified anemia code. How to fix unspecified ICD code. Replace unspecified diagnosis with specific code. ICD-10 codes ending in .9 (unspecified) or NOS should be replaced with the most specific code available. D64.9 (unspecified anemia) should be replaced with: D50.9 (iron deficiency anemia), D51.9 (vitamin B12 deficiency anemia), D52.9 (folate deficiency anemia), or D53.9 (nutritional anemia) based on clinical documentation. Unspecified codes increase denial risk when combined with complex procedures requiring specific medical necessity documentation. Fix D64.9: review clinical notes to identify the specific anemia type and update the diagnosis code accordingly."
+  },
+  {
+    "ruleId": "CHI_CODING_002_Admin_Exam_Z02",
+    "packageName": "Code_guidelines",
+    "severity": "SEVERE",
+    "objectType": "diagnosis",
+    "code": "Z02.9",
+    "activityType": null,
+    "shortMessage": "Z02.9 administrative examination requires supporting clinical documentation.",
+    "longMessage": "When Z02.9 (Encounter for administrative examination, unspecified) is used as primary diagnosis, a secondary specific reason for the examination or a medical necessity certificate must be attached per CHI guidelines. Administrative examination codes alone are insufficient to support most diagnostic or therapeutic procedures."
+  },
+  {
+    "ruleId": "CHI_MATERNITY_001_Grid_Flag",
+    "packageName": "Code_guidelines",
+    "severity": "SEVERE",
+    "objectType": "diagnosis",
+    "code": null,
+    "activityType": null,
+    "shortMessage": "Maternity ICD codes require Grid Maternity Flag set to YES.",
+    "longMessage": "Why does maternity diagnosis need a grid flag? What is the grid maternity flag? How to fix missing maternity flag. As per CHI MDS requirements, when any ICD-10 code from the maternity chapter (O00-O9A) is coded, the Grid Maternity Flag under ITEM must be set to YES or TRUE. This flag is mandatory and its absence will cause claim rejection. Why is the grid flag required for maternity: CHI's Minimum Data Set mandates it for all maternity encounters to identify pregnancy-related claims for special processing. If the patient is not pregnant, set the flag to NO or FALSE. Fix: add the grid maternity flag field set to YES in the claim ITEM section when any O-chapter diagnosis is present."
+  },
+  {
+    "ruleId": "CHI_BUNDLING_001_CCI_Modifier_Required",
+    "packageName": "Core_validation",
+    "severity": "SEVERE",
+    "objectType": "activity",
+    "code": null,
+    "activityType": "CPT",
+    "shortMessage": "Concurrent billing of certain CPT pairs requires Modifier 59 or XE.",
+    "longMessage": "CCI bundling rules require Modifier 59 (Distinct Procedural Service) or XE (Separate Encounter) when two typically-bundled procedures are billed separately in the same encounter. Examples: Physical Therapy pairs 97110 and 97140. Without the modifier the secondary code will be denied as bundled."
+  },
+  {
+    "ruleId": "CHI_BUNDLING_002_Lab_Panel",
+    "packageName": "Core_validation",
+    "severity": "WARNING",
+    "objectType": "activity",
+    "code": null,
+    "activityType": "CPT",
+    "shortMessage": "Overlapping lab panel codes billed concurrently may indicate duplicate or unbundled services.",
+    "longMessage": "Explain the lab bundling issue for 82728. Why are multiple iron lab tests flagged. Lab panel bundling check for ferritin iron iron-binding. CPT 82728 (Ferritin), 83540 (Iron serum), and 83550 (Iron Binding Capacity) together form a complete iron panel. CHI bundling guidelines require these to be submitted as a panel rather than individually when all three are ordered in the same encounter. Billing them separately may be considered unbundling. How to fix the iron lab bundling issue: verify if a panel code covers all three tests; if so use the panel code. If each test is individually ordered for separate clinical reasons, document the distinct clinical indication for each. Payer systems flag concurrent iron studies as potential duplicate or unbundled services."
+  },
+  {
+    "ruleId": "CHI_ACTIVITY_001_Zero_Gross",
+    "packageName": "Core_validation",
+    "severity": "WARNING",
+    "objectType": "activity",
+    "code": null,
+    "activityType": null,
+    "shortMessage": "Activity gross amount of zero may indicate a missing or bundled charge.",
+    "longMessage": "An activity submitted with a gross amount of 0.0 will be flagged for review. This indicates either: (1) included in another bundled charge and should be removed, (2) billing system error, or (3) complimentary service. Payers may deny zero-gross activities as incomplete submissions."
+  },
+  {
+    "ruleId": "CHI_SPECIALTY_001_EM_Code_Specialty",
+    "packageName": "Core_validation",
+    "severity": "INFO",
+    "objectType": "activity",
+    "code": null,
+    "activityType": "CPT",
+    "shortMessage": "E&M codes must match clinician specialty and place of service.",
+    "longMessage": "Evaluation and Management (E&M) codes (99202-99499) are validated against clinician specialty and place of service. New patient codes (99202-99205) require no prior visit within 3 years. Established patient codes (99211-99215) require prior relationship. Hospital E&M codes (99221-99239) require inpatient encounter type."
+  },
+  {
+    "ruleId": "CHI_REHAB_001_Stroke_Sequelae_Specificity",
+    "packageName": "Code_guidelines",
+    "severity": "SEVERE",
+    "objectType": "diagnosis",
+    "code": "I69.359",
+    "activityType": null,
+    "shortMessage": "Stroke sequelae codes require laterality specification for rehabilitation claims.",
+    "longMessage": "ICD-10 code I69.359 (Hemiplegia following cerebral infarction, unspecified side) requires laterality for rehab claims. Use: I69.351 (right dominant), I69.352 (left dominant), I69.353 (right non-dominant), I69.354 (left non-dominant)."
+  },
+  {
+    "ruleId": "CHI_RADIOLOGY_001_Chest_Xray_Coding",
+    "packageName": "Core_validation",
+    "severity": "INFO",
+    "objectType": "activity",
+    "code": "71010",
+    "activityType": "CPT",
+    "shortMessage": "Chest X-Ray single view coding and quantity validation.",
+    "longMessage": "CPT 71010 (Chest X-Ray, single view) should be billed with quantity 1. Multiple views: 71020 (2 views), 71030 (4+ views). Zero-gross submissions for radiology are flagged as potentially unbilled or bundled."
+  },
+  {
+    "ruleId": "CHI_LIPID_001_Medical_Necessity_R51",
+    "packageName": "Code_guidelines",
+    "severity": "SEVERE",
+    "objectType": "activity",
+    "code": "80061",
+    "activityType": "CPT",
+    "shortMessage": "Lipid panel (80061) billed under headache diagnosis (R51) fails medical necessity.",
+    "longMessage": "CPT 80061 (Lipid Panel) requires a diagnosis supporting cardiovascular risk assessment. R51 (Headache) does not establish medical necessity for lipid screening. Accepted diagnoses: E78.x (lipoprotein disorders), Z13.220 (lipoid disorder screening), Z82.49 (family history cardiovascular disease), confirmed hypertension or diabetes. Fix: add a supporting secondary diagnosis or attach clinical justification."
+  },
+  {
+    "ruleId": "CHI_GENERAL_001_Denial_Appeal_Process",
+    "packageName": "Core_validation",
+    "severity": "INFO",
+    "objectType": "claim",
+    "code": null,
+    "activityType": null,
+    "shortMessage": "CHI denial appeal process, timeline, and deadlines.",
+    "longMessage": "What is the appeal process for a denied claim? What is the CHI appeal timeline? How long do I have to appeal a denial? How to appeal a CHI denial. Under CHI regulations: first-level appeal must be submitted within 30 calendar days from the date of the denial notification letter. Second-level appeal must be submitted within 60 days of the first-level denial decision. Appeal documentation required: original claim, denial reason code, clinical documentation supporting medical necessity, letter of appeal from treating clinician. Late appeals are rejected. The 30-day appeal timeline starts from the denial letter date, not the date of service."
+  },
+  {
+    "ruleId": "CHI_GENERAL_002_Prior_Authorization",
+    "packageName": "Code_guidelines",
+    "severity": "CRITICAL",
+    "objectType": "activity",
+    "code": null,
+    "activityType": null,
+    "shortMessage": "Certain procedures require prior authorization (PA) before service delivery.",
+    "longMessage": "Does this activity need prior authorization? Does 83735 need prior auth? Does this claim need pre-authorization? Prior authorization (PA) is required for procedures on CHI's Prior Authorization Required list. Submitting without an authorization number results in automatic denial regardless of medical necessity. The PA number must be obtained from the payer before service is rendered. Emergency procedures are exempt but require retrospective authorization within 24-48 hours. To check if prior auth is needed: contact the payer with the CPT code and primary diagnosis. Prior authorization, pre-authorization, and pre-approval all refer to the same process."
+  },
+  {
+    "ruleId": "CHI_UROLOGY_001_Lab_Panel_N40_Specialty_Mismatch",
+    "packageName": "Code_guidelines",
+    "severity": "SEVERE",
+    "objectType": "activity",
+    "code": null,
+    "activityType": "CPT",
+    "shortMessage": "Multiple pathology lab panels billed under Urology with BPH diagnosis require medical necessity justification.",
+    "longMessage": "When multiple lab CPT codes (82306 Vitamin D, 82565 Creatinine, 82607 Vitamin B12, 83036 HbA1c, 84443 TSH, 84450 AST, 84460 ALT, 86140 CRP) are billed concurrently under Urology with N40.1 (BPH), CHI flags for Claim Processing review. These metabolic panels are not directly related to the urological diagnosis. Each lab must be individually justified. Add secondary diagnoses: E11 (Diabetes), E03.9 (Hypothyroidism), N18 (CKD), E55.9 (Vitamin D deficiency)."
+  },
+  {
+    "ruleId": "CHI_UROLOGY_002_Vitamin_D_82306_Necessity",
+    "packageName": "Code_guidelines",
+    "severity": "SEVERE",
+    "objectType": "activity",
+    "code": "82306",
+    "activityType": "CPT",
+    "shortMessage": "CPT 82306 (Vitamin D 25-OH) requires a supporting diagnosis for deficiency or metabolic condition.",
+    "longMessage": "CPT 82306 (Vitamin D, 25-hydroxy) requires a Vitamin D deficiency or metabolic diagnosis. When billed under Urology with N40.1 (BPH) as sole primary diagnosis, medical necessity is not established. Supporting diagnoses: E55.9 (Vitamin D deficiency), E55.0 (Rickets), M81.0 (Osteoporosis), N25.81 (Secondary hyperparathyroidism). Without these the activity will be denied for Claim Processing."
+  },
+  {
+    "ruleId": "CHI_UROLOGY_003_HbA1c_83036_Necessity",
+    "packageName": "Code_guidelines",
+    "severity": "SEVERE",
+    "objectType": "activity",
+    "code": "83036",
+    "activityType": "CPT",
+    "shortMessage": "CPT 83036 (HbA1c) requires a diabetes or pre-diabetes diagnosis.",
+    "longMessage": "CPT 83036 (Hemoglobin A1c) requires a diabetes diagnosis. When billed under Urology with N40.1 (BPH), medical necessity for HbA1c is not established without: E11 (Type 2 diabetes), E10 (Type 1 diabetes), R73.09 (Pre-diabetes), Z79.4 (Long-term insulin use)."
+  },
+  {
+    "ruleId": "CHI_UROLOGY_004_TSH_84443_Necessity",
+    "packageName": "Code_guidelines",
+    "severity": "SEVERE",
+    "objectType": "activity",
+    "code": "84443",
+    "activityType": "CPT",
+    "shortMessage": "CPT 84443 (TSH) requires a thyroid-related diagnosis or symptom.",
+    "longMessage": "CPT 84443 (Thyroid Stimulating Hormone) requires a thyroid-related diagnosis. Without E03.9 (Hypothyroidism), E05.90 (Hyperthyroidism), or documented thyroid symptoms, TSH under Urology with N40.1 (BPH) will be flagged. Urology specialty plus TSH without thyroid diagnosis is a common denial trigger."
+  },
+  {
+    "ruleId": "CHI_UROLOGY_005_CRP_86140_Necessity",
+    "packageName": "Code_guidelines",
+    "severity": "WARNING",
+    "objectType": "activity",
+    "code": "86140",
+    "activityType": "CPT",
+    "shortMessage": "CPT 86140 (CRP) requires an inflammatory or infectious condition diagnosis.",
+    "longMessage": "CPT 86140 (C-Reactive Protein) requires an inflammatory or infectious diagnosis: J06 (Respiratory infection), N39.0 (UTI), Z13.6 (Cardiovascular risk screening), or documented acute infection. Under Urology with N40.1 (BPH) alone, payers may question medical necessity."
+  },
+  {
+    "ruleId": "CHI_UROLOGY_006_Liver_Function_84450_84460",
+    "packageName": "Code_guidelines",
+    "severity": "WARNING",
+    "objectType": "activity",
+    "code": "84450",
+    "activityType": "CPT",
+    "shortMessage": "Liver function tests (AST 84450, ALT 84460) require hepatic or metabolic diagnosis.",
+    "longMessage": "CPT 84450 (AST) and 84460 (ALT) require a hepatic or metabolic diagnosis: K76.0 (Fatty liver), K70 (Alcoholic liver disease), Z79.899 (Hepatotoxic medication monitoring), B18 (Chronic viral hepatitis). Commonly justified when patient is on statins, antifungals, or alpha-blockers."
+  },
+  {
+    "ruleId": "CHI_UROLOGY_007_Creatinine_82565_Renal",
+    "packageName": "Code_guidelines",
+    "severity": "INFO",
+    "objectType": "activity",
+    "code": "82565",
+    "activityType": "CPT",
+    "shortMessage": "CPT 82565 (Creatinine) is relevant to BPH with renal complications but requires CKD or obstruction diagnosis.",
+    "longMessage": "CPT 82565 (Creatinine serum) is justified with N40.1 (BPH) when there is renal obstruction concern. Supporting diagnoses: N13 (Obstructive uropathy), N18 (CKD), R35.0 (Nocturia), documented hydronephrosis. Without a renal complication diagnosis, payers may flag as incidental testing."
+  },
+  {
+    "ruleId": "CHI_UROLOGY_008_VitaminB12_82607",
+    "packageName": "Code_guidelines",
+    "severity": "SEVERE",
+    "objectType": "activity",
+    "code": "82607",
+    "activityType": "CPT",
+    "shortMessage": "CPT 82607 (Vitamin B12) requires a deficiency, neurological, or malabsorption diagnosis.",
+    "longMessage": "CPT 82607 (Vitamin B12) requires: D51 (B12 deficiency anemia), G20 (Parkinson's), G35 (Multiple sclerosis), E63 (Nutritional deficiencies), or documented neuropathy. Under Urology with N40.1 (BPH), payers will flag as Claim Processing issue without a neurological or deficiency secondary diagnosis."
+  },
+  {
+    "ruleId": "CHI_CLAIM_PROC_001_Multi_Lab_Single_Encounter",
+    "packageName": "Core_validation",
+    "severity": "SEVERE",
+    "objectType": "claim",
+    "code": null,
+    "activityType": null,
+    "shortMessage": "Multiple unrelated lab panels in a single specialty encounter trigger Claim Processing review.",
+    "longMessage": "When 5 or more distinct lab CPT codes are billed in a single encounter under a non-primary-care specialty (e.g. Urology, Orthopaedics), CHI triggers Claim Processing review. Each lab test must have an individual diagnosis justifying it. Fix: (1) add specific secondary diagnoses per lab test, (2) split general health screening labs into a separate primary care encounter, (3) attach documentation explaining the comprehensive workup rationale."
+  },
+  {
+    "ruleId": "CHI_CLAIM_PROC_002_Secondary_Psychiatry_Unrelated",
+    "packageName": "Code_guidelines",
+    "severity": "WARNING",
+    "objectType": "diagnosis",
+    "code": null,
+    "activityType": null,
+    "shortMessage": "Secondary psychiatry diagnosis unrelated to primary specialty may increase claim processing scrutiny.",
+    "longMessage": "When a secondary mental health diagnosis (F01-F99) is submitted alongside a non-psychiatric primary diagnosis in a specialty encounter, CHI may increase scrutiny. An unrelated psychiatric secondary diagnosis does not strengthen medical necessity for specialty procedures and can complicate the claim processing review."
+  },
+  {
+    "ruleId": "CHI_CLAIM_PROC_003_Elderly_Patient_Lab_Workup",
+    "packageName": "Core_validation",
+    "severity": "INFO",
+    "objectType": "claim",
+    "code": null,
+    "activityType": null,
+    "shortMessage": "Comprehensive lab workup for elderly patients requires documented clinical rationale per test.",
+    "longMessage": "For patients aged 70+, comprehensive metabolic lab panels are clinically reasonable but CHI requires individual justification per test. A blanket elderly patient screening justification is insufficient. Document specific clinical concern for each test: falls risk for Vitamin D, cognitive decline for B12, metabolic syndrome for HbA1c and liver enzymes, thyroid risk for TSH."
+  },
+  {
+    "ruleId": "CHI_N40_001_BPH_Lab_Justification",
+    "packageName": "Code_guidelines",
+    "severity": "SEVERE",
+    "objectType": "diagnosis",
+    "code": "N40.1",
+    "activityType": null,
+    "shortMessage": "N40.1 (BPH with LUTS) alone does not justify comprehensive metabolic lab panels.",
+    "longMessage": "ICD-10 N40.1 (Benign Prostatic Hyperplasia with LUTS) standard workup includes: PSA (86316), urinalysis (81001), and creatinine if obstruction suspected (82565). Comprehensive metabolic panels including Vitamin D (82306), B12 (82607), HbA1c (83036), TSH (84443), liver enzymes (84450, 84460), and CRP (86140) are NOT standard BPH workup and require independent secondary diagnoses. Without these, all non-urological labs will be denied under CHI Claim Processing rules."
+  }
+]

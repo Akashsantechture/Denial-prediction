@@ -1,0 +1,12 @@
+[
+  {
+    "ruleId": "KSA_PLACEHOLDER_001",
+    "packageName": "Core_validation",
+    "severity": "INFO",
+    "objectType": "claim",
+    "code": null,
+    "activityType": null,
+    "shortMessage": "Placeholder rule for KSA/CCHI implementation",
+    "longMessage": "This is a placeholder rule. KSA-specific CCHI/Nphies rules will be added here during model training and knowledge base development."
+  }
+]

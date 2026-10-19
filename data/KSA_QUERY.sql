@@ -1,0 +1,95 @@
+
+USE [ACCUMED_JHAH];
+GO
+
+SELECT
+    s.name AS schema_name,
+    t.name AS table_name,
+    c.name AS column_name,
+    ty.name AS data_type,
+    c.max_length,
+    c.is_nullable
+FROM sys.tables AS t
+JOIN sys.schemas AS s
+    ON t.schema_id = s.schema_id
+JOIN sys.columns AS c
+    ON t.object_id = c.object_id
+JOIN sys.types AS ty
+    ON c.user_type_id = ty.user_type_id
+WHERE c.name IN (
+    'IDPayer',
+    'MemberID',
+    'PayerID',
+    'ProviderID',
+    'Gross',
+    'Net',
+    'FacilityID',
+    'PatientID',
+    'Start',
+    'End',
+    'StartType',
+    'EndType',
+    'TransferSource',
+    'TransferDestination',
+    'SubType',
+    'BP_SYSTOLIC',
+    'HEIGHT',
+    'HEART_RATE',
+    'GLUCOSE_LEVEL',
+    'SAO2',
+    'TEMPERATURE',
+    'WEIGHT',
+    'SPO2',
+    'BP',
+    'BP_DIASTOLIC',
+    'RESPIRATORY_RATE',
+    'EmergencyArrivalCode',
+    'visit_type',
+    'Emergency_Service_Start_Date',
+    'Emergency_Department_Disposition',
+    'Service_Event_Type',
+    'Care_Type',
+    'CauseOfDeath',
+    'TriagDate',
+    'Triag_Category',
+    'Discharge_Clinician_License',
+    'Discharge_Specialty',
+    'birthWeight',
+    'Code',
+    'Quantity',
+    'Clinician',
+    'PriorAuthorizationID',
+    'providerCode',
+    'Network',
+    'SubNetworkName',
+    'Policy',
+    'PATIENT_NAME',
+    'PATIENT_SURNAME',
+    'GENDER_ID',
+    'DATE_OF_BIRTH',
+    'NATIONALITY',
+    'MARTIAL_STATUS',
+    'Occupation',
+    'Religion',
+    'PATIENT_INSURANCE_ID',
+    'INSURANCE_LISENCE',
+    'NetworkName',
+    'NetworkId',
+    'SubNetworkId',
+    'PlanName',
+    'PlanId',
+    'START_DATE',
+    'END_DATE',
+    'IS_EXPIRED',
+    'Policy_Number',
+    'ADMISSION_TYPE',
+    'MATERNITY',
+    'Category',
+    'Value',
+    'Reason',
+    'ReceiverID'
+)
+ORDER BY
+    c.name,
+    s.name,
+    t.name;
