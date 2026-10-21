@@ -3,23 +3,29 @@ ai_analyst/rag/rule_store.py
 ----------------------------
 ChromaDB-backed Thynk rule store.
 
+Region-aware implementation that maintains separate ChromaDB collections
+for each healthcare region (UAE/CHI and KSA/CCHI).
+
 Replaces the earlier pgvector implementation.  ChromaDB runs as a
 local persistent store — no PostgreSQL extension needed, no extra
 infrastructure.
 
 Responsibilities:
-  - Initialise a persistent ChromaDB client + collection
+  - Initialise region-specific persistent ChromaDB clients + collections
   - Upsert rule chunks with pre-computed embedding vectors
   - Run cosine-similarity nearest-neighbour queries
-  - Report rule count
+  - Report rule count per region
 
 Dependencies:
     pip install chromadb
 
-The ChromaDB data directory defaults to:
-    <project_root>/ai_analyst/rag/chroma_store/
+The ChromaDB data directories default to:
+    <project_root>/ai_analyst/rag/chroma_store_uae/
+    <project_root>/ai_analyst/rag/chroma_store_ksa/
 
-Override via the CHROMA_STORE_PATH environment variable.
+Override via environment variables:
+    CHROMA_STORE_PATH_UAE
+    CHROMA_STORE_PATH_KSA
 """
 
 from __future__ import annotations
@@ -32,93 +38,123 @@ from typing import Any, Dict, List, Optional
 logger = logging.getLogger(__name__)
 
 # ------------------------------------------------------------------ #
-# Store path
+# Store paths per region
 # ------------------------------------------------------------------ #
 
-_DEFAULT_STORE = Path(__file__).resolve().parent / "chroma_store"
-_STORE_PATH    = Path(os.getenv("CHROMA_STORE_PATH", str(_DEFAULT_STORE)))
-_COLLECTION    = "thynk_rules"
+_PROJECT_ROOT = Path(__file__).resolve().parent
+
+_STORE_PATHS = {
+    "uae": Path(os.getenv("CHROMA_STORE_PATH_UAE", str(_PROJECT_ROOT / "chroma_store_uae"))),
+    "ksa": Path(os.getenv("CHROMA_STORE_PATH_KSA", str(_PROJECT_ROOT / "chroma_store_ksa"))),
+}
+
+_COLLECTION_NAMES = {
+    "uae": "chi_rules",
+    "ksa": "cchi_rules",
+}
 
 # ------------------------------------------------------------------ #
-# Module-level client + collection (initialised lazily)
+# Module-level client + collection cache (per region)
 # ------------------------------------------------------------------ #
 
-_client:     Optional[Any] = None
-_collection: Optional[Any] = None
+_clients: Dict[str, Any] = {}
+_collections: Dict[str, Any] = {}
 
 
-def _get_collection():
-    """Return (and lazily create) the ChromaDB collection."""
-    global _client, _collection
+def _get_collection(region: str = "uae"):
+    """
+    Return (and lazily create) the ChromaDB collection for a region.
+    
+    Args:
+        region: 'uae' or 'ksa'
+    """
+    global _clients, _collections
+    
+    region = region.lower()
+    if region not in _STORE_PATHS:
+        raise ValueError(f"Unsupported region: {region}. Must be 'uae' or 'ksa'.")
 
-    if _collection is not None:
-        return _collection
+    if region in _collections:
+        return _collections[region]
 
     import chromadb
 
-    _STORE_PATH.mkdir(parents=True, exist_ok=True)
-    _client = chromadb.PersistentClient(path=str(_STORE_PATH))
+    store_path = _STORE_PATHS[region]
+    collection_name = _COLLECTION_NAMES[region]
+    
+    store_path.mkdir(parents=True, exist_ok=True)
+    client = chromadb.PersistentClient(path=str(store_path))
+    _clients[region] = client
 
     # Delete stale collection if it exists with wrong dimension
     try:
-        existing = _client.get_collection(name=_COLLECTION)
+        existing = client.get_collection(name=collection_name)
         # Probe dimension by checking metadata
         sample = existing.peek(limit=1)
         if sample and sample.get("embeddings") and len(sample["embeddings"]) > 0:
             dim = len(sample["embeddings"][0])
             from .embedder import EMBEDDING_DIM
             if dim != EMBEDDING_DIM:
-                _client.delete_collection(name=_COLLECTION)
+                client.delete_collection(name=collection_name)
                 existing = None
     except Exception:
         existing = None
 
     # cosine distance — matches what the embedder optimises for
-    _collection = _client.get_or_create_collection(
-        name=_COLLECTION,
+    collection = client.get_or_create_collection(
+        name=collection_name,
         metadata={"hnsw:space": "cosine"},
     )
+    _collections[region] = collection
 
     logger.info(
-        "[RuleStore] ChromaDB collection '%s' ready at %s",
-        _COLLECTION, _STORE_PATH,
+        "[RuleStore] ChromaDB collection '%s' ready for region '%s' at %s",
+        collection_name, region.upper(), store_path,
     )
-    return _collection
+    return collection
 
 
 # ------------------------------------------------------------------ #
 # Init (called at startup — idempotent)
 # ------------------------------------------------------------------ #
 
-def init_rule_store() -> None:
+def init_rule_store(region: str = "uae") -> None:
     """
-    Ensure the ChromaDB store and collection exist.
-    Call once at application startup.
+    Ensure the ChromaDB store and collection exist for a region.
+    Call once at application startup per region.
+    
+    Args:
+        region: 'uae' or 'ksa'
     """
-    global _client, _collection
-    # Reset cache so _get_collection() reinitialises fresh
-    _client = None
-    _collection = None
-    _get_collection()
-    logger.info("[RuleStore] ChromaDB rule store initialised.")
+    global _clients, _collections
+    region = region.lower()
+    # Reset cache for this region so _get_collection() reinitialises fresh
+    _clients.pop(region, None)
+    _collections.pop(region, None)
+    _get_collection(region)
+    logger.info("[RuleStore] ChromaDB rule store initialised for region '%s'.", region.upper())
 
 
 # ------------------------------------------------------------------ #
 # Upsert
 # ------------------------------------------------------------------ #
 
-def upsert_rules_batch(rules: List[Dict[str, Any]]) -> int:
+def upsert_rules_batch(rules: List[Dict[str, Any]], region: str = "uae") -> int:
     """
-    Upsert a batch of rule dicts into ChromaDB.
+    Upsert a batch of rule dicts into ChromaDB for a specific region.
 
     Each dict must have:
         rule_id, package_name, severity, object_type,
         title, short_message, long_message, chunk_text, embedding
+    
+    Args:
+        rules: List of rule dictionaries
+        region: 'uae' or 'ksa'
 
     Returns the number of rules upserted.
     ChromaDB upsert is idempotent on the `rule_id` (used as the document id).
     """
-    col = _get_collection()
+    col = _get_collection(region)
 
     ids          = []
     embeddings   = []
@@ -146,7 +182,7 @@ def upsert_rules_batch(rules: List[Dict[str, Any]]) -> int:
     )
 
     count = len(ids)
-    logger.info("[RuleStore] Upserted %d rules into ChromaDB.", count)
+    logger.info("[RuleStore] Upserted %d rules into ChromaDB for region '%s'.", count, region.upper())
     return count
 
 
@@ -156,19 +192,25 @@ def upsert_rules_batch(rules: List[Dict[str, Any]]) -> int:
 
 def similarity_search(
     query_embedding: List[float],
+    region: str = "uae",
     top_k: int = 5,
 ) -> List[Dict[str, Any]]:
     """
-    Return the top-k most similar rules to a query embedding.
+    Return the top-k most similar rules to a query embedding for a region.
 
     ChromaDB returns distances in [0, 2] for cosine space.
     We convert to similarity = 1 - (distance / 2) → [0, 1].
+    
+    Args:
+        query_embedding: Query vector
+        region: 'uae' or 'ksa'
+        top_k: Maximum number of results
 
     Returns a list of dicts with rule metadata + similarity score.
     Returns an empty list if the collection has no documents or
     an error occurs.
     """
-    col = _get_collection()
+    col = _get_collection(region)
 
     try:
         n_results = min(top_k, col.count())
@@ -211,9 +253,14 @@ def similarity_search(
 # Utility
 # ------------------------------------------------------------------ #
 
-def count_rules() -> int:
-    """Return the number of rules currently stored in ChromaDB."""
+def count_rules(region: str = "uae") -> int:
+    """
+    Return the number of rules currently stored in ChromaDB for a region.
+    
+    Args:
+        region: 'uae' or 'ksa'
+    """
     try:
-        return _get_collection().count()
+        return _get_collection(region).count()
     except Exception:
         return 0

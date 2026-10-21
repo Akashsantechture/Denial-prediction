@@ -1,6 +1,6 @@
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Header
 from fastapi.middleware.cors import CORSMiddleware
 
 from .schemas import (
@@ -174,7 +174,17 @@ def health():
 )
 def create_analyst_session(
     request: AnalystSessionRequest,
+    x_region: str = Header(default="uae", alias="X-Region"),
 ):
+    """
+    Create a new analyst session with auto-generated initial summary.
+    
+    Headers:
+        X-Region: Region code ('uae' or 'ksa') - defaults to 'uae'
+    """
+    region = x_region.lower()
+    if region not in ("uae", "ksa"):
+        region = "uae"
 
     if analyst_service is None:
         raise HTTPException(
@@ -183,21 +193,25 @@ def create_analyst_session(
         )
 
     try:
-
         print("\n" + "=" * 80)
         print("CREATE ANALYST SESSION")
         print("=" * 80)
+        print(f"Region: {region.upper()}")
         print("Received claim intelligence:")
         print(request.claim_intelligence)
         print("=" * 80)
 
-        session_id = analyst_service.create_session(
-            claim_intelligence=request.claim_intelligence
+        session_id, initial_summary = analyst_service.create_session(
+            claim_intelligence=request.claim_intelligence,
+            region=region,
+            auto_summarize=True,  # Enable auto-summary
         )
 
         return AnalystSessionResponse(
             session_id=session_id,
             message="Analyst session created successfully.",
+            initial_summary=initial_summary,
+            rag_used=initial_summary is not None,
         )
 
     except Exception as exc:
@@ -221,7 +235,17 @@ def create_analyst_session(
 )
 def analyst_chat(
     request: AnalystChatRequest,
+    x_region: str = Header(default="uae", alias="X-Region"),
 ):
+    """
+    Chat with the AI analyst about a claim.
+    
+    Headers:
+        X-Region: Region code ('uae' or 'ksa') - defaults to 'uae'
+    """
+    region = x_region.lower()
+    if region not in ("uae", "ksa"):
+        region = "uae"  # Fallback to UAE if invalid region
 
     if analyst_service is None:
         raise HTTPException(
@@ -230,11 +254,11 @@ def analyst_chat(
         )
 
     try:
-
         answer, rag_used = analyst_service.chat(
             session_id=request.session_id,
             user_message=request.message,
             use_rag=request.use_rag,
+            region=region,  # Pass region to analyst service
         )
 
         return AnalystChatResponse(

@@ -133,15 +133,26 @@ def _build_chunk(rule: Dict[str, Any]) -> str:
 # Main ingest function
 # ------------------------------------------------------------------ #
 
-def run_ingest() -> Dict[str, Any]:
+def run_ingest(region: str = "uae") -> Dict[str, Any]:
     """
-    Execute full ingest pipeline.
+    Execute full ingest pipeline for a specific region.
+    
+    Args:
+        region: 'uae' or 'ksa'
 
     Returns a summary dict with counts and status.
     """
+    region = region.lower()
+    if region not in ("uae", "ksa"):
+        raise ValueError(f"Invalid region: {region}. Must be 'uae' or 'ksa'.")
+    
     # Late import so this module can be loaded without DB connection
     from .embedder import Embedder
     from .rule_store import upsert_rules_batch, count_rules
+
+    # Update paths based on region
+    _LOOKUP_PATH     = _PROJECT_ROOT / "Thynk" / region / ("thynk-claimlookup.json" if region == "uae" else "nphies-claimlookup.json")
+    _RAG_RULES_PATH  = _PROJECT_ROOT / "Thynk" / region / ("thynk-rag-rules.json" if region == "uae" else "nphies-rag-rules.json")
 
     # ── Load claim lookup JSON ─────────────────────────────────
     claim_rules: List[Dict[str, Any]] = []
@@ -213,15 +224,17 @@ def run_ingest() -> Dict[str, Any]:
         })
 
     # ── Upsert ─────────────────────────────────────────────────
-    count = upsert_rules_batch(rows)
-    total = count_rules()
+    count = upsert_rules_batch(rows, region=region)
+    total = count_rules(region=region)
 
     logger.info(
-        "[Ingest] Done. Upserted %d rules. Total in store: %d.", count, total
+        "[Ingest] Done for region '%s'. Upserted %d rules. Total in store: %d.",
+        region.upper(), count, total
     )
 
     return {
         "status":          "ok",
+        "region":          region,
         "ingested":        count,
         "total_in_store":  total,
         "from_claim_lookup": len(claim_rules),
@@ -234,6 +247,7 @@ def run_ingest() -> Dict[str, Any]:
 # ------------------------------------------------------------------ #
 
 if __name__ == "__main__":
+    import argparse
     import os
     from pathlib import Path
 
@@ -246,9 +260,20 @@ if __name__ == "__main__":
         format="%(asctime)s  %(levelname)-8s  %(name)s  %(message)s",
     )
 
-    result = run_ingest()
+    # Parse command line arguments
+    parser = argparse.ArgumentParser(description="Ingest rules into ChromaDB for a region")
+    parser.add_argument(
+        "--region",
+        type=str,
+        default="uae",
+        choices=["uae", "ksa"],
+        help="Region to ingest rules for (default: uae)"
+    )
+    args = parser.parse_args()
+
+    result = run_ingest(region=args.region)
     print("\n" + "=" * 60)
-    print("INGEST RESULT")
+    print(f"INGEST RESULT FOR {args.region.upper()}")
     print("=" * 60)
     print(json.dumps(result, indent=2))
 

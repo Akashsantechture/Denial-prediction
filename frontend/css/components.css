@@ -485,6 +485,23 @@
 .thinking-dots em { animation: blink 1.2s infinite; }
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
 
+/* Initial summary styling */
+.chat-bubble.initial-summary {
+  background: linear-gradient(135deg, rgba(109, 40, 217, 0.08), rgba(124, 58, 237, 0.05));
+  border-left: 3px solid #8B5CF6 !important;
+  padding: 1rem 1.25rem;
+  max-width: 100% !important;
+}
+
+.chat-message-system {
+  text-align: center;
+  font-size: 0.72rem;
+  color: var(--color-text-muted);
+  padding: 0.6rem 1rem;
+  font-style: italic;
+  opacity: 0.8;
+}
+
 /* Fallback notice appended when LLM was expected but rule-based ran */
 .chat-fallback-notice {
   margin-top: .5rem;

@@ -896,3 +896,169 @@ Distinguish clearly between:
             raise RuntimeError(
                 f"Gemini LLM request failed: {exc}"
             ) from exc
+
+    # ============================================================
+    # INITIAL SUMMARY PROMPT
+    # ============================================================
+
+    def build_initial_summary_prompt(
+        self,
+        claim_intelligence: Dict[str, Any],
+        retrieved_rules: str | None,
+        region: str = "uae",
+    ) -> str:
+        """
+        Build a prompt for the initial claim analysis summary.
+        
+        This is the first message the analyst shows — a proactive
+        analysis combining model predictions, Thynk validation,
+        and RAG knowledge base rules.
+        
+        Args:
+            claim_intelligence: Full claim data with predictions
+            retrieved_rules: RAG-retrieved rule context (or None)
+            region: 'uae' or 'ksa'
+            
+        Returns:
+            Formatted prompt string for Gemini
+        """
+        from .region_config import get_region_config
+        
+        config = get_region_config(region)
+        regulator = config.regulator_name
+        
+        # Extract key metrics
+        claim_summary = claim_intelligence.get("prediction", {})
+        denial_pct = claim_summary.get("claim_denial_probability_pct", 0)
+        risk_level = claim_summary.get("claim_risk_level", "UNKNOWN")
+        
+        # Extract top SHAP contributor
+        top_shap = claim_intelligence.get("top_shap_contributions", [])
+        top_driver = top_shap[0]["feature"] if top_shap else "Unknown"
+        
+        # Extract denied activities
+        activities = claim_intelligence.get("prediction", {}).get("activity_predictions", [])
+        denied = [
+            f"{a['activity_code']} ({a.get('cpt_category', 'Unknown')})"
+            for a in activities if a.get("predicted_denial")
+        ]
+        
+        # Extract Thynk validation summary
+        thynk = claim_intelligence.get("thynk_validation")
+        thynk_summary = ""
+        if thynk and thynk.get("found"):
+            summary = thynk.get("summary", {})
+            thynk_summary = f"""
+**Thynk Validation Summary:**
+- CRITICAL: {summary.get('critical', 0)}
+- SEVERE: {summary.get('severe', 0)}
+- WARNING: {summary.get('warning', 0)}
+- INFO: {summary.get('info', 0)}
+"""
+            # Add top fired rules
+            all_items = thynk.get("all", [])[:3]
+            if all_items:
+                thynk_summary += "\n**Top Issues:**\n"
+                for item in all_items:
+                    thynk_summary += f"- [{item.get('severity', 'INFO')}] {item.get('shortMessage', 'N/A')}\n"
+        
+        rag_section = ""
+        if retrieved_rules:
+            rag_section = f"""
+
+{retrieved_rules}
+"""
+        
+        prompt = f"""You are a {regulator} claims denial prevention analyst.
+
+TASK: Provide a concise initial analysis of this claim. The user just evaluated the claim and opened the AI Analyst chat. Give them immediate, actionable insights without waiting for questions.
+
+ANALYSIS SOURCES:
+1. **ML Model Predictions**: Denial probabilities and SHAP risk drivers
+2. **{regulator} Validation ({config.claim_system_name})**: Live rule engine results
+3. **{regulator} Knowledge Base**: Relevant regulatory rules and guidelines
+
+FORMAT YOUR RESPONSE EXACTLY AS:
+
+## 📊 Risk Assessment
+- **Denial Probability**: {denial_pct:.1f}%
+- **Risk Level**: {risk_level}
+- **Primary Driver**: {top_driver}
+
+## ⚠️ Key Issues
+{f"**Denied Activities:** {', '.join(denied)}" if denied else "✅ No activities predicted for denial."}
+
+{thynk_summary if thynk_summary else "✅ No Thynk validation issues found."}
+
+## 💡 Recommendations
+[Provide 2-4 specific, actionable fixes ranked by impact. Reference specific codes, diagnoses, or rule IDs from the data above. If no major issues, suggest minor optimizations.]
+
+## 📚 Relevant {regulator} Rules
+[If RAG rules are available, cite the most relevant 1-2 rules briefly with rule IDs. If not available, skip this section.]
+
+## ❓ Ask Me Anything
+I can help with:
+- Detailed explanations of any flagged issue
+- Step-by-step fix instructions  
+- Required documentation
+- Appeal strategies
+
+---
+
+**IMPORTANT FORMATTING RULES:**
+- Keep total response under 350 words
+- Be specific (use actual codes from the data, not generic examples)
+- Prioritize actionable advice
+- Use markdown formatting (##, -, **)
+- If no major issues found, acknowledge clean claim and suggest minor optimizations
+
+---
+
+FULL CLAIM DATA:
+```json
+{json.dumps(claim_intelligence, indent=2)}
+```
+{rag_section}
+"""
+        return prompt
+    
+    def generate_initial_summary(
+        self,
+        claim_intelligence: Dict[str, Any],
+        retrieved_rules: str | None,
+        region: str = "uae",
+    ) -> str:
+        """
+        Generate the initial claim summary.
+        
+        Args:
+            claim_intelligence: Full claim data with predictions
+            retrieved_rules: RAG-retrieved rule context (or None)
+            region: 'uae' or 'ksa'
+            
+        Returns:
+            Generated summary text
+        """
+        prompt = self.build_initial_summary_prompt(
+            claim_intelligence=claim_intelligence,
+            retrieved_rules=retrieved_rules,
+            region=region,
+        )
+        
+        try:
+            response = self.client.models.generate_content(
+                model=self.model_name,
+                contents=prompt,
+                config=types.GenerateContentConfig(
+                    system_instruction=SYSTEM_PROMPT,
+                    temperature=0.2,  # Slightly higher for more natural summary
+                ),
+            )
+
+            if not response or not response.text:
+                raise RuntimeError("Gemini returned an empty response.")
+
+            return response.text.strip()
+
+        except Exception as exc:
+            raise RuntimeError(f"Initial summary generation failed: {exc}") from exc

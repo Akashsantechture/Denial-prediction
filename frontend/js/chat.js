@@ -54,7 +54,6 @@ const Chat = (() => {
   let _contributions = [];  // aggregated claim-level SHAP from SHAP.fromApiResult()
   let _sessionId     = null;
   let _mode          = 'INACTIVE';
-  let _ragEnabled    = false; // controlled by the UI toggle
 
   // ── DOM helpers ──────────────────────────────────────────────────────
   const _el    = id => document.getElementById(id);
@@ -70,6 +69,26 @@ const Chat = (() => {
     _idle()?.classList.add('hidden');
     const div = document.createElement('div');
     div.className = `chat-bubble ${role}`;
+    div.innerHTML = html;
+    el.appendChild(div);
+    el.scrollTop = el.scrollHeight;
+    return div;
+  }
+  
+  function _appendAssistant(text, options = {}) {
+    const el = _msgs();
+    if (!el) return null;
+    _idle()?.classList.add('hidden');
+    const div = document.createElement('div');
+    div.className = `chat-bubble assistant${options.isInitialSummary ? ' initial-summary' : ''}`;
+    
+    let html = _wrap(text);
+    
+    // Add RAG badge for initial summary
+    if (options.isInitialSummary && options.ragUsed) {
+      html += `<p class="chat-rag-notice">✦ Powered by ${window.regionManager?.getCurrentRegion().regulator || 'CHI'} rule knowledge base</p>`;
+    }
+    
     div.innerHTML = html;
     el.appendChild(div);
     el.scrollTop = el.scrollHeight;
@@ -103,12 +122,9 @@ const Chat = (() => {
     const el = _badge();
     if (!el) return;
     if (_mode === 'LLM') {
-      const ragNote = _ragEnabled ? ' · ✦ Rule Lookup' : '';
-      el.textContent = `Intelligence connected${ragNote}`;
-      el.className   = _ragEnabled ? 'chat-mode-badge llm rag-on' : 'chat-mode-badge llm';
-      el.title       = _ragEnabled
-        ? 'Gemini + ChromaDB rule retrieval active'
-        : 'Powered by Gemini via the AI Analyst microservice';
+      el.textContent = 'Intelligence connected · ✦ Full Analysis';
+      el.className   = 'chat-mode-badge llm rag-on';
+      el.title       = 'Gemini · Model predictions · Thynk validation · Knowledge base';
     } else if (_mode === 'RULE_BASED') {
       el.textContent = '⚡ Rule-based';
       el.className   = 'chat-mode-badge rule';
@@ -604,7 +620,7 @@ ${drivers}`;
   // ── LLM + fallback ───────────────────────────────────────────────────
   async function _respond(userMessage) {
     if (_mode === 'LLM' && _sessionId) {
-      const r = await AnalystAPI.chat(_sessionId, userMessage, _ragEnabled);
+      const r = await AnalystAPI.chat(_sessionId, userMessage, true);
       if (r.ok) return { text: r.answer, source: 'llm', ragUsed: r.rag_used === true };
       console.warn('[Chat] LLM fallback:', r.detail);
     }
@@ -662,14 +678,49 @@ ${drivers}`;
       `Top SHAP drivers (claim-level): ${top3 || '—'}.\n\n` +
       `Ask me about any specific activity, secondary diagnosis, feature, or remediation step.`;
 
-    _appendBubble('assistant', _wrap(greeting));
-    _initLLM(payload, result, contributions);
+    // Show the rule-based greeting immediately as a placeholder,
+    // then replace it once the LLM summary arrives.
+    const greetingBubble = _appendBubble('assistant', _wrap(greeting));
+    _initLLM(payload, result, contributions, greetingBubble);
   }
 
-  async function _initLLM(payload, result, contributions) {
+  async function _initLLM(payload, result, contributions, greetingBubble = null) {
     const sr = await AnalystAPI.createSession(_buildCI());
-    if (sr.ok) { _sessionId = sr.session_id; _mode = 'LLM'; }
-    else { _mode = 'RULE_BASED'; console.warn('[Chat] AI Analyst unavailable:', sr.detail); }
+    if (sr.ok) {
+      _sessionId = sr.session_id;
+      _mode = 'LLM';
+
+      if (sr.initial_summary) {
+        // Replace the placeholder greeting with the AI-generated summary
+        if (greetingBubble && greetingBubble.parentNode) {
+          greetingBubble.className = 'chat-bubble assistant initial-summary';
+          greetingBubble.innerHTML = _wrap(sr.initial_summary);
+          if (sr.rag_used) {
+            const badge = document.createElement('p');
+            badge.className = 'chat-rag-notice';
+            badge.textContent = '✦ Analysis powered by Model · Thynk · Knowledge Base';
+            greetingBubble.appendChild(badge);
+          }
+        } else {
+          // Bubble was removed somehow — just append fresh
+          _appendAssistant(sr.initial_summary, { isInitialSummary: true, ragUsed: sr.rag_used });
+        }
+
+        // Separator
+        const sep = document.createElement('div');
+        sep.className = 'chat-message-system';
+        sep.textContent = 'Ask me anything about this claim...';
+        _msgs().appendChild(sep);
+        _msgs().scrollTop = _msgs().scrollHeight;
+
+        console.log(`[Chat] Initial summary displayed (RAG: ${sr.rag_used})`);
+      }
+      // If no summary returned, keep the greeting bubble as-is
+    } else {
+      _mode = 'RULE_BASED';
+      console.warn('[Chat] AI Analyst unavailable:', sr.detail);
+      // Greeting bubble stays — it's the fallback content
+    }
     _updateBadge();
   }
 
@@ -712,5 +763,5 @@ ${drivers}`;
     _updateBadge();
   }
 
-  return { init, send, clear, setRag: (on) => { _ragEnabled = on; _updateBadge(); } };
+  return { init, send, clear };
 })();

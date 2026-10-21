@@ -36,15 +36,24 @@ class Retriever:
     """
     Embed a query and retrieve semantically similar Thynk rules.
 
-    One instance is created at startup and shared across all requests.
-    The Embedder is stateless between calls so this is safe.
+    Region-aware: searches within the specified region's rule collection.
+    Each retriever instance is bound to a specific region (UAE or KSA).
     """
 
-    def __init__(self) -> None:
+    def __init__(self, region: str = "uae") -> None:
+        """
+        Initialize retriever for a specific region.
+        
+        Args:
+            region: 'uae' or 'ksa' - determines which rule collection to search
+        """
         self._embedder = Embedder()
-        total = count_rules()
+        self._region = region.lower()
+        
+        total = count_rules(region=self._region)
         logger.info(
-            "[Retriever] Ready. Rule store contains %d indexed rules.", total
+            "[Retriever] Ready for region '%s'. Rule store contains %d indexed rules.",
+            self._region.upper(), total
         )
 
     # ------------------------------------------------------------------ #
@@ -76,8 +85,8 @@ class Retriever:
             # Embed the query
             query_vec = self._embedder.embed(query_text)
 
-            # Search pgvector
-            results = similarity_search(query_vec, top_k=top_k)
+            # Search ChromaDB (region-specific collection)
+            results = similarity_search(query_vec, region=self._region, top_k=top_k)
 
             # Filter by minimum similarity
             relevant = [r for r in results if r["similarity"] >= min_similarity]

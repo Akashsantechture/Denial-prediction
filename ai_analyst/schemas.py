@@ -17,6 +17,8 @@ class AnalystSessionRequest(BaseModel):
 class AnalystSessionResponse(BaseModel):
     session_id: str
     message: str
+    initial_summary: str | None = None  # Auto-generated summary
+    rag_used: bool = False              # Whether RAG was used in summary
 
 
 class AnalystChatRequest(BaseModel):

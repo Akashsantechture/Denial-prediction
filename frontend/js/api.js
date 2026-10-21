@@ -103,12 +103,19 @@ const API = (() => {
     return ICD_CATEGORY_MAP[diagnosisCode[0].toUpperCase()] ?? 'Unknown_ICD';
   }
 
-  // ── Fetch with timeout ───────────────────────────────────────────────
+  // ── Fetch with timeout + region header ──────────────────────────────
   async function _fetchTimeout(url, options = {}) {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
+    
+    // Inject X-Region header from region manager
+    const headers = { ...options.headers };
+    if (window.regionManager) {
+      headers['X-Region'] = window.regionManager.getRegionHeader();
+    }
+    
     try {
-      return await fetch(url, { ...options, signal: controller.signal });
+      return await fetch(url, { ...options, headers, signal: controller.signal });
     } finally {
       clearTimeout(timer);
     }
@@ -259,7 +266,12 @@ const AnalystAPI = (() => {
       });
       if (response.status === 200) {
         const data = await response.json();
-        return { ok: true, session_id: data.session_id };
+        return {
+          ok:              true,
+          session_id:      data.session_id,
+          initial_summary: data.initial_summary ?? null,
+          rag_used:        data.rag_used ?? false,
+        };
       }
       const body = await response.json().catch(() => ({}));
       return { ok: false, detail: body.detail ?? `HTTP ${response.status}` };
