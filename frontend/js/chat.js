@@ -138,7 +138,7 @@ const Chat = (() => {
   // ── Shorthand accessors ──────────────────────────────────────────────
   function _cs()    { return _result?.claim_summary ?? {}; }
   function _preds() { return _result?.predictions   ?? []; }
-  function _acts()  { return _payload?.activities   ?? []; }
+  function _acts()  { return _payload?.activities ?? _payload?.services ?? []; }
 
   // Primary diagnosis code — new field name
   function _primaryDx() {
@@ -239,7 +239,6 @@ ${drivers}`;
         icd_category:           API.deriveIcdCategory(_primaryDx()),
         patient_age:            _payload?.patient_age,
         gender:                 _payload?.gender,
-        nationality:            _payload?.nationality,
         encounter_type:         _payload?.encounter_type,
         length_of_stay:         _payload?.length_of_stay,
         claim_gross:            _payload?.claim_gross,
@@ -247,6 +246,10 @@ ${drivers}`;
         clinician_profession:   _payload?.clinician_profession,
         facility_type:          _payload?.facility_type,
         payer_classification:   _payload?.payer_classification,
+        payer_name:             _payload?.payer_name,
+        payer_id:               _payload?.payer_id,
+        receiver_id:            _payload?.receiver_id,
+        network:                _payload?.network,
         activities:             _acts(),
       },
       prediction: {

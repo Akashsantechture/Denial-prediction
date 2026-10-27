@@ -204,13 +204,17 @@ prdicted:documentation,documentation,documentation
   "nationality": "JORDANIAN",
   "encounter_type": "OP",
   "length_of_stay": 0,
-  "claim_gross": 604.8,                                                            6
+  "claim_gross": 604.8,                                                            
   "claim_net": 604.8,
   "clinician_profession": "FAMILY/GENERAL PRACTICE",
   "clinician_category": "General Medical Practice",
   "facility_type": "Hospital",
   "payer_classification": "Insurance",
   "primary_diagnosis_code": "O99.013",
+  "payer_id":"INS026",
+  "payer_name":"NATIONAL HEALTH INSURANCE COMPANY (DAMAN)",
+  "receiver_id":"INS026",
+  "network":"Unknown Network",
   "activities": [
     {
       "activity_code": "84443",
@@ -400,7 +404,6 @@ prdicted:documentation,documentation,documentation
     }
   ]
 }
-
 
 
 

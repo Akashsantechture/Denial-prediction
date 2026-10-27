@@ -68,6 +68,7 @@
 const API = (() => {
   const BASE_URL        = 'http://127.0.0.1:8000';
   const PREDICT_URL     = `${BASE_URL}/predict`;
+  const KSA_PREDICT_URL = `${BASE_URL}/ksa/predict`;
   const HEALTH_URL      = `${BASE_URL}/health`;
   const MODEL_INFO_URL  = `${BASE_URL}/model-info`;
   const TIMEOUT_MS      = 25_000;
@@ -122,52 +123,89 @@ const API = (() => {
   }
 
   /**
-   * Send a claim to POST /predict.
-   *
-   * @param {Object} payload  — object collected from the form.
-   *   Expected fields:
-   *     primary_diagnosis_code  string
-   *     patient_age             int
-   *     gender / nationality / encounter_type / length_of_stay
-   *     claim_gross / claim_net
-   *     clinician_profession / facility_type / payer_classification
-   *     activities: [{
-   *       activity_code, activity_quantity, activity_gross,
-   *       diagnoses: [{ diagnosis_code, diagnosis_type }]
-   *     }]
-   * @returns PredictSuccess | ApiError
+   * Route to UAE or KSA predict based on the active region toggle.
    */
   async function predict(payload) {
+    const region = window.regionManager?.getRegionCode() || 'uae';
+    return region === 'ksa' ? _predictKSA(payload) : _predictUAE(payload);
+  }
+
+  // ── UAE predict (/predict) ───────────────────────────────────────────
+  async function _predictUAE(payload) {
 
     // Build ClaimRequest — map flat form fields to exact API schema
     const claimRequest = {
       claim_id:               payload.claim_id || `CLM-${Date.now()}`,
       patient_age:            payload.patient_age,
       gender:                 payload.gender,
-      nationality:            payload.nationality,
       encounter_type:         payload.encounter_type,
       length_of_stay:         payload.length_of_stay,
       claim_gross:            payload.claim_gross,
       claim_net:              payload.claim_net,
       clinician_profession:   payload.clinician_profession,
       facility_type:          payload.facility_type,
-      payer_classification:   payload.payer_classification || payload.payer_id || 'UNKNOWN',
-      primary_diagnosis_code: payload.primary_diagnosis_code || payload.diagnosis_code || '',
+      payer_classification:   payload.payer_classification || 'Insurance',
+      payer_name:             payload.payer_name           || 'Unknown',
+      payer_id:               payload.payer_id             || 'Unknown',
+      receiver_id:            payload.receiver_id          || 'Unknown',
+      network:                payload.network              || 'Unknown Network',
+      primary_diagnosis_code: payload.primary_diagnosis_code || '',
       activities:             (payload.activities || []).map(a => ({
         activity_code:      a.activity_code,
         activity_quantity:  a.activity_quantity,
         activity_gross:     a.activity_gross,
-        // diagnoses array: each activity carries its own diagnosis list
-        // primary always included; secondary diagnoses optional
         diagnoses: Array.isArray(a.diagnoses) && a.diagnoses.length > 0
           ? a.diagnoses
-          : [{ diagnosis_code: payload.primary_diagnosis_code || payload.diagnosis_code || '', diagnosis_type: 'primary' }],
+          : [{ diagnosis_code: payload.primary_diagnosis_code || '', diagnosis_type: 'Principal' }],
       })),
     };
 
+    return _sendPredict(PREDICT_URL, claimRequest);
+  }
+
+  // ── KSA predict (/ksa/predict) ───────────────────────────────────────
+  // KSA uses services[] not activities[].
+  // Maps service_code/service_quantity/service_gross from each service item.
+  // Extra claim-level fields: facility, department, claim_type, claim_subtype, policy_name.
+  async function _predictKSA(payload) {
+
+    const claimRequest = {
+      claim_id:               payload.claim_id || `CLM-${Date.now()}`,
+      patient_age:            payload.patient_age,
+      gender:                 payload.gender,
+      encounter_type:         payload.encounter_type,
+      length_of_stay:         payload.length_of_stay,
+      claim_gross:            payload.claim_gross,
+      claim_net:              payload.claim_net,
+      facility:               payload.facility              || 'Unknown',
+      facility_type:          payload.facility_type,
+      clinician_category:     payload.clinician_category    || 'Unknown',
+      department:             payload.department            || 'Unknown',
+      claim_type:             payload.claim_type            || 'Unknown',
+      claim_subtype:          payload.claim_subtype         || 'Unknown',
+      payer_classification:   payload.payer_classification  || 'Unknown',
+      payer_id:               payload.payer_id              || 'Unknown',
+      receiver_id:            payload.receiver_id           || 'Unknown',
+      policy_name:            payload.policy_name           || 'Unknown',
+      primary_diagnosis_code: payload.primary_diagnosis_code || '',
+      services:               (payload.services || []).map(s => ({
+        service_code:     s.service_code,
+        service_quantity: s.service_quantity,
+        service_gross:    s.service_gross,
+        diagnoses: Array.isArray(s.diagnoses) && s.diagnoses.length > 0
+          ? s.diagnoses
+          : [{ diagnosis_code: payload.primary_diagnosis_code || '', diagnosis_type: 'Principal' }],
+      })),
+    };
+
+    return _sendPredict(KSA_PREDICT_URL, claimRequest);
+  }
+
+  // ── Shared fetch + response handler ─────────────────────────────────
+  async function _sendPredict(url, claimRequest) {
     let response;
     try {
-      response = await _fetchTimeout(PREDICT_URL, {
+      response = await _fetchTimeout(url, {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
         body:    JSON.stringify(claimRequest),

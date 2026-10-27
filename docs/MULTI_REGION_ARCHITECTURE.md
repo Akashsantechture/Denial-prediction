@@ -223,3 +223,10 @@ For questions about multi-region architecture:
 - Model organization: See `models/README.md`
 - Rule organization: See `Thynk/README.md`
 - RAG architecture: See `ai_analyst/rag/README.md`
+
+
+The two rules that would have saved all the debugging today:
+
+Always run Step 0 first — let the model tell you its features, never hand-write or assume them
+api.js has its own claimRequest mapper — any new schema field must be added in three places: schemas.py, app.js collectPayload, AND api.js claimRequest mapper. Miss any one and you get a 422.
+Everything else in the guide is additive — you're not rewiring anything that works today, just branching on the X-Region header that's already flowing through the entire stack.

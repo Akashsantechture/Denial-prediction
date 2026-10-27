@@ -1,0 +1,416 @@
+{
+  "claim_id": "10058277",
+  "facility": "Dhahran",
+  "facility_type": "Hospital",
+  "patient_age": 48,
+  "gender": "Male",
+  "policy_name": "ARAMCO TRADING COMPANY",
+  "payer_classification": "TIER 1",
+  "payer_id": "102",
+  "receiver_id": "102",
+  "encounter_type": "OP",
+  "length_of_stay": 0,
+  "clinician_category": "General Medical Practice",
+  "department": "DHC CARDIOLOGY CLINIC",
+  "claim_type": "Outpatient",
+  "claim_subtype": "op",
+  "claim_gross": 402.50,
+  "claim_net": 350.00,
+  "primary_diagnosis_code": "I25.10",
+  "services": [
+    {
+      "service_code": "836000030",
+      "service_quantity": 1.0,
+      "service_gross": 0.0,
+      "diagnoses": [
+        {
+          "diagnosis_code": "I25.10",
+          "diagnosis_type": "Principal"
+        },
+        {
+          "diagnosis_code": "U82.3",
+          "diagnosis_type": "Secondary"
+        },
+        {
+          "diagnosis_code": "E11.9",
+          "diagnosis_type": "Secondary"
+        },
+        {
+          "diagnosis_code": "I20.0",
+          "diagnosis_type": "Secondary"
+        }
+      ]
+    },
+    {
+      "service_code": "836000020",
+      "service_quantity": 1.0,
+      "service_gross": 402.50,
+      "diagnoses": [
+        {
+          "diagnosis_code": "I25.10",
+          "diagnosis_type": "Principal"
+        },
+        {
+          "diagnosis_code": "U82.3",
+          "diagnosis_type": "Secondary"
+        },
+        {
+          "diagnosis_code": "E11.9",
+          "diagnosis_type": "Secondary"
+        },
+        {
+          "diagnosis_code": "I20.0",
+          "diagnosis_type": "Secondary"
+        }
+      ]
+    }
+  ]
+}
+
+
+
+{
+  "claim_id": "10554129",
+  "facility": "Dhahran",
+  "facility_type": "Hospital",
+  "patient_age": 4,
+  "gender": "Female",
+  "policy_name": "INTERNATIONAL UTILITY COMPANY",
+  "payer_classification": "VIP",
+  "payer_id": "102",
+  "receiver_id": "102",
+  "encounter_type": "OP",
+  "length_of_stay": 0,
+  "clinician_category": "General Medical Practice",
+  "department": "DHC PED PULMONARY CL",
+  "claim_type": "Outpatient",
+  "claim_subtype": "op",
+  "claim_gross": 402.50,
+  "claim_net": 350.00,
+  "primary_diagnosis_code": "J98.8",
+  "services": [
+    {
+      "service_code": "836000020",
+      "service_quantity": 1.0,
+      "service_gross": 402.50,
+      "diagnoses": [
+        {
+          "diagnosis_code": "J98.8",
+          "diagnosis_type": "Principal"
+        }
+      ]
+    }
+  ]
+}
+
+
+{
+  "claim_id": "10605752",
+  "facility": "Dhahran",
+  "facility_type": "Hospital",
+  "patient_age": 0,
+  "gender": "Male",
+  "policy_name": "Saudi Arabian Oil Company (Saudi Aramco)",
+  "payer_classification": "Saudi Aramco Medical Plan",
+  "payer_id": "102",
+  "receiver_id": "102",
+  "encounter_type": "OP",
+  "length_of_stay": 0,
+  "clinician_category": "General Medical Practice",
+  "department": "DHC PRIMARY CARE PEDS CLINIC",
+  "claim_type": "Outpatient",
+  "claim_subtype": "op",
+  "claim_gross": 1239.70,
+  "claim_net": 1078.00,
+  "primary_diagnosis_code": "Z00.1",
+  "services": [
+    {
+      "service_code": "836000020",
+      "service_quantity": 1.0,
+      "service_gross": 402.50,
+      "diagnoses": [
+        {
+          "diagnosis_code": "Z00.1",
+          "diagnosis_type": "Principal"
+        }
+      ]
+    },
+    {
+      "service_code": "730503530",
+      "service_quantity": 1.0,
+      "service_gross": 417.45,
+      "diagnoses": [
+        {
+          "diagnosis_code": "Z00.1",
+          "diagnosis_type": "Principal"
+        }
+      ]
+    },
+    {
+      "service_code": "730503550",
+      "service_quantity": 1.0,
+      "service_gross": 419.75,
+      "diagnoses": [
+        {
+          "diagnosis_code": "Z00.1",
+          "diagnosis_type": "Principal"
+        }
+      ]
+    }
+  ]
+}
+
+
+{
+  "claim_id": "10003209",
+  "facility": "Dhahran",
+  "facility_type": "Hospital",
+  "patient_age": 47,
+  "gender": "Female",
+  "policy_name": "Saudi Arabian Oil Company (Saudi Aramco)",
+  "payer_classification": "Saudi Aramco Medical Plan",
+  "payer_id": "102",
+  "receiver_id": "102",
+  "encounter_type": "OP",
+  "length_of_stay": 0,
+  "clinician_category": "General Medical Practice",
+  "department": "DHC ENDOCRINOLOGY CLINIC",
+  "claim_type": "Outpatient",
+  "claim_subtype": "op",
+  "claim_gross": 402.50,
+  "claim_net": 350.00,
+  "primary_diagnosis_code": "R10.4",
+  "services": [
+    {
+      "service_code": "836000020",
+      "service_quantity": 1.0,
+      "service_gross": 402.50,
+      "diagnoses": [
+        {
+          "diagnosis_code": "R10.4",
+          "diagnosis_type": "Principal"
+        }
+      ]
+    }
+  ]
+}
+
+
+
+
+
+
+
+
+{
+  "claim_id": "10674581",
+  "facility": "Dhahran",
+  "facility_type": "Hospital",
+  "patient_age": 40,
+  "gender": "Female",
+  "policy_name": "Saudi Arabian Oil Company (Saudi Aramco)",
+  "payer_classification": "Saudi Aramco Medical Plan",
+  "payer_id": "102",
+  "receiver_id": "102",
+  "encounter_type": "ER",
+  "length_of_stay": 0,
+  "clinician_category": "General Medical Practice",
+  "department": "DHH EMERGENCY DEPT",
+  "claim_type": "Emergency",
+  "claim_subtype": "emr",
+  "claim_gross": 2906.53,
+  "claim_net": 2527.81,
+  "primary_diagnosis_code": "L98.7",
+  "services": [
+    {
+      "service_code": "836000010",
+      "service_quantity": 1.0,
+      "service_gross": 287.50,
+      "diagnoses": [
+        {
+          "diagnosis_code": "L98.7",
+          "diagnosis_type": "Principal"
+        },
+        {
+          "diagnosis_code": "Y83.8",
+          "diagnosis_type": "Secondary"
+        },
+        {
+          "diagnosis_code": "T81.3",
+          "diagnosis_type": "Secondary"
+        }
+      ]
+    },
+    {
+      "service_code": "730503730",
+      "service_quantity": 1.0,
+      "service_gross": 150.65,
+      "diagnoses": [
+        {
+          "diagnosis_code": "L98.7",
+          "diagnosis_type": "Principal"
+        },
+        {
+          "diagnosis_code": "Y83.8",
+          "diagnosis_type": "Secondary"
+        },
+        {
+          "diagnosis_code": "T81.3",
+          "diagnosis_type": "Secondary"
+        }
+      ]
+    },
+    {
+      "service_code": "730500980",
+      "service_quantity": 1.0,
+      "service_gross": 149.50,
+      "diagnoses": [
+        {
+          "diagnosis_code": "L98.7",
+          "diagnosis_type": "Principal"
+        },
+        {
+          "diagnosis_code": "Y83.8",
+          "diagnosis_type": "Secondary"
+        },
+        {
+          "diagnosis_code": "T81.3",
+          "diagnosis_type": "Secondary"
+        }
+      ]
+    },
+    {
+      "service_code": "730000030",
+      "service_quantity": 1.0,
+      "service_gross": 336.95,
+      "diagnoses": [
+        {
+          "diagnosis_code": "L98.7",
+          "diagnosis_type": "Principal"
+        },
+        {
+          "diagnosis_code": "Y83.8",
+          "diagnosis_type": "Secondary"
+        },
+        {
+          "diagnosis_code": "T81.3",
+          "diagnosis_type": "Secondary"
+        }
+      ]
+    },
+    {
+      "service_code": "731000080",
+      "service_quantity": 1.0,
+      "service_gross": 284.05,
+      "diagnoses": [
+        {
+          "diagnosis_code": "L98.7",
+          "diagnosis_type": "Principal"
+        },
+        {
+          "diagnosis_code": "Y83.8",
+          "diagnosis_type": "Secondary"
+        },
+        {
+          "diagnosis_code": "T81.3",
+          "diagnosis_type": "Secondary"
+        }
+      ]
+    },
+    {
+      "service_code": "730501620",
+      "service_quantity": 1.0,
+      "service_gross": 80.50,
+      "diagnoses": [
+        {
+          "diagnosis_code": "L98.7",
+          "diagnosis_type": "Principal"
+        },
+        {
+          "diagnosis_code": "Y83.8",
+          "diagnosis_type": "Secondary"
+        },
+        {
+          "diagnosis_code": "T81.3",
+          "diagnosis_type": "Secondary"
+        }
+      ]
+    },
+    {
+      "service_code": "731001140",
+      "service_quantity": 1.0,
+      "service_gross": 363.18,
+      "diagnoses": [
+        {
+          "diagnosis_code": "L98.7",
+          "diagnosis_type": "Principal"
+        },
+        {
+          "diagnosis_code": "Y83.8",
+          "diagnosis_type": "Secondary"
+        },
+        {
+          "diagnosis_code": "T81.3",
+          "diagnosis_type": "Secondary"
+        }
+      ]
+    },
+    {
+      "service_code": "730000090",
+      "service_quantity": 1.0,
+      "service_gross": 800.40,
+      "diagnoses": [
+        {
+          "diagnosis_code": "L98.7",
+          "diagnosis_type": "Principal"
+        },
+        {
+          "diagnosis_code": "Y83.8",
+          "diagnosis_type": "Secondary"
+        },
+        {
+          "diagnosis_code": "T81.3",
+          "diagnosis_type": "Secondary"
+        }
+      ]
+    },
+    {
+      "service_code": "730502170",
+      "service_quantity": 1.0,
+      "service_gross": 198.95,
+      "diagnoses": [
+        {
+          "diagnosis_code": "L98.7",
+          "diagnosis_type": "Principal"
+        },
+        {
+          "diagnosis_code": "Y83.8",
+          "diagnosis_type": "Secondary"
+        },
+        {
+          "diagnosis_code": "T81.3",
+          "diagnosis_type": "Secondary"
+        }
+      ]
+    },
+    {
+      "service_code": "730504030",
+      "service_quantity": 1.0,
+      "service_gross": 364.55,
+      "diagnoses": [
+        {
+          "diagnosis_code": "L98.7",
+          "diagnosis_type": "Principal"
+        },
+        {
+          "diagnosis_code": "Y83.8",
+          "diagnosis_type": "Secondary"
+        },
+        {
+          "diagnosis_code": "T81.3",
+          "diagnosis_type": "Secondary"
+        }
+      ]
+    }
+  ]
+}

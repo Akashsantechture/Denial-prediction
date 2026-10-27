@@ -1,0 +1,27 @@
+
+                                    feature  importance
+                              facility_type    0.244408
+                                    network    0.204518
+                                receiver_id    0.077132
+                               cpt_category    0.049204
+                              activity_code    0.042387
+                             activity_gross    0.025071
+                             encounter_type    0.024040
+                          activity_quantity    0.023427
+                       clinician_profession    0.022011
+                            secondary_obgyn    0.019828
+                       secondary_congenital    0.017314
+                 primary_diagnosis_category    0.015703
+                     primary_diagnosis_code    0.015565
+                       secondary_infectious    0.013564
+                             length_of_stay    0.013535
+                  secondary_external_causes    0.011445
+                        secondary_neurology    0.011179
+secondary_factors_influencing_health_status    0.010927
+                    secondary_endocrinology    0.010643
+                      secondary_dermatology    0.010586
+                    secondary_genitourinary    0.010373
+                       secondary_psychiatry    0.010335
+                         secondary_dx_count    0.010163
+           secondary_trauma_burns_poisoning    0.010161
+              secondary_oncology_hematology    0.009910

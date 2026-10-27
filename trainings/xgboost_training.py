@@ -346,7 +346,7 @@ from xgboost import XGBClassifier
 # CONFIG
 # ==========================================================
 
-DATA_PATH = Path("data/claim_activity_denial_model_v3.parquet")
+DATA_PATH = Path("data/claim_activity_denial_model_v3-uae.parquet")
 
 MODEL_DIR = Path("models/xgboost")
 MODEL_DIR.mkdir(parents=True, exist_ok=True)
@@ -453,15 +453,67 @@ if df[TARGET].nunique() != 2:
     )
 
 
+# # ==========================================================
+# # CLAIM-LEVEL TRAIN / TEST SPLIT
+# # ==========================================================
+
+# # Normalize IDs consistently for splitting.
+# # This avoids string-vs-numeric ID mismatches.
+# df["_claim_split_key"] = df[CLAIM_ID].astype(str)
+
+# unique_claims = df["_claim_split_key"].unique()
+
+# train_claims, test_claims = train_test_split(
+#     unique_claims,
+#     test_size=TEST_SIZE,
+#     random_state=RANDOM_STATE,
+# )
+
+# train_df = df[
+#     df["_claim_split_key"].isin(train_claims)
+# ].copy()
+
+# test_df = df[
+#     df["_claim_split_key"].isin(test_claims)
+# ].copy()
+
+# if set(train_df["_claim_split_key"]) & set(
+#     test_df["_claim_split_key"]
+# ):
+#     raise RuntimeError(
+#         "Claim leakage detected between train and test."
+#     )
+
+# print(f"\nUnique claims: {len(unique_claims):,}")
+# print(f"Train rows:    {len(train_df):,}")
+# print(f"Test rows:     {len(test_df):,}")
+# print(
+#     f"Train denial rate: "
+#     f"{train_df[TARGET].mean():.2%}"
+# )
+# print(
+#     f"Test denial rate:  "
+#     f"{test_df[TARGET].mean():.2%}"
+# )
+
+
+
 # ==========================================================
 # CLAIM-LEVEL TRAIN / TEST SPLIT
 # ==========================================================
 
-# Normalize IDs consistently for splitting.
-# This avoids string-vs-numeric ID mismatches.
-df["_claim_split_key"] = df[CLAIM_ID].astype(str)
+# Normalize claim IDs for consistent grouping.
+df["_claim_split_key"] = df["haad_claim_id"].astype(str)
 
-unique_claims = df["_claim_split_key"].unique()
+# Convert Arrow-backed values into a regular Python list.
+# This avoids the scikit-learn / PyArrow indexing error.
+unique_claims = (
+    df["_claim_split_key"]
+    .drop_duplicates()
+    .tolist()
+)
+
+print(f"\nUnique claims: {len(unique_claims):,}")
 
 train_claims, test_claims = train_test_split(
     unique_claims,
@@ -469,6 +521,7 @@ train_claims, test_claims = train_test_split(
     random_state=RANDOM_STATE,
 )
 
+# Keep all activity rows belonging to each claim together.
 train_df = df[
     df["_claim_split_key"].isin(train_claims)
 ].copy()
@@ -477,16 +530,20 @@ test_df = df[
     df["_claim_split_key"].isin(test_claims)
 ].copy()
 
-if set(train_df["_claim_split_key"]) & set(
-    test_df["_claim_split_key"]
-):
+# Verify that no claim appears in both datasets.
+train_claim_set = set(train_claims)
+test_claim_set = set(test_claims)
+
+if train_claim_set & test_claim_set:
     raise RuntimeError(
         "Claim leakage detected between train and test."
     )
 
-print(f"\nUnique claims: {len(unique_claims):,}")
-print(f"Train rows:    {len(train_df):,}")
-print(f"Test rows:     {len(test_df):,}")
+print(f"Train claims: {len(train_claims):,}")
+print(f"Test claims:  {len(test_claims):,}")
+print(f"Train rows:   {len(train_df):,}")
+print(f"Test rows:    {len(test_df):,}")
+
 print(
     f"Train denial rate: "
     f"{train_df[TARGET].mean():.2%}"
@@ -495,6 +552,7 @@ print(
     f"Test denial rate:  "
     f"{test_df[TARGET].mean():.2%}"
 )
+
 
 
 # ==========================================================

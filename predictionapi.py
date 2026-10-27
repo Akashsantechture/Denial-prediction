@@ -30,12 +30,8 @@ SHAP_ENGINE = None
 FEATURE_ORDER = [
     "activity_code",
     "activity_quantity",
-    "activity_gross",
     "patient_age",
     "gender",
-    "nationality",
-    "claim_gross",
-    "claim_net",
     "encounter_type",
     "length_of_stay",
     "clinician_profession",
@@ -65,7 +61,11 @@ FEATURE_ORDER = [
     "secondary_external_causes",
     "secondary_factors_influencing_health_status",
     "secondary_unknown_icd_category",
-    "cpt_category"
+    "cpt_category",
+    "payer_name",
+    "network",
+    "payer_id",
+    "receiver_id",
 ]
 
 

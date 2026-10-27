@@ -948,17 +948,11 @@ Distinguish clearly between:
         thynk_summary = ""
         if thynk and thynk.get("found"):
             summary = thynk.get("summary", {})
-            thynk_summary = f"""
-**Thynk Validation Summary:**
-- CRITICAL: {summary.get('critical', 0)}
-- SEVERE: {summary.get('severe', 0)}
-- WARNING: {summary.get('warning', 0)}
-- INFO: {summary.get('info', 0)}
-"""
+            thynk_summary = f"""Thynk Validation: CRITICAL {summary.get('critical', 0)} · SEVERE {summary.get('severe', 0)} · WARNING {summary.get('warning', 0)} · INFO {summary.get('info', 0)}"""
             # Add top fired rules
             all_items = thynk.get("all", [])[:3]
             if all_items:
-                thynk_summary += "\n**Top Issues:**\n"
+                thynk_summary += "\n"
                 for item in all_items:
                     thynk_summary += f"- [{item.get('severity', 'INFO')}] {item.get('shortMessage', 'N/A')}\n"
         
@@ -980,37 +974,34 @@ ANALYSIS SOURCES:
 
 FORMAT YOUR RESPONSE EXACTLY AS:
 
-## 📊 Risk Assessment
-- **Denial Probability**: {denial_pct:.1f}%
-- **Risk Level**: {risk_level}
-- **Primary Driver**: {top_driver}
+**Risk Assessment**
+- Denial Probability: {denial_pct:.1f}%
+- Risk Level: {risk_level}
+- Primary Driver: {top_driver}
 
-## ⚠️ Key Issues
-{f"**Denied Activities:** {', '.join(denied)}" if denied else "✅ No activities predicted for denial."}
+**Key Issues**
+{f"Denied Activities: {', '.join(denied)}" if denied else "No activities predicted for denial."}
 
-{thynk_summary if thynk_summary else "✅ No Thynk validation issues found."}
+{thynk_summary if thynk_summary else "No Thynk validation issues found."}
 
-## 💡 Recommendations
+**Recommendations**
 [Provide 2-4 specific, actionable fixes ranked by impact. Reference specific codes, diagnoses, or rule IDs from the data above. If no major issues, suggest minor optimizations.]
 
-## 📚 Relevant {regulator} Rules
-[If RAG rules are available, cite the most relevant 1-2 rules briefly with rule IDs. If not available, skip this section.]
+**Relevant {regulator} Rules**
+[If RAG rules are available, cite the most relevant 1-2 rules briefly with rule IDs. If not available, skip this section entirely — do not print this heading.]
 
-## ❓ Ask Me Anything
-I can help with:
-- Detailed explanations of any flagged issue
-- Step-by-step fix instructions  
-- Required documentation
-- Appeal strategies
+**Further Assistance**
+For detailed explanations, step-by-step fix instructions, required documentation, or appeal strategies, ask a follow-up question.
 
 ---
 
 **IMPORTANT FORMATTING RULES:**
 - Keep total response under 350 words
-- Be specific (use actual codes from the data, not generic examples)
+- Use only plain text and markdown bold (**heading**) for section titles — no emojis, no ## headings
+- Be specific: use actual codes from the data, not generic examples
 - Prioritize actionable advice
-- Use markdown formatting (##, -, **)
 - If no major issues found, acknowledge clean claim and suggest minor optimizations
+- Skip the "Relevant Rules" section entirely if no RAG rules are available
 
 ---
 

@@ -73,10 +73,14 @@
   // Enrich predictions — client-side cpt_category only
   // recommendation removed — top_drivers not present in main.py multimodal response
   // ------------------------------------------------------------------ //
-  function _enrichPredictions(predictions, activities, _primaryDiagnosisCode) {
+  function _enrichPredictions(predictions, lineItems, _primaryDiagnosisCode) {
     return predictions.map((pred, idx) => ({
       ...pred,
-      cpt_category: _deriveCptCategory(activities[idx]?.activity_code ?? pred.activity_code),
+      // activity_code already mapped in backend response (service_code → activity_code)
+      // cpt_category derived client-side from whichever code key is available
+      cpt_category: _deriveCptCategory(
+        lineItems?.[idx]?.activity_code ?? lineItems?.[idx]?.service_code ?? pred.activity_code
+      ),
     }));
   }
 
@@ -106,37 +110,41 @@
   // Health check
   // ------------------------------------------------------------------ //
   async function checkHealth() {
-    const badge = document.getElementById('health-badge');
-    const epEl  = document.getElementById('health-endpoint');
-    if (badge) {
-      badge.className = 'health-badge loading';
-      badge.innerHTML = '<span class="health-dot"></span> Checking…';
+    const topBadge = document.getElementById('top-health-badge');
+    const badge    = document.getElementById('health-badge');   // legacy hidden
+
+    if (topBadge) {
+      topBadge.className = 'top-nav-health loading';
+      topBadge.innerHTML = '<span class="health-dot"></span> Checking…';
     }
 
-    const h = await API.health();
+    // Both services checked in parallel
+    const [h, analystH] = await Promise.all([
+      API.health().catch(() => ({ status: 'offline' })),
+      AnalystAPI.health().catch(() => ({ status: 'offline' })),
+    ]);
 
-    if (badge) {
-      const allLoaded = h.model_loaded && h.encoder_loaded && h.shap_loaded;
-      if (h.status === 'healthy' && allLoaded) {
-        badge.className = 'health-badge online';
-        badge.innerHTML = '<span class="health-dot"></span> Backend online · Model · Encoder · SHAP loaded';
-      } else if (h.status === 'healthy' && h.model_loaded) {
-        badge.className = 'health-badge loading';
-        const missing = [
-          !h.encoder_loaded && 'Encoder',
-        ].filter(Boolean).join(', ');
-        badge.innerHTML = missing
-          ? `<span class="health-dot"></span> Backend online · Model loaded · ${missing} NOT loaded`
-          : `<span class="health-dot"></span> Backend online · Model loaded`;
-      } else if (h.status === 'healthy') {
-        badge.className = 'health-badge loading';
-        badge.innerHTML = '<span class="health-dot"></span> Backend online · Model NOT loaded';
+    const modelOk   = h.status === 'healthy' && h.model_loaded && h.encoder_loaded;
+    const analystOk = analystH?.analyst_service_loaded && analystH?.llm_loaded;
+
+    if (topBadge) {
+      if (modelOk && analystOk) {
+        topBadge.className = 'top-nav-health online';
+        topBadge.innerHTML = '<span class="health-dot"></span> Backend online · Model loaded';
+      } else if (modelOk) {
+        topBadge.className = 'top-nav-health loading';
+        topBadge.innerHTML = '<span class="health-dot"></span> Backend online · AI Analyst offline';
       } else {
-        badge.className = 'health-badge offline';
-        badge.innerHTML = `<span class="health-dot"></span> Backend ${h.status}`;
+        topBadge.className = 'top-nav-health offline';
+        topBadge.innerHTML = '<span class="health-dot"></span> Backend offline';
       }
     }
-    if (epEl) epEl.textContent = API.PREDICT_URL;
+
+    // Update legacy hidden badge
+    if (badge) {
+      badge.className = modelOk ? 'health-badge online' : 'health-badge offline';
+      badge.innerHTML = `<span class="health-dot"></span>`;
+    }
   }
 
   // ------------------------------------------------------------------ //
@@ -179,15 +187,15 @@
       primary_diagnosis_code: primaryDxCode,
       patient_age:            parseInt(v('f-patient_age'), 10),
       gender:                 v('f-gender'),
-      nationality:            v('f-nationality'),
       encounter_type:         v('f-encounter_type'),
       length_of_stay:         parseInt(v('f-length_of_stay'), 10),
-      claim_gross:            parseFloat(v('f-claim_gross')),
-      claim_net:              parseFloat(v('f-claim_net')),
       clinician_profession:   v('f-clinician_profession'),
       facility_type:          v('f-facility_type'),
-      payer_classification:   v('f-payer_id') || 'UNKNOWN',
-      payer_id:               v('f-payer_id'),
+      payer_classification:   v('f-payer_classification') || 'Insurance',
+      payer_id:               v('f-payer_id') || 'Unknown',
+      payer_name:             v('f-payer_name') || 'Unknown',
+      receiver_id:            v('f-receiver_id') || 'Unknown',
+      network:                v('f-network') || 'Unknown Network',
       activities,
     };
   }
@@ -283,6 +291,9 @@
     const pct   = cs.claim_denial_probability_pct;
     const level = cs.claim_risk_level.toLowerCase();
 
+    // KSA uses services[], UAE uses activities[] — normalise once
+    const lineItems = payload.activities ?? payload.services ?? [];
+
     // Claim Score Hero
     const scoreEl = document.getElementById('claim-score-value');
     const levelEl = document.getElementById('claim-score-level');
@@ -300,7 +311,7 @@
     // At-Risk Amount — sum activity_gross only for hard-denied activities
     const atRiskData = preds.reduce((acc, pred, i) => {
       if (pred.predicted_denial) {
-        acc.amount += (payload.activities?.[i]?.activity_gross ?? 0);
+        acc.amount += (lineItems[i]?.activity_gross ?? lineItems[i]?.service_gross ?? 0);
         acc.count++;
       }
       return acc;
@@ -320,9 +331,13 @@
       : atRiskCount === totalActs          ? 'high'
       : 'medium';
 
+    const isKSA        = (window.regionManager?.getRegionCode() || 'uae') === 'ksa';
+    const currencyCode = isKSA ? 'SAR' : 'AED';
+    const currencyLocale = isKSA ? 'en-SA' : 'en-AE';
+
     const atRiskDisplay = atRiskCount === 0
-      ? 'AED 0'
-      : `AED ${atRiskTotal.toLocaleString('en-AE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+      ? `${currencyCode} 0`
+      : `${currencyCode} ${atRiskTotal.toLocaleString(currencyLocale, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
     _setKPI('kpi-claim-score', atRiskDisplay, atRiskLevel, atRiskLabel);
     _setKPI('kpi-highest-act',  `${(cs.highest_activity_risk * 100).toFixed(1)}%`, 'neutral', 'Highest Activity');
@@ -339,16 +354,16 @@
     });
     _setTableRows('patient-table', [
       ['Age / Gender',   `${payload.patient_age} yrs / ${_titleCase(payload.gender)}`],
-      ['Nationality',    _titleCase(payload.nationality)],
       ['Primary ICD',    payload.primary_diagnosis_code],
       ['ICD Category',   API.deriveIcdCategory(payload.primary_diagnosis_code)],
-      ['Claim Gross',    `AED ${fmt(payload.claim_gross)}`],
-      ['Claim Net',      `AED ${fmt(payload.claim_net)}`],
       ['LOS',            `${payload.length_of_stay} day${payload.length_of_stay !== 1 ? 's' : ''}`],
       ['Encounter',      payload.encounter_type],
       ['Clinician',      payload.clinician_profession],
       ['Facility',       payload.facility_type],
-      ['Payer',          payload.payer_id || payload.payer_classification],
+      ['Payer',          payload.payer_name || payload.payer_classification],
+      ['Payer ID',       payload.payer_id || '—'],
+      ['Network',        payload.network || '—'],
+      ['Receiver',       payload.receiver_id || '—'],
     ]);
 
     // Action banner — top-level recommendation from highest-risk prediction
@@ -360,20 +375,31 @@
       ab.innerHTML = `<strong>${cs.claim_risk_level} Denial Likelihood (${pct.toFixed(1)}%)</strong>`;
     }
 
-    _renderActivityTable(preds, payload.activities ?? []);
+    _renderActivityTable(preds, lineItems);
   }
 
   function _renderActivityTable(predictions, activities) {
     const tbody = document.getElementById('activity-predictions-body');
     if (!tbody) return;
+
+    const isKSA          = (window.regionManager?.getRegionCode() || 'uae') === 'ksa';
+    const currencyCode   = isKSA ? 'SAR' : 'AED';
+    const currencyLocale = isKSA ? 'en-SA' : 'en-AE';
+
+    // Hide/show CPT Category column header for this table
+    const cptHeader  = document.querySelector('#activity-predictions-table .col-cpt');
+    const grossHeader = document.querySelector('#activity-predictions-table .col-gross');
+    if (cptHeader)   cptHeader.style.display  = isKSA ? 'none' : '';
+    if (grossHeader) grossHeader.textContent  = isKSA ? 'Gross (SAR)' : 'Gross (AED)';
+
     tbody.innerHTML = predictions.map((pred, idx) => {
       const pct    = (pred.denial_probability * 100).toFixed(1);
       const lvl    = pred.denial_probability >= 0.70 ? 'high'
                    : pred.denial_probability >= 0.40 ? 'medium' : 'low';
       const denied = pred.predicted_denial;
       const act    = activities[idx] ?? {};
-      const gross  = act.activity_gross ?? '—';
-      const qty    = act.activity_quantity ?? '—';
+      const gross  = act.activity_gross ?? act.service_gross ?? '—';
+      const qty    = act.activity_quantity ?? act.service_quantity ?? '—';
 
       // Denial reason cell
       const reasonCell = denied && pred.predicted_denial_reason
@@ -395,10 +421,10 @@
       return `
         <tr class="${denied ? 'row-denied' : ''}">
           <td><code>${pred.activity_code}</code></td>
-          <td><span class="cpt-badge">${pred.cpt_category || '—'}</span></td>
+          ${isKSA ? '' : `<td><span class="cpt-badge">${pred.cpt_category || '—'}</span></td>`}
           <td>${qty}</td>
           <td>${typeof gross === 'number'
-            ? `AED ${gross.toLocaleString('en', { minimumFractionDigits: 2 })}`
+            ? `${currencyCode} ${gross.toLocaleString(currencyLocale, { minimumFractionDigits: 2 })}`
             : gross}</td>
           <td>
             <div class="act-prob-row">
@@ -427,6 +453,7 @@
     const sel = document.getElementById('shap-activity-select');
     if (!sel) return;
 
+    const isKSA = (window.regionManager?.getRegionCode() || 'uae') === 'ksa';
     const preds = result.predictions ?? [];
 
     const sortedByRisk = [...preds]
@@ -437,8 +464,9 @@
       const pct    = (pred.denial_probability * 100).toFixed(1);
       const flag   = pred.predicted_denial ? ' ⚠' : ' ✓';
       const isTop  = sortedByRisk[0]._origIdx === idx ? ' ★ Highest risk' : '';
+      const cptLabel = isKSA ? '' : ` · ${pred.cpt_category}`;
       return `<option value="${idx}">
-        #${idx + 1} · ${pred.activity_code} · ${pred.cpt_category} · ${pct}%${flag}${isTop}
+        #${idx + 1} · ${pred.activity_code}${cptLabel} · ${pct}%${flag}${isTop}
       </option>`;
     }).join('');
 
@@ -457,6 +485,8 @@
   // ------------------------------------------------------------------ //
   function _renderSHAPForActivity(idx) {
     if (!_lastResult || !_lastPayload) return;
+
+    const isKSA = (window.regionManager?.getRegionCode() || 'uae') === 'ksa';
 
     const preds  = _lastResult.predictions ?? [];
     const pred   = preds[idx];
@@ -515,7 +545,7 @@
            </span>`
         : '';
       badgeRow.innerHTML = `
-        <span class="cpt-badge">${pred.cpt_category || '—'}</span>
+        ${isKSA ? '' : `<span class="cpt-badge">${pred.cpt_category || '—'}</span>`}
         <span class="denial-verdict ${pred.predicted_denial ? 'denied' : 'approved'}">
           ${pred.predicted_denial ? '⚠ Likely Denied' : '✓ Likely Approved'}
         </span>
@@ -563,7 +593,9 @@
     // Scatter + dependence always render (use whatever contributions are available)
     Charts.featureScatter('shap-scatter-chart', contributions);
 
-    const actGross        = _lastPayload.activities?.[idx]?.activity_gross ?? 250;
+    const actGross        = (_lastPayload.activities ?? _lastPayload.services ?? [])[idx]?.activity_gross
+                          ?? (_lastPayload.activities ?? _lastPayload.services ?? [])[idx]?.service_gross
+                          ?? 0;
     const actGrossFeature = contributions.find(c =>
       c.feature === 'activity_gross' || c.name.toLowerCase().includes('activity gross')
     );
@@ -575,6 +607,12 @@
   function _renderSHAPAllActivitiesTable(predictions, activeIdx) {
     const tbody = document.getElementById('shap-all-acts-body');
     if (!tbody) return;
+
+    const isKSA = (window.regionManager?.getRegionCode() || 'uae') === 'ksa';
+
+    // Hide/show CPT header in SHAP table
+    const shapCptHeader = document.querySelector('#shap-all-acts-table .col-cpt');
+    if (shapCptHeader) shapCptHeader.style.display = isKSA ? 'none' : '';
 
     tbody.innerHTML = predictions.map((pred, idx) => {
       const pct    = (pred.denial_probability * 100).toFixed(1);
@@ -617,7 +655,7 @@
             data-act-idx="${idx}" style="cursor:pointer;">
           <td>${idx + 1}</td>
           <td><code>${pred.activity_code}</code></td>
-          <td><span class="cpt-badge">${pred.cpt_category || '—'}</span></td>
+          ${isKSA ? '' : `<td><span class="cpt-badge">${pred.cpt_category || '—'}</span></td>`}
           <td><span class="act-prob-val ${lvl}">${pct}%</span></td>
           <td><span class="denial-verdict ${denied ? 'denied' : 'approved'}">
             ${denied ? '⚠ Denied' : '✓ Approved'}
@@ -676,7 +714,9 @@
     if (!_lastPayload) return;
     const activeIcd = ICD.groupFromCode(_lastPayload.primary_diagnosis_code);
     const activeCpt = Interactions.cptGroupFromCode(
-      _lastPayload.activities?.[0]?.activity_code ?? ''
+      (_lastPayload.activities ?? _lastPayload.services ?? [])[0]?.activity_code
+      ?? (_lastPayload.activities ?? _lastPayload.services ?? [])[0]?.service_code
+      ?? ''
     );
     const cap = document.getElementById('interactions-caption');
     if (cap) cap.textContent = `ICD: ${activeIcd} | CPT: ${activeCpt}`;
@@ -761,9 +801,10 @@
       });
     }
 
-    if (!rawPayload.activities || rawPayload.activities.length === 0) {
+    const lineItems = rawPayload.activities || rawPayload.services || [];
+    if (lineItems.length === 0) {
       showSpinner(false);
-      showValidationErrors({ message: 'At least one activity is required.', errors: [] });
+      showValidationErrors({ message: 'At least one activity or service is required.', errors: [] });
       return;
     }
 
@@ -771,10 +812,13 @@
     showSpinner(false);
 
     if (result.ok) {
+      // For KSA, services[] is the line-item array — normalise to a single reference
+      const lineItemsArray = rawPayload.activities ?? rawPayload.services ?? [];
+
       // Enrich raw predictions with client-side cpt_category + recommendation
       result.predictions = _enrichPredictions(
         result.predictions,
-        rawPayload.activities,
+        lineItemsArray,
         rawPayload.primary_diagnosis_code
       );
 
@@ -806,7 +850,7 @@
         ICD.groupFromCode(rawPayload.primary_diagnosis_code)
       );
       ICD.renderHeatmap(ICD.groupFromCode(rawPayload.primary_diagnosis_code));
-      const firstCpt = rawPayload.activities?.[0]?.activity_code ?? '';
+      const firstCpt = lineItemsArray?.[0]?.activity_code ?? lineItemsArray?.[0]?.service_code ?? '';
       Interactions.renderPairsTable(
         ICD.groupFromCode(rawPayload.primary_diagnosis_code),
         Interactions.cptGroupFromCode(firstCpt)

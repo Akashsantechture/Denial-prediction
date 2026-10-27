@@ -1,0 +1,1809 @@
+feature,importance
+categorical__primary_diagnosis_S09.9,0.043055475
+categorical__policy_name_MOH Nextcare,0.040450152
+categorical__primary_diagnosis_L03.9,0.031962197
+categorical__policy_name_Assystem and Ali Alharbi Engineering Consultancy Company,0.028420774
+categorical__primary_diagnosis_D70,0.02735441
+categorical__payer_classification_MOH Nextcare,0.025555048
+categorical__primary_diagnosis_Z01.7,0.01556244
+categorical__primary_diagnosis_N30.0,0.013907216
+categorical__policy_name_NEOM COMPANY,0.013378016
+categorical__primary_diagnosis_N93.0,0.012984796
+categorical__payer_classification_B,0.0125713395
+categorical__primary_diagnosis_L98.7,0.012325631
+categorical__payer_id_128,0.01192795
+categorical__primary_diagnosis_L65.9,0.011773477
+categorical__policy_name_CEER NATIONAL AUTOMOTIVE CO,0.011454275
+categorical__primary_diagnosis_R63.1,0.01123113
+categorical__primary_diagnosis_E11.9,0.011030717
+categorical__department_DHC STAFF CLINIC,0.009806926
+categorical__payer_classification_VIP+,0.009551247
+categorical__receiver_id_128,0.008860491
+categorical__primary_diagnosis_R41.0,0.00853707
+categorical__policy_name_SAUDI IRON & STEEL COMPANY - HADEED,0.008445739
+categorical__department_DHC PRE ANESTHESIA,0.00786207
+categorical__department_DHH 6A PEDIATRIC 5-13,0.007790954
+categorical__primary_diagnosis_Z01.6,0.0077008866
+categorical__payer_id_101,0.0073454017
+categorical__primary_diagnosis_K74.6,0.0073364126
+categorical__payer_id_115,0.0073279967
+categorical__department_DHH 2A MED ISOLATION,0.0068039536
+categorical__primary_diagnosis_R73,0.00656653
+categorical__receiver_id_101,0.006535725
+categorical__payer_classification_BASIC,0.006483516
+categorical__claim_type_Hospital Inpatient,0.006471661
+numeric__secondary_dx_mental,0.0063792323
+categorical__primary_diagnosis_A41.9,0.00616342
+categorical__receiver_id_3,0.0060866396
+categorical__payer_id_3,0.005907461
+categorical__primary_diagnosis_R56.8,0.0058651133
+categorical__policy_name_MOH GLOBMED,0.00584415
+categorical__primary_diagnosis_L03.13,0.0058252346
+categorical__payer_id_130,0.005801554
+categorical__primary_diagnosis_E78.5,0.0055407537
+categorical__encounter_type_IP,0.0053429855
+categorical__primary_diagnosis_Z00.1,0.0050718454
+categorical__department_DHC DERMATOLOGY CLINIC,0.005047238
+categorical__department_DHH 1B SURGICAL MALE,0.0050463313
+categorical__primary_diagnosis_E05.9,0.005023772
+categorical__primary_diagnosis_J44.9,0.004889455
+categorical__policy_name_MASADER HUMAN RESOURCES SERVICES COMPANY,0.0048888233
+categorical__department_DHH 4A MED ISOLATION,0.0048829783
+categorical__primary_diagnosis_O30.0,0.004801579
+categorical__primary_diagnosis_category_Ear and Mastoid Process,0.004773884
+categorical__primary_diagnosis_Z51.4,0.004757361
+categorical__primary_diagnosis_I95.9,0.0046827006
+categorical__department_DHH 4H ORTHOPEDIC/SURGICAL,0.00467957
+categorical__receiver_id_115,0.004628626
+categorical__primary_diagnosis_R14,0.0046188887
+categorical__payer_classification_Saudi Aramco Medical Plan,0.0044664037
+categorical__department_DHC PLASTIC SURGERY,0.0044332044
+categorical__policy_name_Ù…Ø¤Ø³Ø³Ø© Ø§ÙˆÙ‚Ø§Øª Ø´Ø±Ù‚ Ø§Ù„ØªØ¬Ø§Ø±ÙŠØ©,0.0043111867
+categorical__payer_id_102,0.004194526
+categorical__policy_name_EARADAT TRANSPORT COMPANY,0.0041562025
+categorical__claim_type_Primary Health Care,0.004119697
+categorical__primary_diagnosis_Z12.3,0.0040863156
+categorical__service_code_921430000,0.004076935
+categorical__policy_name_Saudi Arabian Oil Company (Saudi Aramco),0.0040437705
+categorical__receiver_id_KSI001,0.004036534
+categorical__receiver_id_130,0.003980129
+categorical__department_DHH CARDIOVASCULAR,0.003928508
+categorical__service_code_189-277-07,0.0038237493
+categorical__primary_diagnosis_J30.4,0.0037935453
+categorical__primary_diagnosis_N39.0,0.0037613404
+categorical__department_DHC NEUROLOGY CLINIC,0.003657692
+categorical__primary_diagnosis_K90.0,0.003588292
+categorical__receiver_id_102,0.0035540552
+categorical__primary_diagnosis_S99.9,0.003358492
+categorical__primary_diagnosis_M65.3,0.0033567029
+categorical__payer_classification_SENIOR PREMIUM 3.1,0.0033544116
+categorical__service_code_300550000,0.0032730526
+categorical__service_code_836000000,0.0031762943
+categorical__service_code_836000010,0.0031760314
+categorical__payer_id_109,0.0031663058
+categorical__primary_diagnosis_C20,0.0031615116
+categorical__service_code_836000020,0.0031395543
+numeric__secondary_dx_obstetrics,0.0031226724
+categorical__policy_name_ARAMCO TRADING COMPANY,0.0031157453
+categorical__payer_classification_GLOBMED MOH,0.0030814288
+categorical__payer_classification_C-RES,0.0030747303
+categorical__policy_name_GROQ LTD,0.0030185734
+categorical__primary_diagnosis_A09.9,0.0029585974
+categorical__primary_diagnosis_R05,0.0029553606
+categorical__service_code_730501420,0.0029109197
+categorical__policy_name_SCHNEIDER ELECTRIC SYSTEM ARABIA CO LTD,0.0028999434
+categorical__primary_diagnosis_C95.90,0.0028935417
+numeric__secondary_dx_blood_immune,0.0028539023
+categorical__service_code_A1006,0.0028287014
+categorical__policy_name_Cyberani Company,0.002816463
+categorical__primary_diagnosis_category_Neoplasms,0.0027928965
+categorical__policy_name_Public Investment Fund,0.0027571183
+categorical__primary_diagnosis_C44.9,0.0027332185
+categorical__primary_diagnosis_category_Skin and Subcutaneous Tissue,0.0027205944
+categorical__primary_diagnosis_R50.9,0.0027000152
+categorical__receiver_id_109,0.0026848055
+categorical__policy_name_HAMMOUD HAMAD AL HAMMAD TRADING AND CONT CO,0.0026508966
+categorical__policy_name_NAIZAK GLOBAL ENGINEERING SYSTEMS CONTRACTING CO,0.00264621
+categorical__primary_diagnosis_Z00.0,0.0026445782
+categorical__payer_id_KSI001,0.0026335442
+categorical__service_code_20-222-06,0.0026216446
+categorical__primary_diagnosis_R10.1,0.0026017353
+categorical__payer_classification_VIPP,0.002584876
+numeric__secondary_dx_musculoskeletal,0.0025778634
+categorical__payer_classification_TASNIM VISIT VISA,0.002546707
+categorical__primary_diagnosis_G45.9,0.0025245508
+categorical__primary_diagnosis_K63.9,0.0024740468
+numeric__secondary_dx_digestive,0.002446524
+categorical__policy_name_TASNIM VISIT VISA,0.0023862375
+numeric__length_of_stay,0.0023781038
+categorical__service_code_730501040,0.0023738123
+categorical__primary_diagnosis_R10.4,0.0023210954
+categorical__department_DHH 2B TELEMETRY UNIT,0.0023128896
+categorical__service_code_731500080,0.0023102146
+categorical__department_DHC PED GI CLINIC,0.0022589948
+categorical__primary_diagnosis_F05.0,0.0022486828
+categorical__primary_diagnosis_R00.2,0.0022470572
+categorical__primary_diagnosis_E14.73,0.0022372906
+categorical__primary_diagnosis_S69.9,0.0022258065
+categorical__primary_diagnosis_category_Factors Affecting Health Status,0.0022176383
+categorical__primary_diagnosis_Z09.8,0.0021988677
+categorical__policy_name_MASIMO MANUFACTURE,0.0021915284
+categorical__primary_diagnosis_Z34.9,0.0021499342
+numeric__secondary_dx_symptoms,0.0021277338
+categorical__encounter_type_ER,0.0021134783
+categorical__payer_classification_TIER 1,0.0020969175
+numeric__secondary_dx_infections,0.0020749108
+categorical__department_DHC NEUROSURGERY,0.0020623386
+"categorical__primary_diagnosis_category_Endocrine, Nutritional and Metabolic",0.0020556217
+categorical__primary_diagnosis_I64,0.00204957
+categorical__department_DHC INFUSION THERAPY,0.0020351198
+categorical__department_DHH URGENT CARE,0.0020303794
+categorical__primary_diagnosis_S72.11,0.0020269232
+categorical__primary_diagnosis_J93.9,0.002009369
+categorical__primary_diagnosis_category_Infections and Parasites,0.0019827485
+categorical__payer_classification_VVIP,0.0019701717
+categorical__primary_diagnosis_R42,0.0019385879
+categorical__claim_subtype_emr,0.0019002483
+categorical__primary_diagnosis_Z31.5,0.0018903072
+categorical__service_code_730503730,0.0018900132
+categorical__primary_diagnosis_N99.59,0.0018888145
+categorical__payer_classification_VIP PARENT,0.0018739953
+categorical__primary_diagnosis_M54.5,0.0018671291
+categorical__primary_diagnosis_N39.4,0.0018592216
+categorical__department_DHH 5B ONCOLOGY,0.0018166971
+numeric__secondary_dx_genitourinary,0.0017882371
+categorical__service_code_730500550,0.0017665051
+numeric__secondary_dx_endocrine_metabolic,0.0017640418
+categorical__encounter_type_OP,0.0017617762
+categorical__primary_diagnosis_M13.99,0.0017594931
+categorical__primary_diagnosis_G43.9,0.0017445285
+categorical__department_DHC GENETICS,0.0017417953
+categorical__claim_type_Outpatient,0.0017327792
+categorical__primary_diagnosis_J18.9,0.00172807
+categorical__department_DHC PRIMARY CARE ADULT CLINIC,0.001727744
+categorical__primary_diagnosis_category_Circulatory,0.0017181974
+categorical__primary_diagnosis_E14.9,0.0017136672
+categorical__department_DHC CANCERCARE CLINIC,0.001656775
+categorical__primary_diagnosis_K59.0,0.0016564385
+categorical__service_code_2401233163,0.0016513659
+categorical__payer_id_114,0.0016511575
+categorical__primary_diagnosis_G44,0.0016455194
+categorical__department_DHC PRIMARY CARE PEDS CLINIC,0.0016394003
+categorical__primary_diagnosis_Z90.1,0.001621465
+categorical__primary_diagnosis_category_Nervous System,0.0016178937
+categorical__policy_name_NATIONAL INTERACTIVE ENTERTAINMENT COMPANY,0.0015855579
+categorical__department_DHH 5G MEDICAL,0.0015816242
+categorical__primary_diagnosis_category_Injury and Poisoning,0.0015754845
+categorical__policy_name_Awqaf Management And Real Estate Service,0.0015734717
+categorical__department_DHH EMERGENCY DEPT,0.0015665495
+numeric__secondary_dx_health_status,0.0015663828
+categorical__primary_diagnosis_H26.9,0.0015553889
+categorical__claim_subtype_ip,0.0015543092
+categorical__primary_diagnosis_R06.0,0.0015478163
+categorical__claim_type_Emergency,0.0015437494
+categorical__service_code_585000010,0.0015275566
+categorical__department_DHH 3A STEP DOWN ICU,0.0015124836
+categorical__primary_diagnosis_J06.9,0.0015055737
+numeric__patient_age,0.001505332
+numeric__secondary_dx_external_causes,0.0014968442
+categorical__department_DHC ENDOCRINOLOGY CLINIC,0.0014967301
+categorical__payer_classification_GOLD,0.0014908853
+categorical__primary_diagnosis_category_Genitourinary,0.0014810218
+categorical__primary_diagnosis_K14.8,0.0014461683
+numeric__secondary_dx_special_purposes,0.0014266691
+numeric__secondary_dx_neoplasms,0.0014244308
+numeric__secondary_dx_circulatory,0.0014139157
+categorical__primary_diagnosis_category_Musculoskeletal and Connective Tissue,0.0014124532
+"categorical__primary_diagnosis_category_Blood, Blood Forming and Immune",0.0013920346
+categorical__primary_diagnosis_category_Respiratory,0.0013775364
+categorical__gender_Female,0.0013557859
+categorical__service_code_730503110,0.0013547178
+categorical__service_code_151-172-06,0.0013507064
+categorical__policy_name_NEOM CO,0.0013352443
+categorical__department_DHC OPPA CLINIC,0.0013243714
+categorical__claim_subtype_op,0.0013227771
+categorical__department_DHC ORTHOPEDICS CLINIC,0.0013096852
+categorical__primary_diagnosis_R07.3,0.0013063343
+categorical__payer_classification_TIER 2,0.0012987297
+categorical__gender_Male,0.0012890638
+categorical__department_DHC ENT CLINIC,0.001251583
+categorical__service_code_730502820,0.0012464895
+"categorical__primary_diagnosis_category_Signs, Symptoms and Abnormal Findings",0.0012343711
+categorical__service_code_730502400,0.0012219304
+categorical__claim_subtype___MISSING__,0.0012161797
+numeric__secondary_dx_injury_poisoning,0.0012078555
+categorical__primary_diagnosis_category_Obstetrics,0.0011748425
+categorical__policy_name_GLOBAL DIGITAL INTEGRATED SOLUTIONS COMPNY,0.0011727328
+categorical__department_DHC GASTRO CLINIC,0.0011676254
+categorical__primary_diagnosis_category_Eye and Adnexa,0.0011637614
+categorical__service_code_734000150,0.001149342
+categorical__department_DHH 2C CORONARY CARE,0.0011486346
+categorical__primary_diagnosis_I10,0.0011418995
+categorical__payer_classification_VIP,0.0011381869
+categorical__department_DHC OPHTHALMOLOGY CLINIC,0.0011299609
+numeric__secondary_dx_congenital,0.0011278143
+categorical__department_DHC OB/GYN CLINIC,0.0011256093
+categorical__primary_diagnosis_category_Digestive,0.0011232734
+categorical__policy_name_SADARA CHEMICAL COMPNAY,0.0011119569
+categorical__department_DHC CARDIOLOGY CLINIC,0.0011065453
+categorical__primary_diagnosis_F23.90,0.0010903472
+numeric__secondary_dx_nervous_system,0.0010794468
+numeric__quantity,0.0010755223
+categorical__service_code_730500980,0.0010694541
+categorical__service_code_730000060,0.0010532838
+numeric__secondary_dx_respiratory,0.0010377142
+categorical__primary_diagnosis_R52.9,0.0010345079
+categorical__primary_diagnosis_R07.4,0.0010226237
+numeric__secondary_dx_skin,0.0010167566
+categorical__department_DHH 5C MED SURG ICU,0.0010098642
+categorical__department_DHH PSYCH – FEMALE,0.0009969148
+categorical__service_code_117000000,0.0009913893
+categorical__payer_classification_A,0.00097070617
+categorical__service_code_2602256939,0.00096393825
+categorical__primary_diagnosis_J40,0.00096285285
+categorical__service_code_730500530,0.00094533706
+categorical__primary_diagnosis_category_Mental and Behavioural Disorders,0.00093706313
+categorical__service_code_731000080,0.0009102912
+categorical__service_code_730501310,0.00088810135
+categorical__department_DHC UROLOGY CLINIC,0.0008624383
+categorical__receiver_id_114,0.0008454984
+categorical__policy_name_TAWUNIYA,0.0008220944
+categorical__primary_diagnosis_O02.1,0.00081676967
+categorical__primary_diagnosis_N64.5,0.00081295683
+categorical__primary_diagnosis_I25.10,0.0008011377
+categorical__payer_classification_C,0.00079689914
+categorical__service_code_730502170,0.00077140756
+categorical__service_code_730501440,0.00076887547
+categorical__payer_classification_1,0.00075201446
+categorical__service_code_731001140,0.0007480882
+categorical__primary_diagnosis_R51,0.00074766774
+numeric__secondary_dx_eye,0.00071246136
+categorical__policy_name_DIRIYAH CLUB SPORTS COMPANY,0.00069861696
+categorical__service_code_730501620,0.00069680676
+categorical__service_code_730000090,0.0006852503
+categorical__primary_diagnosis_K92.2,0.0006666441
+categorical__policy_name_ARO DRILLING,0.000640708
+categorical__service_code_730000030,0.0006045922
+categorical__service_code_73100-00-80,0.0005994229
+categorical__service_code_730503550,0.0005976024
+categorical__primary_diagnosis_D64.9,0.0005910369
+categorical__policy_name_KING FAHD UNIVERSITY OF PETROLEUM AND MINERALS,0.00056398654
+categorical__primary_diagnosis_S42.24,0.00055747625
+categorical__policy_name_SAUDI ARAMCO TOTAL REFINING & PETROCHEMI,0.00054815324
+categorical__policy_name_WORLEYPARSONS ENGINEERING CONSULTANCIES,0.0005352192
+categorical__payer_classification_VISIT VISA,0.0005294511
+categorical__service_code_836100100,0.000517454
+categorical__primary_diagnosis_E04.1,0.00050954876
+categorical__service_code_730501850,0.00049460295
+categorical__department_DHC MENTAL HEALTH SERV,0.00048088672
+categorical__primary_diagnosis_K14.9,0.00047667723
+categorical__primary_diagnosis_M54.99,0.00040985696
+categorical__policy_name_MOHAMMED PATHAN,0.0004081004
+categorical__service_code_730503670,0.0003915501
+categorical__service_code_2911211392,0.00039073674
+categorical__primary_diagnosis_I48.9,0.0002497449
+categorical__service_code_2405222059,0.0
+categorical__service_code_2404245204,0.0
+categorical__service_code_2403210641,0.0
+categorical__service_code_2312258817,0.0
+categorical__service_code_2312200360,0.0
+categorical__service_code_2310234370,0.0
+categorical__service_code_2310222777,0.0
+categorical__service_code_2309234264,0.0
+categorical__service_code_2609222646,0.0
+categorical__service_code_2609222644,0.0
+categorical__service_code_2609211077,0.0
+categorical__service_code_2607200127,0.0
+categorical__service_code_2606233836,0.0
+categorical__service_code_2604269520,0.0
+categorical__service_code_2602244983,0.0
+categorical__service_code_2601233178,0.0
+categorical__service_code_26-191-15,0.0
+categorical__service_code_2511211367,0.0
+categorical__service_code_2509222632,0.0
+categorical__service_code_2507222348,0.0
+categorical__service_code_2505233734,0.0
+categorical__service_code_2505233733,0.0
+categorical__service_code_2505233724,0.0
+categorical__service_code_2810211247,0.0
+categorical__service_code_2807245667,0.0
+categorical__service_code_2807245666,0.0
+categorical__service_code_2803233433,0.0
+categorical__service_code_2802244997,0.0
+categorical__service_code_2801256767,0.0
+categorical__service_code_276-277-14,0.0
+categorical__service_code_271-277-13,0.0
+categorical__service_code_2708245835,0.0
+categorical__service_code_2705257464,0.0
+categorical__service_code_2701256759,0.0
+categorical__service_code_2701256758,0.0
+categorical__service_code_2612223042,0.0
+categorical__service_code_2609245952,0.0
+categorical__service_code_2609222650,0.0
+categorical__service_code_2609222649,0.0
+categorical__service_code_30-168-91,0.0
+categorical__service_code_3-960-15,0.0
+categorical__service_code_3-832-15,0.0
+categorical__service_code_3-5112-18,0.0
+categorical__service_code_3-222-94,0.0
+categorical__service_code_294-149-04,0.0
+categorical__service_code_293-149-04,0.0
+categorical__service_code_2911211394,0.0
+categorical__service_code_2910246125,0.0
+categorical__service_code_2910234399,0.0
+categorical__service_code_2909222678,0.0
+categorical__service_code_2907257881,0.0
+categorical__service_code_2907245681,0.0
+categorical__service_code_2906222281,0.0
+categorical__service_code_2811211382,0.0
+categorical__service_code_3010222835,0.0
+categorical__service_code_300810000,0.0
+categorical__service_code_300751600,0.0
+categorical__service_code_3007245699,0.0
+categorical__service_code_3007245698,0.0
+categorical__service_code_300710000,0.0
+categorical__service_code_3006210836,0.0
+categorical__service_code_300550030,0.0
+categorical__service_code_300550020,0.0
+categorical__service_code_300550010,0.0
+categorical__service_code_3005222099,0.0
+categorical__service_code_300350020,0.0
+categorical__service_code_300290020,0.0
+categorical__service_code_3001256784,0.0
+categorical__service_code_300064,0.0
+categorical__service_code_3101221657,0.0
+categorical__service_code_31-5083-21,0.0
+categorical__service_code_31-355-05,0.0
+categorical__service_code_309234086,0.0
+categorical__service_code_307222296,0.0
+categorical__service_code_306530020,0.0
+categorical__service_code_304810000,0.0
+categorical__service_code_304730000,0.0
+categorical__service_code_304221906,0.0
+categorical__service_code_304060000,0.0
+categorical__service_code_303236,0.0
+categorical__service_code_303000100,0.0
+categorical__service_code_301950400,0.0
+categorical__service_code_3010258525,0.0
+categorical__service_code_3010258522,0.0
+categorical__service_code_3010246128,0.0
+categorical__service_code_357131100,0.0
+categorical__service_code_357130400,0.0
+categorical__service_code_353300001,0.0
+categorical__service_code_353210500,0.0
+categorical__service_code_33-355-06,0.0
+categorical__service_code_33-136-07,0.0
+categorical__service_code_321740200,0.0
+categorical__service_code_320900000,0.0
+categorical__service_code_320840000,0.0
+categorical__service_code_32-368-02,0.0
+categorical__service_code_311258538,0.0
+categorical__service_code_311222870,0.0
+categorical__service_code_3107257908,0.0
+categorical__service_code_3107257907,0.0
+categorical__service_code_3107245708,0.0
+categorical__service_code_3101221664,0.0
+categorical__service_code_4-90-82,0.0
+categorical__service_code_4-5740-22,0.0
+categorical__service_code_4-222-95,0.0
+categorical__service_code_394-334-24,0.0
+categorical__service_code_390130000,0.0
+categorical__service_code_390000000,0.0
+categorical__service_code_39-370-08,0.0
+categorical__service_code_39-355-07,0.0
+categorical__service_code_388060000,0.0
+categorical__service_code_387-149-09,0.0
+categorical__service_code_38612-00-00,0.0
+categorical__service_code_384880800,0.0
+categorical__service_code_384180201,0.0
+categorical__service_code_368210300,0.0
+categorical__service_code_36-186-89,0.0
+categorical__service_code_359-334-22,0.0
+categorical__service_code_45-23-03,0.0
+categorical__service_code_44-4-01,0.0
+categorical__service_code_427340101,0.0
+categorical__service_code_417640200,0.0
+categorical__service_code_417640000,0.0
+categorical__service_code_409234099,0.0
+categorical__service_code_409222580,0.0
+categorical__service_code_408222411,0.0
+categorical__service_code_407245483,0.0
+categorical__service_code_406257546,0.0
+categorical__service_code_406000200,0.0
+categorical__service_code_405233591,0.0
+categorical__service_code_404233471,0.0
+categorical__service_code_401244677,0.0
+categorical__service_code_40-186-89,0.0
+categorical__service_code_40-119-82,0.0
+categorical__service_code_5-5297-20,0.0
+categorical__service_code_5-5287-20,0.0
+categorical__service_code_5-5251-19,0.0
+categorical__service_code_5-201-90,0.0
+categorical__service_code_495580001,0.0
+categorical__service_code_485090001,0.0
+categorical__service_code_48-23-07,0.0
+categorical__service_code_479750001,0.0
+categorical__service_code_473060001,0.0
+categorical__service_code_470270201,0.0
+categorical__service_code_470270101,0.0
+categorical__service_code_470090001,0.0
+categorical__service_code_47-149-92,0.0
+categorical__service_code_47-100-04,0.0
+categorical__service_code_463690001,0.0
+categorical__service_code_46-277-98,0.0
+categorical__service_code_503960101,0.0
+categorical__service_code_502070,0.0
+categorical__service_code_502003,0.0
+categorical__service_code_502000001,0.0
+categorical__service_code_501268856,0.0
+categorical__service_code_500098,0.0
+categorical__service_code_500096,0.0
+categorical__service_code_500084,0.0
+categorical__service_code_500080,0.0
+categorical__service_code_500078,0.0
+categorical__service_code_500063,0.0
+categorical__service_code_500016,0.0
+categorical__service_code_500012,0.0
+categorical__service_code_500010,0.0
+categorical__service_code_500004,0.0
+categorical__service_code_50-22-91,0.0
+categorical__service_code_550650000,0.0
+categorical__service_code_550380000,0.0
+categorical__service_code_550360000,0.0
+categorical__service_code_550320000,0.0
+categorical__service_code_550300012,0.0
+categorical__service_code_54-22-06,0.0
+categorical__service_code_54-186-93,0.0
+categorical__service_code_53-22-02,0.0
+categorical__service_code_53-212-97,0.0
+categorical__service_code_518026,0.0
+categorical__service_code_514002,0.0
+categorical__service_code_510006,0.0
+categorical__service_code_506030,0.0
+categorical__service_code_506010,0.0
+categorical__service_code_504027,0.0
+categorical__service_code_504026,0.0
+categorical__service_code_560220000,0.0
+categorical__service_code_560130000,0.0
+categorical__service_code_560010000,0.0
+categorical__service_code_56001-00-00,0.0
+categorical__service_code_56-22-06,0.0
+categorical__service_code_557000200,0.0
+categorical__service_code_557000100,0.0
+categorical__service_code_557000000,0.0
+categorical__service_code_556000000,0.0
+categorical__service_code_552740000,0.0
+categorical__service_code_552520000,0.0
+categorical__service_code_552440100,0.0
+categorical__service_code_552440000,0.0
+categorical__service_code_551130000,0.0
+categorical__service_code_550700000,0.0
+categorical__service_code_550650010,0.0
+categorical__service_code_573500000,0.0
+categorical__service_code_57350-00-00,0.0
+categorical__service_code_57-22-06,0.0
+categorical__service_code_568070000,0.0
+categorical__service_code_566250001,0.0
+categorical__service_code_566190001,0.0
+categorical__service_code_565070000,0.0
+categorical__service_code_565010000,0.0
+categorical__service_code_563070000,0.0
+categorical__service_code_563010000,0.0
+categorical__service_code_562230000,0.0
+categorical__service_code_562210000,0.0
+categorical__service_code_562200000,0.0
+categorical__service_code_56220-00-00,0.0
+categorical__service_code_561070000,0.0
+categorical__service_code_560220100,0.0
+categorical__service_code_575180411,0.0
+categorical__service_code_575180321,0.0
+categorical__service_code_575180121,0.0
+categorical__service_code_575180112,0.0
+categorical__service_code_575180111,0.0
+categorical__service_code_575180021,0.0
+categorical__service_code_575060411,0.0
+categorical__service_code_575060321,0.0
+categorical__service_code_575060311,0.0
+categorical__service_code_575060201,0.0
+categorical__service_code_575060112,0.0
+categorical__service_code_575060111,0.0
+categorical__service_code_575060001,0.0
+categorical__service_code_573600000,0.0
+categorical__service_code_573500300,0.0
+categorical__service_code_573500200,0.0
+categorical__service_code_585000020,0.0
+categorical__service_code_58500-00-10,0.0
+categorical__service_code_583000000,0.0
+categorical__service_code_581120000,0.0
+categorical__service_code_581060000,0.0
+categorical__service_code_581000000,0.0
+categorical__service_code_577150000,0.0
+categorical__service_code_577120011,0.0
+categorical__service_code_577060001,0.0
+categorical__service_code_577000022,0.0
+categorical__service_code_577000021,0.0
+categorical__service_code_577000011,0.0
+categorical__service_code_575240202,0.0
+categorical__service_code_575180421,0.0
+categorical__service_code_575180412,0.0
+categorical__service_code_601221576,0.0
+categorical__service_code_601000000,0.0
+categorical__service_code_600330000,0.0
+categorical__service_code_6-883-16,0.0
+categorical__service_code_6-5773-23,0.0
+categorical__service_code_6-5357-21,0.0
+categorical__service_code_6-475-06,0.0
+categorical__service_code_6-277-96,0.0
+categorical__service_code_6-163-00,0.0
+categorical__service_code_593030000,0.0
+categorical__service_code_593000000,0.0
+categorical__service_code_589000090,0.0
+categorical__service_code_589000030,0.0
+categorical__service_code_587150000,0.0
+categorical__service_code_587000000,0.0
+categorical__service_code_585240000,0.0
+categorical__service_code_706222144,0.0
+categorical__service_code_7-355-01,0.0
+categorical__service_code_69-23-19,0.0
+categorical__service_code_67-100-15,0.0
+categorical__service_code_665420020,0.0
+categorical__service_code_640046,0.0
+categorical__service_code_64-115-18,0.0
+categorical__service_code_615230000,0.0
+categorical__service_code_613900000,0.0
+categorical__service_code_613060000,0.0
+categorical__service_code_61-539-14,0.0
+categorical__service_code_609211011,0.0
+categorical__service_code_605210722,0.0
+categorical__service_code_605030011,0.0
+categorical__service_code_605030000,0.0
+categorical__service_code_604233503,0.0
+categorical__service_code_73050-16-20,0.0
+categorical__service_code_73050-15-50,0.0
+categorical__service_code_73050-09-80,0.0
+categorical__service_code_73050-05-50,0.0
+categorical__service_code_73050-00-73,0.0
+categorical__service_code_730000250,0.0
+categorical__service_code_730000080,0.0
+categorical__service_code_730000010,0.0
+categorical__service_code_73000-00-90,0.0
+categorical__service_code_73000-00-30,0.0
+categorical__service_code_712222993,0.0
+categorical__service_code_709211014,0.0
+categorical__service_code_707245490,0.0
+categorical__service_code_730500170,0.0
+categorical__service_code_730500090,0.0
+categorical__service_code_730500080,0.0
+categorical__service_code_730500071,0.0
+categorical__service_code_730500010,0.0
+categorical__service_code_73050-58-20,0.0
+categorical__service_code_73050-52-70,0.0
+categorical__service_code_73050-41-30,0.0
+categorical__service_code_73050-40-30,0.0
+categorical__service_code_73050-37-30,0.0
+categorical__service_code_73050-36-70,0.0
+categorical__service_code_73050-35-50,0.0
+categorical__service_code_73050-29-80,0.0
+categorical__service_code_73050-26-10,0.0
+categorical__service_code_73050-24-00,0.0
+categorical__service_code_73050-23-00,0.0
+categorical__service_code_730500990,0.0
+categorical__service_code_730500940,0.0
+categorical__service_code_730500910,0.0
+categorical__service_code_730500900,0.0
+categorical__service_code_730500880,0.0
+categorical__service_code_730500670,0.0
+categorical__service_code_730500640,0.0
+categorical__service_code_730500470,0.0
+categorical__service_code_730500440,0.0
+categorical__service_code_730500430,0.0
+categorical__service_code_730500300,0.0
+categorical__service_code_730500280,0.0
+categorical__service_code_730501730,0.0
+categorical__service_code_730501700,0.0
+categorical__service_code_730501690,0.0
+categorical__service_code_730501610,0.0
+categorical__service_code_730501600,0.0
+categorical__service_code_730501580,0.0
+categorical__service_code_730501570,0.0
+categorical__service_code_730501550,0.0
+categorical__service_code_730501540,0.0
+categorical__service_code_730501450,0.0
+categorical__service_code_730501410,0.0
+categorical__service_code_730501150,0.0
+categorical__service_code_730502520,0.0
+categorical__service_code_730502490,0.0
+categorical__service_code_730502340,0.0
+categorical__service_code_730502320,0.0
+categorical__service_code_730502310,0.0
+categorical__service_code_730502300,0.0
+categorical__service_code_730502190,0.0
+categorical__service_code_730502120,0.0
+categorical__service_code_730502110,0.0
+categorical__service_code_730502060,0.0
+categorical__service_code_730501970,0.0
+categorical__service_code_730501800,0.0
+categorical__service_code_730501740,0.0
+categorical__service_code_730503310,0.0
+categorical__service_code_730503060,0.0
+categorical__service_code_730503050,0.0
+categorical__service_code_730503040,0.0
+categorical__service_code_730503020,0.0
+categorical__service_code_730502990,0.0
+categorical__service_code_730502980,0.0
+categorical__service_code_730502900,0.0
+categorical__service_code_730502710,0.0
+categorical__service_code_730502670,0.0
+categorical__service_code_730502620,0.0
+categorical__service_code_730502610,0.0
+categorical__service_code_730502540,0.0
+categorical__service_code_730502530,0.0
+categorical__service_code_730503920,0.0
+categorical__service_code_730503910,0.0
+categorical__service_code_730503860,0.0
+categorical__service_code_730503770,0.0
+categorical__service_code_730503750,0.0
+categorical__service_code_730503720,0.0
+categorical__service_code_730503650,0.0
+categorical__service_code_730503570,0.0
+categorical__service_code_730503560,0.0
+categorical__service_code_730503530,0.0
+categorical__service_code_730503500,0.0
+categorical__service_code_730503340,0.0
+categorical__service_code_730503320,0.0
+categorical__service_code_730504330,0.0
+categorical__service_code_730504270,0.0
+categorical__service_code_730504150,0.0
+categorical__service_code_730504140,0.0
+categorical__service_code_730504130,0.0
+categorical__service_code_730504120,0.0
+categorical__service_code_730504110,0.0
+categorical__service_code_730504060,0.0
+categorical__service_code_730504040,0.0
+categorical__service_code_730504030,0.0
+categorical__service_code_730504020,0.0
+categorical__service_code_730504010,0.0
+categorical__service_code_730504000,0.0
+categorical__service_code_730503950,0.0
+categorical__service_code_730503940,0.0
+categorical__service_code_730503930,0.0
+categorical__service_code_730505770,0.0
+categorical__service_code_730505290,0.0
+categorical__service_code_730505270,0.0
+categorical__service_code_730505200,0.0
+categorical__service_code_730505180,0.0
+categorical__service_code_730505020,0.0
+categorical__service_code_730505010,0.0
+categorical__service_code_730504980,0.0
+categorical__service_code_730504940,0.0
+categorical__service_code_730504890,0.0
+categorical__service_code_730504870,0.0
+categorical__service_code_730504660,0.0
+categorical__service_code_730504650,0.0
+categorical__service_code_730504480,0.0
+categorical__service_code_730504470,0.0
+categorical__service_code_730504430,0.0
+categorical__service_code_731000150,0.0
+categorical__service_code_731000130,0.0
+categorical__service_code_731000090,0.0
+categorical__service_code_73100-26-20,0.0
+categorical__service_code_73100-25-60,0.0
+categorical__service_code_73100-11-40,0.0
+categorical__service_code_730505960,0.0
+categorical__service_code_730505950,0.0
+categorical__service_code_730505910,0.0
+categorical__service_code_730505850,0.0
+categorical__service_code_730505830,0.0
+categorical__service_code_730505820,0.0
+categorical__service_code_730505810,0.0
+categorical__service_code_730505800,0.0
+categorical__service_code_731001000,0.0
+categorical__service_code_731000950,0.0
+categorical__service_code_731000900,0.0
+categorical__service_code_731000880,0.0
+categorical__service_code_731000860,0.0
+categorical__service_code_731000850,0.0
+categorical__service_code_731000680,0.0
+categorical__service_code_731000590,0.0
+categorical__service_code_731000570,0.0
+categorical__service_code_731000560,0.0
+categorical__service_code_731000550,0.0
+categorical__service_code_731000480,0.0
+categorical__service_code_731000430,0.0
+categorical__service_code_731000300,0.0
+categorical__service_code_731000230,0.0
+categorical__service_code_731000180,0.0
+categorical__service_code_731001390,0.0
+categorical__service_code_731001380,0.0
+categorical__service_code_731001290,0.0
+categorical__service_code_731001280,0.0
+categorical__service_code_731001250,0.0
+categorical__service_code_731001240,0.0
+categorical__service_code_731001170,0.0
+categorical__service_code_731001160,0.0
+categorical__service_code_731001150,0.0
+categorical__service_code_731001090,0.0
+categorical__service_code_731001080,0.0
+categorical__service_code_731001070,0.0
+categorical__service_code_731001060,0.0
+categorical__service_code_731001050,0.0
+categorical__service_code_731001030,0.0
+categorical__service_code_731002670,0.0
+categorical__service_code_731002620,0.0
+categorical__service_code_731002590,0.0
+categorical__service_code_731002560,0.0
+categorical__service_code_731002540,0.0
+categorical__service_code_731002530,0.0
+categorical__service_code_731002410,0.0
+categorical__service_code_731002390,0.0
+categorical__service_code_731002380,0.0
+categorical__service_code_731002370,0.0
+categorical__service_code_731002080,0.0
+categorical__service_code_731002030,0.0
+categorical__service_code_731001790,0.0
+categorical__service_code_731001770,0.0
+categorical__service_code_731001550,0.0
+categorical__service_code_731001400,0.0
+categorical__service_code_732000840,0.0
+categorical__service_code_732000750,0.0
+categorical__service_code_732000500,0.0
+categorical__service_code_732000300,0.0
+categorical__service_code_731500120,0.0
+categorical__service_code_731500100,0.0
+categorical__service_code_731500050,0.0
+categorical__service_code_731500040,0.0
+categorical__service_code_73150-01-20,0.0
+categorical__service_code_73150-00-80,0.0
+categorical__service_code_731002840,0.0
+categorical__service_code_731002820,0.0
+categorical__service_code_731002760,0.0
+categorical__service_code_731002750,0.0
+categorical__service_code_731002690,0.0
+categorical__service_code_733000980,0.0
+categorical__service_code_733000420,0.0
+categorical__service_code_733000360,0.0
+categorical__service_code_733000340,0.0
+categorical__service_code_733000220,0.0
+categorical__service_code_733000090,0.0
+categorical__service_code_733000080,0.0
+categorical__service_code_733000060,0.0
+categorical__service_code_732500290,0.0
+categorical__service_code_732500260,0.0
+categorical__service_code_732500092,0.0
+categorical__service_code_732500080,0.0
+categorical__service_code_732500060,0.0
+categorical__service_code_732500030,0.0
+categorical__service_code_732500020,0.0
+categorical__service_code_73250-00-60,0.0
+categorical__service_code_8-5357-23,0.0
+categorical__service_code_8-5287-20,0.0
+categorical__service_code_8-23-80,0.0
+categorical__service_code_7PL31001720,0.0
+categorical__service_code_7PL30500050,0.0
+categorical__service_code_74-212-98,0.0
+categorical__service_code_734000370,0.0
+categorical__service_code_734000080,0.0
+categorical__service_code_734000070,0.0
+categorical__service_code_734000060,0.0
+categorical__service_code_733500650,0.0
+categorical__service_code_733500550,0.0
+categorical__service_code_733500470,0.0
+categorical__service_code_733500050,0.0
+categorical__service_code_733500010,0.0
+categorical__service_code_810246017,0.0
+categorical__service_code_810200200,0.0
+categorical__service_code_81-212-98,0.0
+categorical__service_code_807210854,0.0
+categorical__service_code_805245257,0.0
+categorical__service_code_805233602,0.0
+categorical__service_code_805222002,0.0
+categorical__service_code_804269395,0.0
+categorical__service_code_804233505,0.0
+categorical__service_code_803221825,0.0
+categorical__service_code_801244682,0.0
+categorical__service_code_801233065,0.0
+categorical__service_code_801233063,0.0
+categorical__service_code_801233062,0.0
+categorical__service_code_80-368-04,0.0
+categorical__service_code_8-5518-25,0.0
+categorical__service_code_836100340,0.0
+categorical__service_code_836100210,0.0
+categorical__service_code_836100120,0.0
+categorical__service_code_836100070,0.0
+categorical__service_code_83610-03-70,0.0
+categorical__service_code_83600-00-20,0.0
+categorical__service_code_83600-00-10,0.0
+categorical__service_code_835300010,0.0
+categorical__service_code_835200000,0.0
+categorical__service_code_835000030,0.0
+categorical__service_code_811222885,0.0
+categorical__service_code_811211282,0.0
+categorical__service_code_905800001,0.0
+categorical__service_code_905233614,0.0
+categorical__service_code_904233512,0.0
+categorical__service_code_902221722,0.0
+categorical__service_code_902221712,0.0
+categorical__service_code_902210504,0.0
+categorical__service_code_902200000,0.0
+categorical__service_code_901233075,0.0
+categorical__service_code_9-949-17,0.0
+categorical__service_code_9-63-82,0.0
+categorical__service_code_9-212-92,0.0
+categorical__service_code_88-15-13,0.0
+categorical__service_code_836800000,0.0
+categorical__service_code_836100400,0.0
+categorical__service_code_836100380,0.0
+categorical__service_code_836100370,0.0
+categorical__service_code_909020000,0.0
+categorical__service_code_909010810,0.0
+categorical__service_code_909010721,0.0
+categorical__service_code_909010711,0.0
+categorical__service_code_909010620,0.0
+categorical__service_code_909010610,0.0
+categorical__service_code_909010370,0.0
+categorical__service_code_909010330,0.0
+categorical__service_code_909010310,0.0
+categorical__service_code_909010220,0.0
+categorical__service_code_909010020,0.0
+categorical__service_code_909010010,0.0
+categorical__service_code_906860100,0.0
+categorical__service_code_906650020,0.0
+categorical__service_code_905950071,0.0
+categorical__service_code_905950011,0.0
+categorical__service_code_921300000,0.0
+categorical__service_code_920520000,0.0
+categorical__service_code_920120000,0.0
+categorical__service_code_912246377,0.0
+categorical__service_code_912246375,0.0
+categorical__service_code_912211448,0.0
+categorical__service_code_912211446,0.0
+categorical__service_code_912211443,0.0
+categorical__service_code_911211294,0.0
+categorical__service_code_91-6-04,0.0
+categorical__service_code_91-276-12,0.0
+categorical__service_code_909258202,0.0
+categorical__service_code_909080012,0.0
+categorical__service_code_909080011,0.0
+categorical__service_code_909080000,0.0
+categorical__service_code_961991900,0.0
+categorical__service_code_961990000,0.0
+categorical__service_code_961840000,0.0
+categorical__service_code_961620000,0.0
+categorical__service_code_961390000,0.0
+categorical__service_code_960090000,0.0
+categorical__service_code_955501000,0.0
+categorical__service_code_955500900,0.0
+categorical__service_code_955500500,0.0
+categorical__service_code_955500300,0.0
+categorical__service_code_955500200,0.0
+categorical__service_code_95-276-12,0.0
+categorical__service_code_925159900,0.0
+categorical__service_code_925089900,0.0
+categorical__service_code_925079900,0.0
+categorical__service_code_922090000,0.0
+categorical__service_code_HEPAR500INJ,0.0
+categorical__service_code_H95819,0.0
+categorical__service_code_H93040,0.0
+categorical__service_code_ERYTHR5OPO,0.0
+categorical__service_code_DIPHE50INJ,0.0
+categorical__service_code_DIPHE25PO100,0.0
+categorical__service_code_ACETAINJ10,0.0
+categorical__service_code_97-68-14,0.0
+categorical__service_code_962340000,0.0
+categorical__service_code_962060000,0.0
+categorical__service_code_962051900,0.0
+categorical__service_code_962050000,0.0
+categorical__service_code_962030000,0.0
+categorical__service_code_962001900,0.0
+categorical__service_code_962000000,0.0
+categorical__service_code_U86756,0.0
+categorical__service_code_U86140,0.0
+categorical__service_code_U84520,0.0
+categorical__service_code_U84484,0.0
+categorical__service_code_U83690,0.0
+categorical__service_code_U82951,0.0
+categorical__service_code_U82565,0.0
+categorical__service_code_U80051,0.0
+categorical__service_code_TEANAOP,0.0
+categorical__service_code_T71250,0.0
+categorical__service_code_T71010,0.0
+categorical__service_code_T70450,0.0
+categorical__service_code_Q1000,0.0
+categorical__service_code_METRE11.3INJ,0.0
+categorical__service_code_LAB179,0.0
+categorical__service_code_ICU,0.0
+categorical__payer_id_111,0.0
+categorical__payer_id_105,0.0
+categorical__facility_type_Hospital,0.0
+categorical__encounter_type_DAY CASE,0.0
+categorical__service_code_V86900,0.0
+categorical__service_code_V1007,0.0
+categorical__service_code_17-201-92,0.0
+categorical__service_code_165200300,0.0
+categorical__service_code_165140100,0.0
+categorical__service_code_1612246427,0.0
+categorical__service_code_1612246425,0.0
+categorical__service_code_1611258599,0.0
+categorical__service_code_1603200042,0.0
+categorical__service_code_1603200041,0.0
+categorical__service_code_1601256675,0.0
+categorical__service_code_1601256672,0.0
+categorical__service_code_16-201-92,0.0
+categorical__service_code_16-137-94,0.0
+categorical__service_code_158-149-98,0.0
+categorical__service_code_156000100,0.0
+categorical__service_code_15556-00-00,0.0
+categorical__service_code_155060000,0.0
+categorical__receiver_id_7001537161,0.0
+categorical__receiver_id_111,0.0
+categorical__receiver_id_105,0.0
+categorical__payer_id_7001537161,0.0
+categorical__payer_classification_CLASSIC 1.1 (S),0.0
+categorical__payer_classification_C-STAFF,0.0
+categorical__payer_classification_C+,0.0
+categorical__payer_classification_AP,0.0
+categorical__payer_classification_AD-R,0.0
+categorical__payer_classification_A-P,0.0
+categorical__payer_classification_A++,0.0
+categorical__payer_classification_A+,0.0
+categorical__payer_classification_A PARENT,0.0
+categorical__payer_classification_PARENT VVIP,0.0
+categorical__payer_classification_PARENT B,0.0
+categorical__payer_classification_PARENT A,0.0
+categorical__payer_classification_MANAGEMENT,0.0
+categorical__payer_classification_IHP VIP,0.0
+categorical__service_code_1002221723,0.0
+categorical__payer_classification_GLOBAL EXCL. USA,0.0
+categorical__payer_classification_Executive VVIP,0.0
+categorical__payer_classification_EXECUTIVE VVIP,0.0
+categorical__payer_classification_EXECUTIVE,0.0
+categorical__payer_classification_ESSENTIAL 2.1,0.0
+categorical__payer_classification_EMPLOYEE+,0.0
+categorical__payer_classification_EE A,0.0
+categorical__payer_classification_CLASSIC+NW5,0.0
+categorical__service_code_154-149-98,0.0
+categorical__service_code_1512246417,0.0
+categorical__primary_diagnosis_Z95.4,0.0
+categorical__service_code_1509258218,0.0
+categorical__service_code_1509258216,0.0
+categorical__service_code_1509211057,0.0
+categorical__service_code_1506233820,0.0
+categorical__service_code_1506233818,0.0
+categorical__service_code_1501256657,0.0
+categorical__service_code_1501256646,0.0
+categorical__service_code_1501256644,0.0
+categorical__service_code_150-212-01,0.0
+categorical__service_code_15-276-97,0.0
+categorical__service_code_1408222486,0.0
+categorical__service_code_1408222484,0.0
+categorical__service_code_1407245563,0.0
+categorical__payer_classification_TIER 2 - PARENTS,0.0
+categorical__primary_diagnosis_category_Perinatal,0.0
+categorical__service_code_1001233081,0.0
+categorical__service_code_10-5444-24,0.0
+categorical__payer_classification_SRG7+,0.0
+categorical__payer_classification_SN A,0.0
+categorical__payer_classification_Premium 4.1 (S),0.0
+categorical__payer_classification_Premium 3.1 (S),0.0
+categorical__payer_classification_Premium 3.1,0.0
+categorical__payer_classification_PREMIUM 3.2,0.0
+categorical__payer_classification_PREMIUM 3.1 (S),0.0
+categorical__payer_classification_PREMIUM 3.1,0.0
+categorical__payer_classification_PREMIUM 2.1 (S),0.0
+categorical__payer_classification_PREMIUM 2.1,0.0
+categorical__department_AHH MORGUE,0.0
+categorical__department_AHH EMERGENCY DEPT,0.0
+categorical__department_AHH 2W ICU,0.0
+categorical__department_AHH 2N MEDICAL SURGICAL,0.0
+categorical__payer_classification_VVIPP,0.0
+categorical__service_code_10-325-00,0.0
+categorical__service_code_10-119-82,0.0
+categorical__service_code_1-90-82,0.0
+categorical__payer_classification_VIP1,0.0
+categorical__payer_classification_VIP+1,0.0
+categorical__payer_classification_VIP Parents,0.0
+categorical__service_code_1-647-15,0.0
+categorical__payer_classification_VIP P,0.0
+categorical__payer_classification_VIP - PARENT,0.0
+categorical__service_code_1-5804-23,0.0
+categorical__service_code_1-557-15,0.0
+categorical__department_DHC GENERAL SURGERY,0.0
+categorical__service_code_1-5550-20,0.0
+categorical__department_DHC EXEC HEALTH CLINIC,0.0
+categorical__service_code_1-545-87,0.0
+categorical__service_code_1-5083-17,0.0
+categorical__department_DHC COLORECTAL SURGERY,0.0
+categorical__service_code_1-323-19,0.0
+categorical__department_DHC CARDIAC SURGERY,0.0
+categorical__department_DHC CARDIAC REHAB CLINIC,0.0
+categorical__service_code_1-178-87,0.0
+categorical__department_DHC BARIATRIC SURGERY,0.0
+categorical__department_DHC ANTICOAGULANT CLINIC,0.0
+categorical__department_DHC ALLERGY CLINIC,0.0
+categorical__department_DHAHRAN ULTRASOUND IMAGING,0.0
+categorical__department_DHC PAIN CLINIC,0.0
+categorical__service_code_1-161-00,0.0
+categorical__service_code_###############################################################################################################################################################################################################################################################,0.0
+categorical__service_code_175313064,0.0
+categorical__service_code_175312068,0.0
+categorical__service_code_1710222744,0.0
+categorical__department_DHC NEPHROLOGY CLINIC,0.0
+categorical__service_code_1709258231,0.0
+categorical__department_DHC MATERNAL FETAL MEDICINE,0.0
+categorical__department_DHC LAB,0.0
+categorical__service_code_1709234217,0.0
+categorical__department_DHC INFECTIOUS DIS CLINIC,0.0
+categorical__department_DHC IMMUNIZATION,0.0
+categorical__department_DHC HEMATOLOGY CLINIC,0.0
+categorical__department_DHC GYNECOLOGY ONCOLOGY,0.0
+categorical__service_code_1709200158,0.0
+categorical__department_DHC TREATMENT ROOM,0.0
+categorical__department_DHC RHEUMATOLOGY CLINIC,0.0
+categorical__department_DHC PULMONARY CLINIC,0.0
+categorical__service_code_1708222505,0.0
+categorical__department_DHC PRIMARY CARE DIABETIC EYE SCREENING,0.0
+categorical__service_code_1707257771,0.0
+categorical__department_DHC PEDIATRIC BEHAVIORAL DEVELOPMENT,0.0
+categorical__department_DHC PED NEUROLOGY CL,0.0
+categorical__department_DHC PED NEPHROLOGY CL,0.0
+categorical__service_code_1706257572,0.0
+categorical__department_DHC PED ENDOCRINOLOGY,0.0
+categorical__department_DHC PED CARDIOLOGY CL,0.0
+categorical__department_DHH BREAST IMG,0.0
+categorical__service_code_1706257567,0.0
+categorical__service_code_1706257563,0.0
+categorical__service_code_1705222036,0.0
+categorical__department_DHH 3H OB/GYN,0.0
+categorical__department_DHH 3C SURGICAL ICU,0.0
+categorical__service_code_1705222035,0.0
+categorical__department_DHH 2J LABOR & DELIVERY,0.0
+categorical__service_code_1705222033,0.0
+categorical__service_code_1704233551,0.0
+categorical__department_DHC VASCULAR SURGERY,0.0
+categorical__service_code_17-665-17,0.0
+categorical__department_DHH SPEECH LANG PATH,0.0
+categorical__department_DHH RADIATION ONCOLOGY,0.0
+categorical__service_code_175315045,0.0
+categorical__department_DHH PSYCH - MALE,0.0
+categorical__department_DHH PHYSICAL THERAPY,0.0
+categorical__department_DHH PERIOP,0.0
+categorical__department_DHH OCCUPATIONAL THERAPY,0.0
+categorical__department_DHH NURSERY,0.0
+categorical__department_DHH MORGUE,0.0
+categorical__department_DHH EMS PHARMACY,0.0
+categorical__service_code_175315044,0.0
+categorical__department_DHH DISCHARGE PHARMACY,0.0
+categorical__department_DHH CENTRAL IMG,0.0
+categorical__department_DHH CARDIAC CATH LAB,0.0
+categorical__policy_name_AL SUWAIKET FOR TRANSPORTATION COMPNAY,0.0
+categorical__policy_name_AL QADISIYA CLUB CO,0.0
+categorical__policy_name_AL HOTY CO LTD,0.0
+categorical__policy_name_AL GOSAIBI SERVICES COMPANY LTD,0.0
+categorical__policy_name_AIR PRODUCTS MIDDLE EAST INDUSTRIAL GASES LLC,0.0
+categorical__policy_name_AIMS SMTC COMPANY CENTER FOR TRAINING,0.0
+categorical__policy_name_AHMED ELNASIR MOHAMED ELNIGOUMI,0.0
+categorical__policy_name_AGRICULTURE DEVELOPMENT COMPANY LTD,0.0
+categorical__policy_name_AFC ASIAN CUP LOCAL ORGANIZING COMMITTEE,0.0
+categorical__policy_name_ABDULRAHMAN MUQBIL ABDULLAH ALMESNED,0.0
+categorical__policy_name_ABDULAZIZ ABDULLATIF ABDULLAH AL OMAIR,0.0
+categorical__service_code_175315043,0.0
+categorical__service_code_175315042,0.0
+categorical__claim_type_Day Case,0.0
+categorical__service_code_14-887-17,0.0
+categorical__service_code_14-5117-19,0.0
+categorical__service_code_138150100,0.0
+categorical__service_code_138150000,0.0
+categorical__service_code_136-172-02,0.0
+categorical__service_code_132-276-17,0.0
+categorical__service_code_1311222898,0.0
+categorical__service_code_1310211164,0.0
+categorical__service_code_131-11-94,0.0
+categorical__service_code_1309234206,0.0
+categorical__service_code_1309234199,0.0
+categorical__service_code_1308245764,0.0
+categorical__service_code_1303257068,0.0
+categorical__service_code_1301256595,0.0
+categorical__service_code_1301256587,0.0
+categorical__service_code_124-276-15,0.0
+categorical__policy_name_Aaelat Al Saudia-1028187894,0.0
+categorical__policy_name_Aaelat Al Saudia-1024348557,0.0
+categorical__policy_name_ASAS ALWJIHAT MANUFACTURING COMPANY,0.0
+categorical__service_code_175315041,0.0
+categorical__policy_name_ARAMCO LUBRICANTS AND RETAIL COMPANY,0.0
+categorical__policy_name_ARABIAN GEOPHYSICAL AND SURVEYING CO ARGAS,0.0
+categorical__policy_name_ARABIAN CASTLES FOR GENERAL CONTRACTING,0.0
+categorical__policy_name_ARAB NATIONAL BANK,0.0
+categorical__policy_name_ALUGAIR AREA DEVELOPMENT COMPANY,0.0
+categorical__policy_name_ALRASHED BUILDING MATERIALS CO,0.0
+categorical__policy_name_ALI SAAD S AL SHAIBAN,0.0
+categorical__policy_name_ALI AHMED A ALNOJAIM,0.0
+categorical__policy_name_ALI ABDULLAH A ALGHAMDI,0.0
+categorical__policy_name_AL YAMAMA FOR TRADING AND CONTRACTING COMPANY,0.0
+categorical__policy_name_CATERING CARE COMPANY,0.0
+categorical__policy_name_BUTI RAJEH A ALSUBAI,0.0
+categorical__policy_name_BUPA ARABIA,0.0
+categorical__policy_name_BRANCH OOF SAHARA INTERNATION PETROCHEMI,0.0
+categorical__policy_name_BRANCH OF SAILS,0.0
+categorical__policy_name_BRANCH OF AL HUGAYET GENERAL CONTRACTING,0.0
+categorical__policy_name_BLACK ROCK LTD,0.0
+categorical__policy_name_BIG BAG FACTORY,0.0
+categorical__policy_name_BAKER HUGHES SAUDI ARABIA FOR OPERATION,0.0
+categorical__policy_name_BAKER HUGES SAUDI ARABIA,0.0
+categorical__policy_name_BAE SYSTEMS SAUDI DEVELOPMENT AND TRAINING COMPANY,0.0
+categorical__policy_name_BAE SYSTEMS SAUDI DEVELOPMENT AND TRAINI,0.0
+categorical__policy_name_BAE SYSTEMS OPERATIONS LIMITED OPS,0.0
+categorical__policy_name_BAE SYSTEMS MODSAP MINISTRY OF DEFENCE S,0.0
+categorical__service_code_175315040,0.0
+categorical__policy_name_FIRST NATIONAL RECRIUTMENT COMPANY,0.0
+categorical__policy_name_FATHALLAH ALI ALSUKAIRI UNIFORM ESTABLISHMENT,0.0
+categorical__policy_name_EXPRO Saudi Tourism Authority,0.0
+categorical__policy_name_EXPRO Ministry of Tourism,0.0
+categorical__policy_name_ERNST AND YOUNG PROFESSIONAL SERVICES,0.0
+categorical__policy_name_ERNST AND YOUNG AND CO PUBLIC ACCOUNTANTS,0.0
+categorical__policy_name_ENERGY TECH,0.0
+categorical__policy_name_EMERSON SAUDI ARABIA LLC,0.0
+categorical__policy_name_Deer IT,0.0
+categorical__policy_name_DIRIYAH COMPANY,0.0
+categorical__service_code_175315039,0.0
+categorical__policy_name_DHAHRAN TECHNO-VALLEY,0.0
+categorical__policy_name_DEXCOM ARABIA LIMITED,0.0
+categorical__policy_name_DAMMAM AIRPORTS COMPANY,0.0
+categorical__service_code_175315035,0.0
+categorical__policy_name_IBRAHIM MOHAMMED A ALBABTAIN,0.0
+categorical__policy_name_IBRAHIM AL BASSAM COMPANY,0.0
+categorical__policy_name_HASSAN BIN ALI ALSANAD PARTNERS COMPANY,0.0
+categorical__service_code_175315034,0.0
+categorical__policy_name_HADI SWEA ALJABRI TRANSPORT COMPANY,0.0
+categorical__service_code_175315028,0.0
+categorical__policy_name_GLOBAL DIGITAL INTEGRATED SOLUTIONS COMPANY,0.0
+categorical__policy_name_GENERAL TRADING AND EQUIPMENT CJSC,0.0
+categorical__policy_name_GENERAL COURT OF AUDIT,0.0
+categorical__policy_name_GEMTEC,0.0
+categorical__policy_name_GEGS,0.0
+categorical__policy_name_FUTURE ARTIFICIAL INTELLIGENCE COMPANY,0.0
+categorical__policy_name_FOOD ART INVESTMENT CO,0.0
+categorical__policy_name_FLYNAS COMPANY,0.0
+categorical__policy_name_FLOWSERVE ABAHSAIN CO LTD,0.0
+categorical__policy_name_MA'ADEN CORPORATE (SAUDI ARABIAN MINING),0.0
+categorical__policy_name_King Abdullah Financial District (KAFD),0.0
+categorical__policy_name_KRISHNA LAL YADAV,0.0
+categorical__service_code_175315027,0.0
+categorical__policy_name_KING ABDULLAH UNIVERSITY OF SCIENCE TECH,0.0
+categorical__policy_name_KING ABDULLAH FINANCIAL CENTER MANAGEMENT AND DEVELOPMENT COMPANY,0.0
+categorical__policy_name_KHALID ALI ALTURKI AND PARTNER CO,0.0
+categorical__policy_name_KEMYA AL-JUBAIL PETROCHEMICAL COMPANY,0.0
+categorical__policy_name_KAFAAT BUSINESS SOLUTIONS,0.0
+categorical__policy_name_JOHNS HOPKINS ARAMCO HEALTHCARE,0.0
+categorical__policy_name_JAL INTERNATIONAL LTD,0.0
+categorical__policy_name_JAL HUMAN RESOURCE COMPANY PROFF,0.0
+categorical__policy_name_JAFAR ALI AHMED AL MOHSIN ESTABLISHMENT FOR GENERAL CONTRACTING,0.0
+categorical__policy_name_Ismail Abudawood And Procter And Gamble LTD Company,0.0
+categorical__policy_name_INTERNATIONAL MARITIME INDUSTRIES COMPANY,0.0
+categorical__policy_name_IHP - National Company of Telecommunications and Information Secur,0.0
+categorical__service_code_175315026,0.0
+categorical__policy_name_MOHAMED YOUSEF ALISMAIL LAW FIRM,0.0
+categorical__policy_name_MODON,0.0
+categorical__policy_name_MOBARAK MOHAMMED F ALMARRI,0.0
+categorical__policy_name_MINISTRY OF INVESTMENT,0.0
+categorical__policy_name_MINISTRY OF INDUSTRY AND MINERAL RESOURC,0.0
+categorical__policy_name_MIDDLE EAST IT SOLUCTIONS CO BRANCH,0.0
+categorical__policy_name_METAL COMPANY AMCO,0.0
+categorical__policy_name_MEDTRONIC SAUDI ARABIA,0.0
+categorical__policy_name_MAÂ€™ADEN ALUMINUM COMPANY (MAC),0.0
+categorical__service_code_175315025,0.0
+categorical__policy_name_MARYAM MOHAMMAD S AL ABDULHADI,0.0
+"categorical__policy_name_MA,ADEN PHOSPHATE COMPANY (MPC)",0.0
+categorical__policy_name_OFFICE OF MONSHAAT,0.0
+categorical__policy_name_NOKIA ARABIA LIMITED COMPANY,0.0
+categorical__policy_name_NMDCC ENERGY SAUDI LIMITED COMPANY,0.0
+categorical__policy_name_NEW MURABBA DEVELOPMENT COMPANY,0.0
+categorical__policy_name_NESTLE SAUDI ARABIA,0.0
+categorical__service_code_175315024,0.0
+categorical__policy_name_NATIONAL REAL ESTATE REGISTRATION SERVIC,0.0
+categorical__service_code_175314490,0.0
+categorical__policy_name_NATIONAL HOUSING COMPANY.,0.0
+categorical__service_code_175313514,0.0
+categorical__policy_name_Maaden Phosphate Company (MPC),0.0
+categorical__policy_name_Maaden Corporate (Saudi Arabian Mining Company),0.0
+categorical__policy_name_Maaden Bauxite & Alumina Company (MBAC),0.0
+categorical__policy_name_MUKAMALAH AVIATION CO,0.0
+categorical__policy_name_MOHAMMED YOUSEF AHMED ALISMAIL LAW FIRM,0.0
+categorical__service_code_18-16-81,0.0
+categorical__policy_name_SAUDI ARAMCO JUBAIL REFINERY COMPANY,0.0
+categorical__policy_name_SAUDI AIRLINES GROUP,0.0
+categorical__policy_name_SAL SAUDI LOGISTICS SERVICES COMPANY,0.0
+categorical__service_code_175342633,0.0
+categorical__policy_name_SADARA CHEMICAL COMPANY,0.0
+categorical__policy_name_S01,0.0
+categorical__policy_name_ROYAL COMMISSION FOR JUBAIL,0.0
+categorical__policy_name_ROYAL COMMISSION FOR AL ULA COUNTRY,0.0
+categorical__policy_name_ROYAL COMMISSION FOR AI ULA COUNTRTY,0.0
+categorical__policy_name_REMAT ALRIYADH DEVELOPMENT COMPANY,0.0
+categorical__policy_name_RAYMOND CARL DAMM III,0.0
+categorical__service_code_175329747,0.0
+categorical__policy_name_Oil Park Development Company (OPDC),0.0
+categorical__policy_name_OMAR AHMED ALMOHSEN AND PARTNERS TRADING AND CONTRACTING CO LIMITED,0.0
+categorical__policy_name_OLAYAN SAUDI HOLDING COMPANY,0.0
+categorical__policy_name_SIEMENS ENERGY COMPANY LTD DAMMAM,0.0
+categorical__policy_name_SCHNEIDER ELECTRIC PLANTS SAUDI ARABIA,0.0
+categorical__policy_name_SAUDI WATER AUTHORITY,0.0
+categorical__policy_name_SAUDI TOURISM INVESTMENT COMPANY,0.0
+categorical__policy_name_SAUDI RAILWAY CO. (SAR),0.0
+categorical__policy_name_SAUDI POST CORPORATION,0.0
+categorical__policy_name_SAUDI NATIONAL BANK (SNB),0.0
+categorical__policy_name_SAUDI IRRIGATION ORGANIZATION,0.0
+categorical__policy_name_SAUDI GEOPHYSICAL OFFICE COMPANY,0.0
+categorical__policy_name_SAUDI ENTERTAINMENT VENTURES,0.0
+categorical__policy_name_SAUDI ENGINES MANUFACTURING CO,0.0
+categorical__policy_name_SAUDI CHEVRON PHILIPS CO.,0.0
+categorical__policy_name_SAUDI BUSINESS MACHINES SBM,0.0
+categorical__policy_name_SAUDI ARAMCO TOTAL REFINING & PETROCHEMICAL Co. (SATORP),0.0
+categorical__policy_name_The Munshaat Office (TMO),0.0
+categorical__policy_name_THIRTY THREE MEDIA COMPANY,0.0
+categorical__policy_name_THE RED SEA GLOBAL COMPANY,0.0
+categorical__service_code_175321202,0.0
+categorical__service_code_175316493,0.0
+categorical__policy_name_TASNEE Jubail - Saudi Polyolefins,0.0
+categorical__policy_name_TAQA INDUSTRIALIZATION AND ENERGY SERVICES COMPANY,0.0
+categorical__policy_name_TAMIMI MARKETS CO LTD,0.0
+categorical__policy_name_TAMIMI GLOBAL COMPANY LTD- FOR SERVICES & MAINTENANCE (TAFGA),0.0
+categorical__policy_name_Saudi Iron & Steel Company - HADEED,0.0
+categorical__policy_name_Saudi Aramco,0.0
+categorical__policy_name_SRACO CO,0.0
+categorical__policy_name_SPORTS BOULEVARD FOUNDATION,0.0
+categorical__policy_name_SPONSORE,0.0
+categorical__policy_name_SOFON INDUSTRIES COMPANY,0.0
+categorical__primary_diagnosis_A05.9,0.0
+categorical__service_code_175315058,0.0
+categorical__service_code_175315057,0.0
+categorical__service_code_175315056,0.0
+categorical__service_code_175315055,0.0
+categorical__policy_name_ZAKAT TAX AND CUSTOMS AUTHORITY,0.0
+categorical__policy_name_ZAFAR MEHDI COMPANY,0.0
+categorical__policy_name_YASREF YANBU ARAMCO SINOPEC REFINING CO,0.0
+categorical__service_code_175315054,0.0
+categorical__policy_name_WOOD OVENS FACTORY AL RASS BRANCH,0.0
+categorical__policy_name_WESTERN ATLAS ARABIA LTD CO,0.0
+categorical__policy_name_Valvoline Arabia Lubricants Limited Company,0.0
+categorical__policy_name_Ulterra Arabia LLC,0.0
+categorical__primary_diagnosis_D47.1,0.0
+categorical__primary_diagnosis_D32.9,0.0
+categorical__primary_diagnosis_C83.3,0.0
+categorical__primary_diagnosis_C81.9,0.0
+categorical__primary_diagnosis_C67.9,0.0
+categorical__primary_diagnosis_C50.9,0.0
+categorical__service_code_175315053,0.0
+categorical__primary_diagnosis_C34.9,0.0
+categorical__primary_diagnosis_C18.9,0.0
+categorical__primary_diagnosis_B96.81,0.0
+categorical__primary_diagnosis_B49,0.0
+categorical__primary_diagnosis_B37.3,0.0
+categorical__primary_diagnosis_B34.9,0.0
+categorical__primary_diagnosis_B27.9,0.0
+categorical__service_code_123060000,0.0
+categorical__service_code_1210222706,0.0
+categorical__service_code_1210211149,0.0
+categorical__service_code_1203245038,0.0
+categorical__service_code_120000000,0.0
+categorical__service_code_12-828-20,0.0
+categorical__service_code_12-5773-23,0.0
+categorical__service_code_119014,0.0
+categorical__service_code_119000000,0.0
+categorical__service_code_117270000,0.0
+categorical__service_code_1171549,0.0
+categorical__service_code_117120000,0.0
+categorical__service_code_117090000,0.0
+categorical__service_code_175315052,0.0
+categorical__service_code_11700-00-00,0.0
+categorical__service_code_115060000,0.0
+categorical__primary_diagnosis_E04.9,0.0
+categorical__primary_diagnosis_E04.2,0.0
+categorical__service_code_175315051,0.0
+categorical__primary_diagnosis_E03.9,0.0
+categorical__primary_diagnosis_E03.8,0.0
+categorical__primary_diagnosis_D69.5,0.0
+categorical__primary_diagnosis_D68.0,0.0
+categorical__service_code_175315050,0.0
+categorical__primary_diagnosis_D59.1,0.0
+categorical__primary_diagnosis_D57.0,0.0
+categorical__primary_diagnosis_D56.8,0.0
+categorical__primary_diagnosis_D56.1,0.0
+categorical__primary_diagnosis_D55.0,0.0
+categorical__primary_diagnosis_D50.9,0.0
+categorical__service_code_175315048,0.0
+categorical__primary_diagnosis_E14.11,0.0
+categorical__primary_diagnosis_E11.8,0.0
+categorical__primary_diagnosis_E11.72,0.0
+categorical__primary_diagnosis_E11.65,0.0
+categorical__primary_diagnosis_E11.61,0.0
+categorical__primary_diagnosis_E11.11,0.0
+categorical__primary_diagnosis_E10.9,0.0
+categorical__primary_diagnosis_E10.8,0.0
+categorical__primary_diagnosis_E10.65,0.0
+categorical__primary_diagnosis_E10.40,0.0
+categorical__primary_diagnosis_E10.11,0.0
+categorical__primary_diagnosis_E09.9,0.0
+categorical__primary_diagnosis_E07.8,0.0
+categorical__primary_diagnosis_E06.9,0.0
+categorical__service_code_175315047,0.0
+categorical__primary_diagnosis_F03,0.0
+categorical__primary_diagnosis_E88.1,0.0
+categorical__primary_diagnosis_E87.6,0.0
+categorical__primary_diagnosis_E87.1,0.0
+categorical__primary_diagnosis_E86,0.0
+categorical__primary_diagnosis_E84,0.0
+categorical__primary_diagnosis_E83.3,0.0
+categorical__primary_diagnosis_E78.9,0.0
+categorical__primary_diagnosis_E66.93,0.0
+categorical__primary_diagnosis_E66.90,0.0
+categorical__primary_diagnosis_E55.9,0.0
+categorical__primary_diagnosis_E53.8,0.0
+categorical__primary_diagnosis_E34.3,0.0
+categorical__service_code_1905222046,0.0
+categorical__primary_diagnosis_F84.0,0.0
+categorical__primary_diagnosis_F81.9,0.0
+categorical__primary_diagnosis_F80.2,0.0
+categorical__primary_diagnosis_F80.1,0.0
+categorical__primary_diagnosis_F43.2,0.0
+categorical__primary_diagnosis_F42.9,0.0
+categorical__primary_diagnosis_F41.9,0.0
+categorical__primary_diagnosis_F41.2,0.0
+categorical__primary_diagnosis_F41.1,0.0
+categorical__primary_diagnosis_F41.0,0.0
+categorical__primary_diagnosis_F32.90,0.0
+categorical__primary_diagnosis_F32.20,0.0
+categorical__primary_diagnosis_F31.9,0.0
+categorical__primary_diagnosis_F30.9,0.0
+categorical__service_code_1902233260,0.0
+categorical__primary_diagnosis_F22.0,0.0
+categorical__primary_diagnosis_G47.2,0.0
+categorical__primary_diagnosis_G47.0,0.0
+categorical__service_code_1901233125,0.0
+categorical__primary_diagnosis_G44.2,0.0
+categorical__primary_diagnosis_G44.0,0.0
+categorical__service_code_188-277-07,0.0
+categorical__service_code_1811211338,0.0
+categorical__primary_diagnosis_G43.2,0.0
+categorical__primary_diagnosis_G43.0,0.0
+categorical__primary_diagnosis_G40.91,0.0
+categorical__primary_diagnosis_G35,0.0
+categorical__primary_diagnosis_G30.9,0.0
+categorical__primary_diagnosis_G25.9,0.0
+categorical__primary_diagnosis_G12.9,0.0
+categorical__primary_diagnosis_F98.8,0.0
+categorical__primary_diagnosis_F90.0,0.0
+categorical__primary_diagnosis_H53.8,0.0
+categorical__primary_diagnosis_H53.2,0.0
+categorical__primary_diagnosis_H53.1,0.0
+categorical__primary_diagnosis_H52.7,0.0
+categorical__primary_diagnosis_H52.2,0.0
+categorical__primary_diagnosis_H50.9,0.0
+categorical__primary_diagnosis_H35.8,0.0
+categorical__primary_diagnosis_H35.7,0.0
+categorical__primary_diagnosis_H35.5,0.0
+categorical__primary_diagnosis_H33.2,0.0
+categorical__service_code_1810222750,0.0
+categorical__primary_diagnosis_H04.1,0.0
+categorical__primary_diagnosis_G93.8,0.0
+categorical__primary_diagnosis_G62.9,0.0
+categorical__primary_diagnosis_G56.0,0.0
+categorical__primary_diagnosis_G47.32,0.0
+categorical__primary_diagnosis_I21.4,0.0
+categorical__primary_diagnosis_I21.3,0.0
+categorical__primary_diagnosis_I21.0,0.0
+categorical__primary_diagnosis_I20.0,0.0
+categorical__service_code_1810222749,0.0
+categorical__primary_diagnosis_I09.9,0.0
+categorical__primary_diagnosis_H93.1,0.0
+categorical__primary_diagnosis_H92.0,0.0
+categorical__primary_diagnosis_H90.4,0.0
+categorical__primary_diagnosis_H81.1,0.0
+categorical__primary_diagnosis_H81.0,0.0
+categorical__primary_diagnosis_H71,0.0
+categorical__primary_diagnosis_H66.1,0.0
+categorical__primary_diagnosis_H66.0,0.0
+categorical__primary_diagnosis_H60.9,0.0
+categorical__primary_diagnosis_H57.9,0.0
+categorical__primary_diagnosis_I50.1,0.0
+categorical__primary_diagnosis_I50.0,0.0
+categorical__primary_diagnosis_I49.3,0.0
+categorical__service_code_1810211191,0.0
+categorical__primary_diagnosis_I48.0,0.0
+categorical__primary_diagnosis_I46.9,0.0
+categorical__primary_diagnosis_I46.0,0.0
+categorical__primary_diagnosis_I44.7,0.0
+categorical__primary_diagnosis_I42.9,0.0
+categorical__primary_diagnosis_I37.0,0.0
+categorical__primary_diagnosis_I35.2,0.0
+categorical__primary_diagnosis_I35.0,0.0
+categorical__primary_diagnosis_I26.9,0.0
+categorical__primary_diagnosis_I25.9,0.0
+categorical__service_code_1807245613,0.0
+categorical__primary_diagnosis_I24.9,0.0
+categorical__primary_diagnosis_J03.9,0.0
+categorical__primary_diagnosis_J02.9,0.0
+categorical__primary_diagnosis_J01.1,0.0
+categorical__primary_diagnosis_I89.0,0.0
+categorical__primary_diagnosis_I83.9,0.0
+categorical__primary_diagnosis_I80.40,0.0
+categorical__primary_diagnosis_I72.9,0.0
+categorical__primary_diagnosis_I65.2,0.0
+categorical__service_code_1807222312,0.0
+categorical__primary_diagnosis_I63.9,0.0
+categorical__primary_diagnosis_I63.4,0.0
+categorical__primary_diagnosis_I61.9,0.0
+categorical__primary_diagnosis_I60.9,0.0
+categorical__primary_diagnosis_I51.4,0.0
+categorical__primary_diagnosis_I50.9,0.0
+categorical__primary_diagnosis_J45.9,0.0
+categorical__service_code_1803257099,0.0
+categorical__primary_diagnosis_J39.9,0.0
+categorical__primary_diagnosis_J38.7,0.0
+categorical__primary_diagnosis_J34.8,0.0
+categorical__primary_diagnosis_J33.9,0.0
+categorical__primary_diagnosis_J32.9,0.0
+categorical__primary_diagnosis_J20.9,0.0
+categorical__service_code_1803245063,0.0
+categorical__primary_diagnosis_J11.1,0.0
+categorical__primary_diagnosis_J10.1,0.0
+categorical__service_code_180-172-14,0.0
+categorical__primary_diagnosis_J05.0,0.0
+categorical__primary_diagnosis_J04.0,0.0
+categorical__primary_diagnosis_K57.92,0.0
+categorical__primary_diagnosis_K52.9,0.0
+categorical__primary_diagnosis_K51.9,0.0
+categorical__primary_diagnosis_K42.9,0.0
+categorical__primary_diagnosis_K40.90,0.0
+categorical__primary_diagnosis_K29.70,0.0
+categorical__primary_diagnosis_K29.50,0.0
+categorical__primary_diagnosis_K21.9,0.0
+categorical__service_code_18-62-82,0.0
+categorical__service_code_18-355-01,0.0
+categorical__primary_diagnosis_K12.1,0.0
+categorical__primary_diagnosis_K11.8,0.0
+categorical__primary_diagnosis_K05.1,0.0
+categorical__primary_diagnosis_J98.4,0.0
+categorical__service_code_21-5083-20,0.0
+categorical__primary_diagnosis_J84.9,0.0
+categorical__primary_diagnosis_K80.00,0.0
+categorical__primary_diagnosis_K76.8,0.0
+categorical__primary_diagnosis_K76.0,0.0
+categorical__primary_diagnosis_K75.8,0.0
+categorical__primary_diagnosis_K64.1,0.0
+categorical__service_code_208245719,0.0
+categorical__primary_diagnosis_K63.8,0.0
+categorical__primary_diagnosis_K63.58,0.0
+categorical__primary_diagnosis_K63.50,0.0
+categorical__primary_diagnosis_K62.9,0.0
+categorical__primary_diagnosis_K62.5,0.0
+categorical__primary_diagnosis_K62.3,0.0
+categorical__primary_diagnosis_K60.2,0.0
+categorical__service_code_206257519,0.0
+categorical__primary_diagnosis_K58.9,0.0
+categorical__primary_diagnosis_L30.9,0.0
+categorical__primary_diagnosis_L29.9,0.0
+categorical__primary_diagnosis_L20.9,0.0
+categorical__primary_diagnosis_L03.2,0.0
+categorical__primary_diagnosis_L03.02,0.0
+categorical__primary_diagnosis_L02.3,0.0
+categorical__primary_diagnosis_L02.1,0.0
+categorical__service_code_203-212-04,0.0
+categorical__primary_diagnosis_K91.43,0.0
+categorical__primary_diagnosis_K90.9,0.0
+categorical__primary_diagnosis_K85.9,0.0
+categorical__primary_diagnosis_K81.9,0.0
+categorical__primary_diagnosis_K80.20,0.0
+categorical__primary_diagnosis_L98.9,0.0
+categorical__primary_diagnosis_L98.8,0.0
+categorical__primary_diagnosis_L85.9,0.0
+categorical__primary_diagnosis_L82,0.0
+categorical__primary_diagnosis_L73.2,0.0
+categorical__primary_diagnosis_L72.1,0.0
+categorical__primary_diagnosis_L70.0,0.0
+categorical__primary_diagnosis_L63.9,0.0
+categorical__primary_diagnosis_L60.9,0.0
+categorical__primary_diagnosis_L50.9,0.0
+categorical__primary_diagnosis_L50.8,0.0
+categorical__primary_diagnosis_L40.9,0.0
+categorical__primary_diagnosis_L40.5,0.0
+categorical__primary_diagnosis_L40,0.0
+categorical__primary_diagnosis_M25.59,0.0
+categorical__primary_diagnosis_M25.57,0.0
+categorical__primary_diagnosis_M25.56,0.0
+categorical__primary_diagnosis_M25.55,0.0
+categorical__primary_diagnosis_M25.51,0.0
+categorical__primary_diagnosis_M23.23,0.0
+categorical__primary_diagnosis_M22.2,0.0
+categorical__primary_diagnosis_M22.1,0.0
+categorical__primary_diagnosis_M21.06,0.0
+categorical__primary_diagnosis_M17.1,0.0
+categorical__primary_diagnosis_M17.0,0.0
+categorical__service_code_202233207,0.0
+categorical__primary_diagnosis_M13.95,0.0
+categorical__primary_diagnosis_M13.86,0.0
+categorical__primary_diagnosis_M13.81,0.0
+categorical__primary_diagnosis_M12.81,0.0
+categorical__primary_diagnosis_M77.0,0.0
+categorical__primary_diagnosis_M75.1,0.0
+categorical__primary_diagnosis_M75.0,0.0
+categorical__primary_diagnosis_M72.2,0.0
+categorical__primary_diagnosis_M72.0,0.0
+categorical__primary_diagnosis_M70.2,0.0
+categorical__service_code_2010246075,0.0
+categorical__service_code_2008245781,0.0
+categorical__primary_diagnosis_M54.3,0.0
+categorical__primary_diagnosis_M54.2,0.0
+categorical__primary_diagnosis_M51.3,0.0
+categorical__primary_diagnosis_M48.09,0.0
+categorical__primary_diagnosis_M46.1,0.0
+categorical__primary_diagnosis_M35.2,0.0
+categorical__primary_diagnosis_M25.96,0.0
+categorical__primary_diagnosis_N17.9,0.0
+categorical__primary_diagnosis_N13.3,0.0
+categorical__primary_diagnosis_N10,0.0
+categorical__primary_diagnosis_N02.9,0.0
+categorical__primary_diagnosis_M96.1,0.0
+categorical__primary_diagnosis_M95.5,0.0
+categorical__primary_diagnosis_M85.56,0.0
+categorical__primary_diagnosis_M81.99,0.0
+categorical__primary_diagnosis_M79.87,0.0
+categorical__primary_diagnosis_M79.86,0.0
+categorical__primary_diagnosis_M79.82,0.0
+categorical__primary_diagnosis_M79.67,0.0
+categorical__primary_diagnosis_M79.66,0.0
+categorical__primary_diagnosis_M79.64,0.0
+categorical__primary_diagnosis_M79.19,0.0
+categorical__primary_diagnosis_M79.15,0.0
+categorical__primary_diagnosis_N47,0.0
+categorical__primary_diagnosis_N42.9,0.0
+categorical__primary_diagnosis_N41.9,0.0
+categorical__primary_diagnosis_N41.0,0.0
+categorical__primary_diagnosis_N40,0.0
+categorical__service_code_2004257244,0.0
+categorical__primary_diagnosis_N39.3,0.0
+categorical__primary_diagnosis_N35.9,0.0
+categorical__primary_diagnosis_N32.8,0.0
+categorical__primary_diagnosis_N28.8,0.0
+categorical__primary_diagnosis_N23,0.0
+categorical__primary_diagnosis_N20.1,0.0
+categorical__primary_diagnosis_N20.0,0.0
+categorical__primary_diagnosis_N18.9,0.0
+categorical__service_code_115030400,0.0
+categorical__service_code_113120000,0.0
+categorical__service_code_112190016,0.0
+categorical__service_code_112190014,0.0
+categorical__service_code_112190012,0.0
+categorical__service_code_112180000,0.0
+categorical__service_code_1111258571,0.0
+categorical__service_code_1111211307,0.0
+categorical__service_code_1110211114,0.0
+categorical__service_code_1108222475,0.0
+categorical__service_code_1108222467,0.0
+categorical__service_code_1106233783,0.0
+categorical__service_code_1104233522,0.0
+categorical__service_code_1103210599,0.0
+categorical__service_code_110258295,0.0
+categorical__service_code_110258287,0.0
+categorical__service_code_2-780-11,0.0
+categorical__primary_diagnosis_O00.9,0.0
+categorical__service_code_2-5893-23,0.0
+categorical__primary_diagnosis_N93.9,0.0
+categorical__primary_diagnosis_N92.6,0.0
+categorical__primary_diagnosis_N92.4,0.0
+categorical__primary_diagnosis_N83.2,0.0
+categorical__primary_diagnosis_N64.9,0.0
+categorical__primary_diagnosis_N64.8,0.0
+categorical__service_code_2-5876-23,0.0
+categorical__primary_diagnosis_N64.4,0.0
+categorical__primary_diagnosis_N64,0.0
+categorical__primary_diagnosis_N63,0.0
+categorical__primary_diagnosis_N62,0.0
+categorical__primary_diagnosis_N50.8,0.0
+categorical__primary_diagnosis_Q17.2,0.0
+categorical__primary_diagnosis_Q02,0.0
+categorical__primary_diagnosis_P05.1,0.0
+categorical__primary_diagnosis_O99.01,0.0
+categorical__primary_diagnosis_O82,0.0
+categorical__primary_diagnosis_O80,0.0
+categorical__primary_diagnosis_O47.0,0.0
+categorical__primary_diagnosis_O40,0.0
+categorical__primary_diagnosis_O34.2,0.0
+categorical__primary_diagnosis_O24.49,0.0
+categorical__primary_diagnosis_O21.0,0.0
+categorical__primary_diagnosis_O20.9,0.0
+categorical__primary_diagnosis_O20.0,0.0
+categorical__primary_diagnosis_O09.4,0.0
+categorical__primary_diagnosis_O03.9,0.0
+categorical__primary_diagnosis_R10.0,0.0
+categorical__primary_diagnosis_R10,0.0
+categorical__service_code_2-44-83,0.0
+categorical__service_code_1911246264,0.0
+categorical__primary_diagnosis_R06.5,0.0
+categorical__service_code_1907233882,0.0
+categorical__primary_diagnosis_R04.0,0.0
+categorical__service_code_1906233827,0.0
+categorical__primary_diagnosis_Q87.89,0.0
+categorical__primary_diagnosis_Q85.1,0.0
+categorical__primary_diagnosis_Q77.4,0.0
+categorical__primary_diagnosis_Q71.6,0.0
+categorical__primary_diagnosis_Q71.12,0.0
+categorical__primary_diagnosis_Q61.43,0.0
+categorical__primary_diagnosis_Q27.3,0.0
+categorical__primary_diagnosis_R25.2,0.0
+categorical__primary_diagnosis_R25.1,0.0
+categorical__primary_diagnosis_R23.2,0.0
+categorical__primary_diagnosis_R22.9,0.0
+categorical__primary_diagnosis_R20.8,0.0
+categorical__primary_diagnosis_R19.89,0.0
+categorical__primary_diagnosis_R18,0.0
+categorical__primary_diagnosis_R17,0.0
+categorical__primary_diagnosis_R13,0.0
+categorical__primary_diagnosis_R12,0.0
+categorical__primary_diagnosis_R11,0.0
+categorical__service_code_220000030,0.0
+categorical__primary_diagnosis_R10.3,0.0
+categorical__primary_diagnosis_R10.2,0.0
+categorical__service_code_220000029,0.0
+categorical__service_code_22-149-91,0.0
+categorical__service_code_22-100-95,0.0
+categorical__primary_diagnosis_R50.8,0.0
+categorical__primary_diagnosis_R49.0,0.0
+categorical__primary_diagnosis_R47.8,0.0
+categorical__primary_diagnosis_R45.1,0.0
+categorical__service_code_211234424,0.0
+categorical__primary_diagnosis_R41.8,0.0
+categorical__primary_diagnosis_R39.8,0.0
+categorical__primary_diagnosis_R35,0.0
+categorical__primary_diagnosis_R33,0.0
+categorical__primary_diagnosis_R31,0.0
+categorical__primary_diagnosis_R30.0,0.0
+categorical__primary_diagnosis_R26.3,0.0
+categorical__primary_diagnosis_R26.0,0.0
+categorical__primary_diagnosis_R79.89,0.0
+categorical__primary_diagnosis_R79.82,0.0
+categorical__primary_diagnosis_R68.8,0.0
+categorical__primary_diagnosis_R63.8,0.0
+categorical__primary_diagnosis_R63.4,0.0
+categorical__primary_diagnosis_R62.8,0.0
+categorical__primary_diagnosis_R59.1,0.0
+categorical__primary_diagnosis_R56.0,0.0
+categorical__primary_diagnosis_R55,0.0
+categorical__primary_diagnosis_R53,0.0
+categorical__service_code_2111246318,0.0
+categorical__primary_diagnosis_R52.2,0.0
+categorical__primary_diagnosis_R52.0,0.0
+categorical__primary_diagnosis_S59.9,0.0
+categorical__primary_diagnosis_S52.50,0.0
+categorical__primary_diagnosis_S51.0,0.0
+categorical__service_code_2110258453,0.0
+categorical__primary_diagnosis_S42.22,0.0
+categorical__primary_diagnosis_S42.02,0.0
+categorical__primary_diagnosis_S30.1,0.0
+categorical__primary_diagnosis_S29.9,0.0
+categorical__primary_diagnosis_S06.9,0.0
+categorical__primary_diagnosis_S02.9,0.0
+categorical__primary_diagnosis_S01.1,0.0
+categorical__primary_diagnosis_R94.5,0.0
+categorical__primary_diagnosis_R92,0.0
+categorical__primary_diagnosis_R89.9,0.0
+categorical__primary_diagnosis_R80,0.0
+categorical__primary_diagnosis_T14.1,0.0
+categorical__primary_diagnosis_T14.08,0.0
+categorical__primary_diagnosis_S93.40,0.0
+categorical__primary_diagnosis_S92.9,0.0
+categorical__primary_diagnosis_S92.5,0.0
+categorical__primary_diagnosis_S92.21,0.0
+categorical__primary_diagnosis_S90.88,0.0
+categorical__primary_diagnosis_S82.8,0.0
+categorical__service_code_2108245795,0.0
+categorical__primary_diagnosis_S72.00,0.0
+categorical__primary_diagnosis_S70.1,0.0
+categorical__service_code_2107222338,0.0
+categorical__primary_diagnosis_S69.8,0.0
+categorical__primary_diagnosis_S68.9,0.0
+categorical__primary_diagnosis_S62.0,0.0
+categorical__primary_diagnosis_Z08.0,0.0
+categorical__primary_diagnosis_Z04.8,0.0
+categorical__primary_diagnosis_Z03.5,0.0
+categorical__primary_diagnosis_Z01.0,0.0
+categorical__service_code_2107222337,0.0
+categorical__primary_diagnosis_Z00,0.0
+categorical__primary_diagnosis_W19,0.0
+categorical__primary_diagnosis_T79.6,0.0
+categorical__primary_diagnosis_T78.4,0.0
+categorical__primary_diagnosis_T78.1,0.0
+categorical__primary_diagnosis_T67.5,0.0
+categorical__primary_diagnosis_T30.0,0.0
+categorical__primary_diagnosis_T16,0.0
+categorical__primary_diagnosis_Z27.4,0.0
+categorical__primary_diagnosis_Z27.3,0.0
+categorical__primary_diagnosis_Z27.1,0.0
+categorical__primary_diagnosis_Z26.9,0.0
+categorical__primary_diagnosis_Z25.1,0.0
+categorical__primary_diagnosis_Z24.6,0.0
+categorical__primary_diagnosis_Z24.3,0.0
+categorical__primary_diagnosis_Z24.2,0.0
+categorical__primary_diagnosis_Z23.8,0.0
+categorical__primary_diagnosis_Z13.88,0.0
+categorical__primary_diagnosis_Z13.6,0.0
+categorical__primary_diagnosis_Z13.1,0.0
+categorical__primary_diagnosis_Z12.8,0.0
+categorical__service_code_2107222336,0.0
+categorical__primary_diagnosis_Z09.4,0.0
+categorical__primary_diagnosis_Z48.0,0.0
+categorical__primary_diagnosis_Z46.5,0.0
+categorical__primary_diagnosis_Z45.2,0.0
+categorical__primary_diagnosis_Z45.0,0.0
+categorical__primary_diagnosis_Z41.2,0.0
+categorical__primary_diagnosis_Z38.0,0.0
+categorical__primary_diagnosis_Z36.8,0.0
+categorical__primary_diagnosis_Z35.9,0.0
+categorical__primary_diagnosis_Z35.52,0.0
+categorical__primary_diagnosis_Z35.51,0.0
+categorical__service_code_2107222333,0.0
+categorical__primary_diagnosis_Z34.0,0.0
+categorical__primary_diagnosis_Z33,0.0
+categorical__primary_diagnosis_Z31.6,0.0
+categorical__service_code_2107222332,0.0
+categorical__primary_diagnosis_Z28.9,0.0
+categorical__primary_diagnosis_Z95.1,0.0
+categorical__primary_diagnosis_Z92.28,0.0
+categorical__primary_diagnosis_Z90.3,0.0
+categorical__service_code_2107222330,0.0
+categorical__primary_diagnosis_Z87.8,0.0
+categorical__primary_diagnosis_Z87.2,0.0
+categorical__primary_diagnosis_Z87.12,0.0
+categorical__primary_diagnosis_Z73.3,0.0
+categorical__primary_diagnosis_Z71.8,0.0
+categorical__primary_diagnosis_Z71.2,0.0
+categorical__primary_diagnosis_Z53.2,0.0
+categorical__primary_diagnosis_Z51.9,0.0
+categorical__primary_diagnosis_Z51.88,0.0
+categorical__primary_diagnosis_Z51.81,0.0
+categorical__primary_diagnosis_Z51.1,0.0
+categorical__service_code_2107222328,0.0
+categorical__service_code_2102221748,0.0
+categorical__service_code_2308234032,0.0
+categorical__service_code_2308222531,0.0
+categorical__service_code_2307257826,0.0
+categorical__service_code_2306210826,0.0
+categorical__service_code_23-883-19,0.0
+categorical__primary_diagnosis_category_External Causes,0.0
+categorical__service_code_23-803-11,0.0
+categorical__service_code_2207245622,0.0
+categorical__primary_diagnosis_category_Congenital,0.0
+categorical__service_code_2204257266,0.0
+categorical__service_code_2201256732,0.0
+categorical__primary_diagnosis_Z96.1,0.0
+categorical__service_code_1003210593,0.0
+categorical__service_code_110000000,0.0
+categorical__service_code_110-276-13,0.0
+categorical__service_code_11-548-23,0.0
+categorical__service_code_108245716,0.0
+categorical__service_code_108-1014-2002,0.0
+categorical__service_code_106222122,0.0
+categorical__service_code_106-68-16,0.0
+categorical__service_code_104-37.94,0.0
+categorical__service_code_103-116-17,0.0
+categorical__service_code_102244819,0.0
+categorical__service_code_101256513,0.0
+categorical__service_code_1012258769,0.0
+categorical__service_code_1012246383,0.0
+categorical__service_code_1008210922,0.0
+categorical__service_code_2201256728,0.0
+categorical__service_code_2201256726,0.0
+categorical__service_code_2201256723,0.0
+categorical__service_code_220000111,0.0
+categorical__service_code_220000079,0.0
+categorical__service_code_220000067,0.0
+categorical__service_code_220000033,0.0
+categorical__service_code_25-191-15,0.0
+numeric__secondary_dx_perinatal,0.0
+categorical__service_code_2412234627,0.0
+categorical__service_code_2411200291,0.0
+categorical__service_code_2410222783,0.0
+categorical__service_code_2410211219,0.0
+categorical__service_code_2407233926,0.0
+categorical__service_code_2406257597,0.0
+numeric__secondary_dx_ear,0.0
+categorical__service_code_10-355-01,0.0

@@ -61,6 +61,38 @@ class ShapEngine:
     def __init__(self, model):
         self.explainer = shap.TreeExplainer(model)
 
+    def explain(self, df, top_n=5):
+        """Binary classifier SHAP — used for the denial prediction model."""
+        shap_values = self.explainer.shap_values(df)
+
+        explanations = []
+
+        for row_idx in range(len(df)):
+
+            # shap_values shape: (n_rows, n_features) for binary XGBoost
+            # or (n_rows, n_features, 2) for some versions
+            if hasattr(shap_values, "shape") and shap_values.ndim == 3:
+                row_shap = shap_values[row_idx, :, 1]   # class 1 = denial
+            elif isinstance(shap_values, list):
+                row_shap = shap_values[1][row_idx]       # old format list[class]
+            else:
+                row_shap = shap_values[row_idx]           # (n_rows, n_features)
+
+            features = []
+            for col_idx, feature in enumerate(df.columns):
+                shap_val = float(row_shap[col_idx])
+                features.append({
+                    "feature":    feature,
+                    "value":      str(df.iloc[row_idx][feature]),
+                    "shap_value": round(shap_val, 4),
+                    "impact":     "increase_risk" if shap_val > 0 else "decrease_risk",
+                })
+
+            features.sort(key=lambda x: abs(x["shap_value"]), reverse=True)
+            explanations.append(features[:top_n])
+
+        return explanations
+
     def explain_multiclass(
         self,
         df,

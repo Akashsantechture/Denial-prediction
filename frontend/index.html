@@ -902,21 +902,21 @@
   "primary_diagnosis_code": "I10",
   "patient_age": 52,
   "gender": "MALE",
-  "nationality": "INDIAN",
   "encounter_type": "OP",
   "length_of_stay": 0,
-  "claim_gross": 500.00,
-  "claim_net": 500.00,
   "clinician_profession": "Internal Medicine",
   "facility_type": "Clinic",
-  "payer_classification": "E001",
+  "payer_classification": "Insurance",
+  "payer_id": "E001",
+  "payer_name": "NATIONAL HEALTH INSURANCE COMPANY (DAMAN)",
+  "receiver_id": "INS026",
+  "network": "Unknown Network",
   "activities": [
     {
       "activity_code": "99213",
       "activity_quantity": 1,
-      "activity_gross": 250.00,
       "diagnoses": [
-        { "diagnosis_code": "I10", "diagnosis_type": "primary" }
+        { "diagnosis_code": "I10", "diagnosis_type": "Principal" }
       ]
     }
   ]
@@ -956,15 +956,6 @@
                 </div>
 
                 <div class="field-group">
-                  <label for="f-nationality">Nationality</label>
-                  <select id="f-nationality">
-                    <option value="EMIRATI">Emirati</option>
-                    <option value="INDIAN" selected>Indian</option>
-                    <option value="OTHERS">Others</option>
-                  </select>
-                </div>
-
-                <div class="field-group">
                   <label for="f-encounter_type">Encounter Type</label>
                   <select id="f-encounter_type">
                     <option value="OP" selected>OP — Outpatient</option>
@@ -980,29 +971,33 @@
                 </div>
               </div><!-- /col1 -->
 
-              <!-- Column 2: Financial -->
-              <div>
-                <div class="form-col-title">Financial</div>
-
-                <div class="field-group">
-                  <label for="f-claim_gross">Claim Gross (AED) *</label>
-                  <input id="f-claim_gross" type="number" value="250.00" min="0.01" step="10" />
-                </div>
-
-                <div class="field-group">
-                  <label for="f-claim_net">Claim Net (AED) *</label>
-                  <input id="f-claim_net" type="number" value="250.00" min="0" step="10" />
-                  <div class="field-hint">Cannot exceed Claim Gross</div>
-                </div>
-              </div><!-- /col2 -->
-
-              <!-- Column 3: Provider & Insurance -->
+              <!-- Column 2: Provider & Insurance -->
               <div>
                 <div class="form-col-title">Provider &amp; Insurance</div>
 
                 <div class="field-group">
-                  <label for="f-payer_id">Payer ID / Classification</label>
-                  <input id="f-payer_id" type="text" value="E001" placeholder="e.g. E001, DAMAN" />
+                  <label for="f-payer_classification">Payer Classification</label>
+                  <input id="f-payer_classification" type="text" value="Insurance" placeholder="e.g. Insurance, E001" />
+                </div>
+
+                <div class="field-group">
+                  <label for="f-payer_id">Payer ID</label>
+                  <input id="f-payer_id" type="text" value="" placeholder="e.g. E001" />
+                </div>
+
+                <div class="field-group">
+                  <label for="f-payer_name">Payer Name</label>
+                  <input id="f-payer_name" type="text" value="" placeholder="e.g. NATIONAL HEALTH INSURANCE COMPANY (DAMAN)" />
+                </div>
+
+                <div class="field-group">
+                  <label for="f-receiver_id">Receiver ID</label>
+                  <input id="f-receiver_id" type="text" value="" placeholder="e.g. INS026" />
+                </div>
+
+                <div class="field-group">
+                  <label for="f-network">Network</label>
+                  <input id="f-network" type="text" value="Unknown Network" placeholder="e.g. Unknown Network" />
                 </div>
 
                 <div class="field-group">
@@ -1136,13 +1131,13 @@
               Red rows indicate activities the model predicts will be denied.
             </div>
             <div class="data-table-wrap" style="border:none;border-radius:0;margin-top:.5rem;">
-              <table class="data-table act-pred-table">
+              <table class="data-table act-pred-table" id="activity-predictions-table">
                 <thead>
                   <tr>
                     <th>Activity Code</th>
-                    <th>CPT Category</th>
+                    <th class="col-cpt">CPT Category</th>
                     <th>Qty</th>
-                    <th>Gross (AED)</th>
+                    <th class="col-gross">Gross</th>
                     <th style="min-width:160px;">Denial Likelihood</th>
                     <th>Verdict</th>
                     <th>Denial Reason</th>
@@ -1263,12 +1258,12 @@
             <div class="chart-title">All Activities — SHAP Driver Comparison</div>
             <div class="chart-caption">Top SHAP driver per activity line. Click a row to jump to that activity's detailed analysis above.</div>
             <div class="data-table-wrap" style="border:none;border-radius:0;margin-top:.5rem;">
-              <table class="data-table shap-all-acts-table">
+              <table class="data-table shap-all-acts-table" id="shap-all-acts-table">
                 <thead>
                   <tr>
                     <th>#</th>
                     <th>Activity Code</th>
-                    <th>CPT Category</th>
+                    <th class="col-cpt">CPT Category</th>
                     <th>Denial Prob</th>
                     <th>Verdict</th>
                     <th>Denial Reason</th>
@@ -1588,17 +1583,18 @@
         primary_diagnosis_code: primaryDx,
         patient_age:            parseInt(g('f-patient_age'), 10) || 52,
         gender:                 g('f-gender') || 'MALE',
-        nationality:            g('f-nationality') || 'INDIAN',
         encounter_type:         g('f-encounter_type') || 'OP',
         length_of_stay:         parseInt(g('f-length_of_stay'), 10) || 0,
-        claim_gross:            parseFloat(g('f-claim_gross')) || 250,
-        claim_net:              parseFloat(g('f-claim_net'))   || 250,
         clinician_profession:   g('f-clinician_profession') || 'Internal Medicine',
         facility_type:          g('f-facility_type') || 'Clinic',
-        payer_classification:   g('f-payer_id') || 'E001',
+        payer_classification:   g('f-payer_classification') || 'Insurance',
+        payer_id:               g('f-payer_id') || 'Unknown',
+        payer_name:             g('f-payer_name') || 'Unknown',
+        receiver_id:            g('f-receiver_id') || 'Unknown',
+        network:                g('f-network') || 'Unknown Network',
         activities:             activities.length ? activities : [{
-          activity_code: '99213', activity_quantity: 1, activity_gross: 250,
-          diagnoses: [{ diagnosis_code: primaryDx, diagnosis_type: 'primary' }],
+          activity_code: '99213', activity_quantity: 1,
+          diagnoses: [{ diagnosis_code: primaryDx, diagnosis_type: 'Principal' }],
         }],
       };
       jsonInput.value = JSON.stringify(sample, null, 2);

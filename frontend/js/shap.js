@@ -156,7 +156,10 @@ const SHAP = (() => {
   function fromActivityIndex(result, idx) {
     const pred = result?.predictions?.[idx];
     if (!pred) return [];
-    const drivers = pred.reason_drivers ?? pred.top_drivers ?? [];
+    // reason_drivers may be [] (empty) for KSA — fall back to top_drivers
+    const drivers = (pred.reason_drivers?.length > 0 ? pred.reason_drivers : null)
+                 ?? (pred.top_drivers?.length   > 0 ? pred.top_drivers   : null)
+                 ?? [];
     if (drivers.length === 0) return [];
     const totalAbs = drivers.reduce((s, d) => s + Math.abs(d.shap_value), 0) || 1;
     return drivers

@@ -23,7 +23,7 @@ from xgboost import XGBClassifier
 # CONFIG
 # ==========================================================
 
-DATA_PATH = "data/claim_denial_reason_model_v2.parquet"
+DATA_PATH = "data/claim_denial_reason_model_v2-uae.parquet"
 
 MODEL_DIR = Path("models/denial_reason")
 MODEL_DIR.mkdir(parents=True, exist_ok=True)
@@ -82,6 +82,7 @@ DROP_COLS = [
     "accumed_patient_id",
     "datestamp",
     "date_submitted",
+    "nationality",
 
     # Payment
     "payment_reference",
@@ -118,7 +119,6 @@ DROP_COLS = [
 CAT_COLS = [
     "activity_code",
     "gender",
-    "nationality",
     "encounter_type",
     "clinician_profession",
     "facility_type",
@@ -126,17 +126,16 @@ CAT_COLS = [
     "primary_diagnosis_code",
     "primary_diagnosis_category",
     "cpt_category",
+    "network",
+    "receiver_id",
 ]
 
 FEATURE_ORDER = [
     "activity_code",
     "activity_quantity",
-    "activity_gross",
+    # "activity_gross",
     "patient_age",
     "gender",
-    "nationality",
-    "claim_gross",
-    "claim_net",
     "encounter_type",
     "length_of_stay",
     "clinician_profession",
@@ -166,7 +165,9 @@ FEATURE_ORDER = [
     "secondary_external_causes",
     "secondary_factors_influencing_health_status",
     "secondary_unknown_icd_category",
-    "cpt_category"
+    "cpt_category",
+    "network",
+    "receiver_id", 
 ]
 
 
@@ -478,7 +479,6 @@ with open(
         f,
         indent=4
     )
-
 
 # ==========================================================
 # SAVE MODEL
