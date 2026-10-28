@@ -19,18 +19,19 @@ ai_analyst/rag/
 
 ## Region-Specific RAG Collections
 
-### UAE Collection (Active)
+### UAE Collection
 - **ChromaDB Path**: `chroma_store_uae/`
-- **Collection Name**: `chi_rules`
-- **Rule Count**: 29+ curated CHI rules
-- **Embedding Model**: `sentence-transformers/all-MiniLM-L6-v2`
+- **Collection Name**: `uae_rules`
+- **Rule Count**: 41 rules (25 curated payer rules + 16 claim lookup rules)
+- **Embedding Model**: `models/gemini-embedding-001` (3072-dim)
 - **Status**: Production ready
 
-### KSA Collection (Placeholder)
+### KSA Collection
 - **ChromaDB Path**: `chroma_store_ksa/`
-- **Collection Name**: `cchi_rules`
-- **Rule Count**: 0 (to be ingested)
-- **Status**: Awaiting CCHI rule curation
+- **Collection Name**: `chi_rules`
+- **Rule Count**: 29 curated CHI rules
+- **Embedding Model**: `models/gemini-embedding-001` (3072-dim)
+- **Status**: Ready for ingestion
 
 ## Components
 

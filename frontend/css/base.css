@@ -9,50 +9,50 @@
 }
 
 :root {
-  /* --- Brand palette (dark theme — Insight-inspired) --- */
-  --color-bg:           #13111A;
-  --color-surface:      #1C1928;
-  --color-surface-alt:  #221F30;
-  --color-border:       #2E2A40;
-  --color-border-light: #252235;
+  /* --- Base surfaces (dark, neutral-slate) --- */
+  --color-bg:           #0F1117;
+  --color-surface:      #161B27;
+  --color-surface-alt:  #1C2233;
+  --color-border:       #252D3D;
+  --color-border-light: #1E2638;
 
   /* --- Text --- */
-  --color-text-primary:   #F0EEFF;
-  --color-text-secondary: #A89FC4;
-  --color-text-muted:     #6B6384;
+  --color-text-primary:   #E2E8F0;
+  --color-text-secondary: #94A3B8;
+  --color-text-muted:     #4E5D78;
 
-  /* --- risk colours --- */
-  --color-high:        #F43F5E;
-  --color-high-bg:     #2D1120;
-  --color-high-border: #5C1E33;
-  --color-medium:      #F59E0B;
-  --color-medium-bg:   #2A1F08;
-  --color-medium-border:#5C4010;
-  --color-low:         #10B981;
-  --color-low-bg:      #0A2318;
-  --color-low-border:  #134D30;
+  /* --- Semantic risk — desaturated, readable, not garish --- */
+  --color-high:         #E05252;
+  --color-high-bg:      #1F1419;
+  --color-high-border:  #3D1E20;
+  --color-medium:       #D4874A;
+  --color-medium-bg:    #1E1810;
+  --color-medium-border:#3A2910;
+  --color-low:          #3D9E6E;
+  --color-low-bg:       #0F1D18;
+  --color-low-border:   #1A3D2C;
 
-  /* --- Accent (violet — cohesive with dark purple base) --- */
-  --color-accent:      #8B5CF6;
-  --color-accent-dark: #6D28D9;
+  /* --- Accent — restrained slate-blue, not violet --- */
+  --color-accent:       #4C7EE0;
+  --color-accent-dark:  #3566C7;
 
-  /* --- Chart background (slightly darker than surface) --- */
-  --color-chart-bg:    #161323;
+  /* --- Chart background --- */
+  --color-chart-bg:     #121827;
 
   /* --- Sidebar --- */
   --sidebar-width: 320px;
 
   /* --- Shadows --- */
-  --shadow-sm: 0 1px 3px rgba(0,0,0,.35), 0 1px 2px rgba(0,0,0,.25);
-  --shadow-md: 0 4px 6px -1px rgba(0,0,0,.4), 0 2px 4px -1px rgba(0,0,0,.25);
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.45), 0 1px 2px rgba(0,0,0,.3);
+  --shadow-md: 0 4px 6px -1px rgba(0,0,0,.5), 0 2px 4px -1px rgba(0,0,0,.3);
 
   /* --- Radii --- */
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 14px;
+  --radius-sm: 5px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
 
   /* --- Transition --- */
-  --transition: 150ms ease;
+  --transition: 130ms ease;
 
   /* --- Font --- */
   --font: 'Inter', system-ui, -apple-system, sans-serif;
@@ -111,7 +111,7 @@ hr {
 .hidden { display: none !important; }
 
 /* --- Scrollbar --- */
-::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 99px; }
 
@@ -120,95 +120,87 @@ hr {
    ============================================================ */
 
 [data-theme="light"] {
-  /* --- Brand palette --- */
-  --color-bg:           #F4F3F8;
+  --color-bg:           #F7F8FA;
   --color-surface:      #FFFFFF;
-  --color-surface-alt:  #F0EEF8;
-  --color-border:       #DDD9EE;
-  --color-border-light: #E8E5F2;
+  --color-surface-alt:  #F1F3F7;
+  --color-border:       #DDE1EA;
+  --color-border-light: #E8EBF0;
 
-  /* --- Text --- */
-  --color-text-primary:   #1A1730;
-  --color-text-secondary: #4B4568;
-  --color-text-muted:     #8B82AA;
+  --color-text-primary:   #16202E;
+  --color-text-secondary: #4A5568;
+  --color-text-muted:     #8896A8;
 
-  /* --- Risk colours (unchanged — same semantics) --- */
-  --color-high:         #DC2626;
-  --color-high-bg:      #FEE2E2;
-  --color-high-border:  #FCA5A5;
-  --color-medium:       #D97706;
-  --color-medium-bg:    #FEF3C7;
-  --color-medium-border:#FCD34D;
-  --color-low:          #059669;
-  --color-low-bg:       #D1FAE5;
-  --color-low-border:   #6EE7B7;
+  --color-high:         #C0392B;
+  --color-high-bg:      #FDF0EF;
+  --color-high-border:  #EDBBBB;
+  --color-medium:       #B45309;
+  --color-medium-bg:    #FEF8EC;
+  --color-medium-border:#F5D08A;
+  --color-low:          #217A4F;
+  --color-low-bg:       #EDF7F2;
+  --color-low-border:   #9EDCBE;
 
-  /* --- Accent --- */
-  --color-accent:       #7C3AED;
-  --color-accent-dark:  #5B21B6;
+  --color-accent:       #2563EB;
+  --color-accent-dark:  #1D4ED8;
 
-  /* --- Chart background --- */
-  --color-chart-bg:     #F8F7FD;
+  --color-chart-bg:     #F9FAFB;
 
-  /* --- Shadows (softer on light) --- */
-  --shadow-sm: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.05);
-  --shadow-md: 0 4px 6px -1px rgba(0,0,0,.10), 0 2px 4px -1px rgba(0,0,0,.06);
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.07), 0 1px 2px rgba(0,0,0,.04);
+  --shadow-md: 0 4px 6px -1px rgba(0,0,0,.08), 0 2px 4px -1px rgba(0,0,0,.05);
 }
-
-/* Light theme adjustments for elements that use hardcoded dark colours */
 
 [data-theme="light"] .shap-pill.pos {
-  background: #FEE2E2;
+  background: #FEF2F2;
   color: #991B1B;
-  border: 1px solid #EF4444;
+  border: 1px solid #F5C6C6;
 }
 [data-theme="light"] .shap-pill.neg {
-  background: #D1FAE5;
-  color: #065F46;
-  border: 1px solid #22C55E;
+  background: #F0FDF4;
+  color: #15603A;
+  border: 1px solid #BBE8CE;
 }
 
 [data-theme="light"] .chat-mode-badge.llm {
-  background: #DBEAFE;
+  background: #EFF6FF;
   color: #1D4ED8;
-  border: 1px solid #93C5FD;
+  border: 1px solid #BFDBFE;
 }
 [data-theme="light"] .chat-mode-badge.llm.rag-on {
-  background: #EDE9FE;
-  color: #5B21B6;
-  border: 1px solid #A78BFA;
+  background: #EEF2FF;
+  color: #3730A3;
+  border: 1px solid #C7D2FE;
 }
 [data-theme="light"] .chat-mode-badge.rule {
-  background: #FEF3C7;
+  background: #FFFBEB;
   color: #92400E;
-  border: 1px solid #F59E0B;
+  border: 1px solid #FDE68A;
 }
 
-[data-theme="light"] .chat-rag-notice { color: #6D28D9; }
-[data-theme="light"] .chat-bubble.user { background: #7C3AED; }
-[data-theme="light"] .chat-bubble code { background: rgba(0,0,0,.06); }
+[data-theme="light"] .chat-rag-notice { color: #3730A3; }
+[data-theme="light"] .chat-bubble.user { background: #2563EB; }
+[data-theme="light"] .chat-bubble code { background: rgba(0,0,0,.05); }
 
 [data-theme="light"] .cpt-badge {
-  background: #DBEAFE;
+  background: #EFF6FF;
   color: #1D4ED8;
-  border: 1px solid #93C5FD;
+  border: 1px solid #BFDBFE;
 }
 
 [data-theme="light"] .data-table tbody tr:hover {
-  background: rgba(124,58,237,0.06);
+  background: rgba(37,99,235,0.05);
 }
 [data-theme="light"] .data-table tbody tr:nth-child(even) {
   background: var(--color-surface-alt);
 }
 
-[data-theme="light"] .verdict-banner.high   { background: #FEE2E2; color: #991B1B; }
-[data-theme="light"] .verdict-banner.medium { background: #FEF3C7; color: #92400E; }
-[data-theme="light"] .verdict-banner.low    { background: #D1FAE5; color: #065F46; }
+[data-theme="light"] .verdict-banner.high   { background: #FDF0EF; color: #7F1D1D; border-color: #EDBBBB; }
+[data-theme="light"] .verdict-banner.medium { background: #FEF8EC; color: #78350F; border-color: #F5D08A; }
+[data-theme="light"] .verdict-banner.low    { background: #EDF7F2; color: #14532D; border-color: #9EDCBE; }
 
 [data-theme="light"] .spinner-overlay {
-  background: rgba(244,243,248,.80);
+  background: rgba(247,248,250,.85);
 }
 
 [data-theme="light"] ::-webkit-scrollbar-thumb {
-  background: #C4BEDD;
+  background: #C9D1DC;
 }

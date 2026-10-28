@@ -414,3 +414,6 @@
     }
   ]
 }
+
+real value - all 10 activities are approved 
+predicted - all 10was approved 

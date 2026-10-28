@@ -49,7 +49,7 @@ class AnalystService:
             or claim_intelligence.get("claim_id")
         )
 
-        thynk_data = thynk_lookup.find(str(claim_id)) if claim_id else None
+        thynk_data = thynk_lookup.find(str(claim_id), region=region) if claim_id else None
 
         if thynk_data:
             print(

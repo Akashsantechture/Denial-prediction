@@ -72,24 +72,31 @@ def _extract_rules(data: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
 
 def _load_rag_rules(data: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     """
-    Load rules directly from thynk-rag-rules.json.
+    Load rules directly from region RAG rules file (e.g. thynk-rag-rules.json or ksa-rag-rules.json).
 
     These are flat rule objects (not wrapped in claim entries).
-    ruleId is still the unique key — RAG file rules take precedence
-    over claim-lookup rules with the same ruleId.
+    Supports both standard schema (ruleId, shortMessage, longMessage)
+    and simplified schema (rule_id, summary, rule_name).
     """
     rules = []
     for item in data:
-        rule_id = item.get("ruleId", "").strip()
+        rule_id = (item.get("ruleId") or item.get("rule_id") or "").strip()
         if not rule_id:
             continue
+        
+        # Support shortMessage or summary or rule_name
+        short_message = item.get("shortMessage") or item.get("summary") or item.get("rule_name") or ""
+        long_message = item.get("longMessage") or item.get("summary") or ""
+        package_name = item.get("packageName") or item.get("package") or item.get("category") or "unknown"
+        object_type = item.get("objectType") or str(item.get("message_level", "claim")).lower()
+
         rules.append({
             "rule_id":       rule_id,
-            "package_name":  item.get("packageName", "unknown"),
+            "package_name":  package_name,
             "severity":      item.get("severity", "INFO").upper(),
-            "object_type":   item.get("objectType", "claim"),
-            "short_message": item.get("shortMessage", ""),
-            "long_message":  item.get("longMessage", ""),
+            "object_type":   object_type,
+            "short_message": short_message,
+            "long_message":  long_message,
             "code":          item.get("code") or "",
             "activity_type": item.get("activityType") or "",
         })
@@ -150,9 +157,19 @@ def run_ingest(region: str = "uae") -> Dict[str, Any]:
     from .embedder import Embedder
     from .rule_store import upsert_rules_batch, count_rules
 
-    # Update paths based on region
-    _LOOKUP_PATH     = _PROJECT_ROOT / "Thynk" / region / ("thynk-claimlookup.json" if region == "uae" else "nphies-claimlookup.json")
-    _RAG_RULES_PATH  = _PROJECT_ROOT / "Thynk" / region / ("thynk-rag-rules.json" if region == "uae" else "nphies-rag-rules.json")
+    # Update paths based on region (supports both ksa-* and nphies-* naming)
+    if region == "uae":
+        _LOOKUP_PATH = _PROJECT_ROOT / "Thynk" / "uae" / "thynk-claimlookup.json"
+        _RAG_RULES_PATH = _PROJECT_ROOT / "Thynk" / "uae" / "thynk-rag-rules.json"
+    else:
+        # KSA: support ksa-* with fallback to nphies-*
+        _LOOKUP_PATH = _PROJECT_ROOT / "Thynk" / "ksa" / "ksa-claimlookup.json"
+        if not _LOOKUP_PATH.exists():
+            _LOOKUP_PATH = _PROJECT_ROOT / "Thynk" / "ksa" / "nphies-claimlookup.json"
+        
+        _RAG_RULES_PATH = _PROJECT_ROOT / "Thynk" / "ksa" / "ksa-rag-rules.json"
+        if not _RAG_RULES_PATH.exists():
+            _RAG_RULES_PATH = _PROJECT_ROOT / "Thynk" / "ksa" / "nphies-rag-rules.json"
 
     # ── Load claim lookup JSON ─────────────────────────────────
     claim_rules: List[Dict[str, Any]] = []

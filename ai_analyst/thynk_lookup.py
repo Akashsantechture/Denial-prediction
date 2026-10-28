@@ -33,51 +33,63 @@ _SEVERITY_ORDER = {
 }
 
 # ============================================================
-# Locate the JSON file
 # ============================================================
-# This file lives at:
-#   <project_root>/Thynk/thynk-claimlookup.json
-#
-# ai_analyst/ is one level below the project root, so we go
-# up two parents: thynk_lookup.py → ai_analyst/ → project root
+# Locate the JSON files per region
+# ============================================================
+_PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
-_PROJECT_ROOT  = Path(__file__).resolve().parent.parent
-_LOOKUP_PATH   = _PROJECT_ROOT / "Thynk" / "thynk-claimlookup.json"
+def _get_lookup_path(region: str) -> Path:
+    region = (region or "uae").lower()
+    if region == "ksa":
+        ksa_path = _PROJECT_ROOT / "Thynk" / "ksa" / "ksa-claimlookup.json"
+        if ksa_path.exists():
+            return ksa_path
+        nphies_path = _PROJECT_ROOT / "Thynk" / "ksa" / "nphies-claimlookup.json"
+        if nphies_path.exists():
+            return nphies_path
+        return ksa_path
+    else:
+        uae_path = _PROJECT_ROOT / "Thynk" / "uae" / "thynk-claimlookup.json"
+        if uae_path.exists():
+            return uae_path
+        return _PROJECT_ROOT / "Thynk" / "thynk-claimlookup.json"
 
 # ============================================================
-# Module-level cache — loaded once at first call
+# Module-level cache — loaded once per region at first call
 # ============================================================
 
-_cache: Optional[List[Dict[str, Any]]] = None
+_caches: Dict[str, List[Dict[str, Any]]] = {}
 
 
-def _load() -> List[Dict[str, Any]]:
-    """Load and cache the lookup JSON.  Returns [] on any error."""
-    global _cache
-    if _cache is not None:
-        return _cache
+def _load(region: str = "uae") -> List[Dict[str, Any]]:
+    """Load and cache the lookup JSON for a given region. Returns [] on any error."""
+    reg = (region or "uae").lower()
+    if reg in _caches:
+        return _caches[reg]
+
+    lookup_path = _get_lookup_path(reg)
 
     try:
-        with open(_LOOKUP_PATH, "r", encoding="utf-8") as fh:
+        with open(lookup_path, "r", encoding="utf-8") as fh:
             raw = json.load(fh)
 
         if not isinstance(raw, list):
             logger.warning("[ThynkLookup] Expected a JSON array — got %s", type(raw).__name__)
-            _cache = []
-            return _cache
+            _caches[reg] = []
+            return _caches[reg]
 
-        _cache = raw
-        logger.info("[ThynkLookup] Loaded %d claim entries from %s", len(_cache), _LOOKUP_PATH)
+        _caches[reg] = raw
+        logger.info("[ThynkLookup] Loaded %d claim entries for %s from %s", len(_caches[reg]), reg, lookup_path)
 
     except FileNotFoundError:
-        logger.warning("[ThynkLookup] Lookup file not found: %s — Thynk disabled.", _LOOKUP_PATH)
-        _cache = []
+        logger.warning("[ThynkLookup] Lookup file not found: %s — Thynk disabled for %s.", lookup_path, reg)
+        _caches[reg] = []
 
     except Exception as exc:
-        logger.warning("[ThynkLookup] Failed to load lookup file: %s — Thynk disabled.", exc)
-        _cache = []
+        logger.warning("[ThynkLookup] Failed to load lookup file for %s: %s — Thynk disabled.", reg, exc)
+        _caches[reg] = []
 
-    return _cache
+    return _caches[reg]
 
 
 # ============================================================
@@ -135,9 +147,13 @@ def _normalise(claim_id: str, items: List[Dict[str, Any]]) -> Dict[str, Any]:
 # Public API
 # ============================================================
 
-def find(claim_id: str) -> Optional[Dict[str, Any]]:
+def find(claim_id: str, region: str = "uae") -> Optional[Dict[str, Any]]:
     """
-    Look up Thynk validation data for a claim_id.
+    Look up Thynk validation data for a claim_id within a given region.
+
+    Args:
+        claim_id: The claim identifier string.
+        region: 'uae' or 'ksa' (defaults to 'uae').
 
     Returns:
         A normalised dict  { found, claim_id, claim_level,
@@ -150,15 +166,15 @@ def find(claim_id: str) -> Optional[Dict[str, Any]]:
         return None
 
     try:
-        entries = _load()
+        entries = _load(region=region)
         for entry in entries:
             if str(entry.get("claim_id", "")).strip() == str(claim_id).strip():
                 items = entry.get("thynk_response", [])
                 result = _normalise(claim_id, items)
                 logger.info(
-                    "[ThynkLookup] Found %d items for claim %s "
+                    "[ThynkLookup] Found %d items for claim %s (%s) "
                     "(CRITICAL=%d SEVERE=%d WARNING=%d INFO=%d)",
-                    result["summary"]["total"], claim_id,
+                    result["summary"]["total"], claim_id, region,
                     result["summary"]["critical"],
                     result["summary"]["severe"],
                     result["summary"]["warning"],
@@ -166,7 +182,7 @@ def find(claim_id: str) -> Optional[Dict[str, Any]]:
                 )
                 return result
 
-        logger.info("[ThynkLookup] claim_id=%s not found in lookup — no Thynk data.", claim_id)
+        logger.info("[ThynkLookup] claim_id=%s not found in %s lookup — no Thynk data.", claim_id, region)
         return None
 
     except Exception as exc:

@@ -162,9 +162,9 @@ class Retriever:
     def _format(rules: List[dict]) -> str:
         lines = [
             "============================================================",
-            "RETRIEVED THYNK RULEBOOK CONTEXT",
+            "RETRIEVED RULEBOOK CONTEXT",
             "============================================================",
-            "The following CHI rules are semantically relevant to the",
+            "The following regulatory compliance and payer rules are semantically relevant to the",
             "current question and claim context. Use them to provide",
             "detailed rule-level explanations and fix recommendations.",
             "Only cite rule IDs that appear below.",

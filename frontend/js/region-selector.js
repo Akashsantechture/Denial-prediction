@@ -80,7 +80,7 @@ class RegionManager {
             <span class="region-slider-option region-ksa">${this.regions.ksa.flag} ${this.regions.ksa.name}</span>
           </label>
         </div>
-        ${!config.productionReady ? '<span class="region-beta-badge">BETA</span>' : ''}
+        ${!config.productionReady ? '' : ''}
       </div>
     `;
   }
@@ -106,24 +106,6 @@ class RegionManager {
     }
 
     const config = this.regions[newRegion];
-
-    // Show warning for non-production regions
-    if (!config.productionReady) {
-      const proceed = confirm(
-        `⚠️ ${config.name} (${config.regulator}) region is in BETA.\n\n` +
-        `Models are still in training and may not be fully accurate.\n\n` +
-        `Continue?`
-      );
-      
-      if (!proceed) {
-        // Revert toggle
-        const toggle = document.getElementById('region-toggle-input');
-        if (toggle) {
-          toggle.checked = this.currentRegion === 'ksa';
-        }
-        return;
-      }
-    }
 
     // Save and reload
     this.currentRegion = newRegion;

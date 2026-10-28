@@ -40,7 +40,7 @@
 }
 
 .form-col-title {
-  font-size: .75rem;
+  font-size: .72rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: .07em;
@@ -79,7 +79,7 @@
 .field-group select:focus {
   outline: none;
   border-color: var(--color-accent);
-  box-shadow: 0 0 0 3px rgba(233,30,140,.12);
+  box-shadow: 0 0 0 3px rgba(76,126,224,.10);
 }
 .field-group input.error,
 .field-group select.error {
@@ -115,7 +115,7 @@
 }
 .btn-primary:hover  { background: var(--color-accent-dark); }
 .btn-primary:active { transform: scale(.99); }
-.btn-primary:disabled { opacity: .6; cursor: not-allowed; }
+.btn-primary:disabled { opacity: .5; cursor: not-allowed; }
 
 /* ============================================================
    VALIDATION ERRORS
@@ -146,8 +146,8 @@
   border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
   margin-bottom: .5rem;
 }
-.val-error-field { font-weight: 700; color: #FCA5A5; font-size: .8rem; }
-.val-error-issue  { color: #FCA5A5;  font-size: .78rem; margin-top: .15rem; }
+.val-error-field { font-weight: 700; color: var(--color-high); font-size: .8rem; }
+.val-error-issue  { color: var(--color-high); font-size: .78rem; margin-top: .15rem; opacity: .85; }
 .val-error-value  { color: var(--color-text-muted); font-size: .74rem; margin-top: .1rem; }
 
 /* ============================================================
@@ -160,10 +160,10 @@
   padding: 1.1rem 1rem;
 }
 .kpi-label {
-  font-size: .72rem;
-  font-weight: 700;
+  font-size: .70rem;
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: .06em;
+  letter-spacing: .07em;
   color: var(--color-text-muted);
   margin-bottom: .35rem;
 }
@@ -193,10 +193,10 @@
   padding: 1.1rem 1rem;
 }
 .info-card-title {
-  font-size: .72rem;
-  font-weight: 700;
+  font-size: .70rem;
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: .06em;
+  letter-spacing: .07em;
   color: var(--color-text-muted);
   margin-bottom: .7rem;
 }
@@ -207,21 +207,22 @@
   vertical-align: top;
 }
 .info-table td:first-child { color: var(--color-text-muted); width: 45%; }
-.info-table td:last-child   { font-weight: 600; color: var(--color-text-primary); }
+.info-table td:last-child   { font-weight: 500; color: var(--color-text-primary); }
 
-/* risk badge */
+/* Risk badge */
 .risk-badge {
   display: inline-flex;
   align-items: center;
   gap: .3rem;
-  padding: .25rem .75rem;
-  border-radius: 999px;
-  font-size: .8rem;
-  font-weight: 700;
+  padding: .22rem .65rem;
+  border-radius: var(--radius-sm);
+  font-size: .77rem;
+  font-weight: 600;
+  letter-spacing: .02em;
 }
-.risk-badge.high   { background: var(--color-high-bg);   color: #FCA5A5; }
-.risk-badge.medium { background: var(--color-medium-bg); color: #FCD34D; }
-.risk-badge.low    { background: var(--color-low-bg);    color: #6EE7B7; }
+.risk-badge.high   { background: var(--color-high-bg);   color: var(--color-high);   border: 1px solid var(--color-high-border); }
+.risk-badge.medium { background: var(--color-medium-bg); color: var(--color-medium); border: 1px solid var(--color-medium-border); }
+.risk-badge.low    { background: var(--color-low-bg);    color: var(--color-low);    border: 1px solid var(--color-low-border); }
 
 /* ============================================================
    CHART CONTAINERS
@@ -246,21 +247,22 @@
 .plotly-container { width: 100%; min-height: 280px; }
 
 /* ============================================================
-   ACTION BANNER
+   ACTION BANNER / VERDICT
    ============================================================ */
 .action-banner {
   border-radius: var(--radius-md);
   padding: .85rem 1.1rem;
-  font-size: .88rem;
+  font-size: .85rem;
   margin-top: 1rem;
+  border: 1px solid;
 }
-.action-banner strong { display: block; margin-bottom: .2rem; }
-.action-banner.high   { background: var(--color-high-bg);   border-left: 4px solid var(--color-high);   color: #FCA5A5; }
-.action-banner.medium { background: var(--color-medium-bg); border-left: 4px solid var(--color-medium); color: #FCD34D; }
-.action-banner.low    { background: var(--color-low-bg);    border-left: 4px solid var(--color-low);    color: #6EE7B7; }
+.action-banner strong { display: block; margin-bottom: .2rem; font-size: .88rem; }
+.action-banner.high   { background: var(--color-high-bg);   border-color: var(--color-high-border);   color: var(--color-high); }
+.action-banner.medium { background: var(--color-medium-bg); border-color: var(--color-medium-border); color: var(--color-medium); }
+.action-banner.low    { background: var(--color-low-bg);    border-color: var(--color-low-border);    color: var(--color-low); }
 
 /* ============================================================
-   ICD / INTERACTION TABLES
+   ICD / DATA TABLES
    ============================================================ */
 .data-table-wrap {
   overflow-x: auto;
@@ -276,32 +278,34 @@
   background: var(--color-surface-alt);
   padding: .55rem .75rem;
   text-align: left;
-  font-size: .74rem;
-  font-weight: 700;
+  font-size: .70rem;
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: .05em;
+  letter-spacing: .06em;
   color: var(--color-text-muted);
   border-bottom: 1px solid var(--color-border);
   white-space: nowrap;
 }
-.data-table tbody tr:nth-child(even) { background: var(--color-surface-alt); }
-.data-table tbody tr:hover { background: rgba(232,30,140,0.07); }
+.data-table tbody tr:nth-child(even) { background: rgba(255,255,255,.018); }
+.data-table tbody tr:hover { background: rgba(76,126,224,.06); }
 .data-table tbody td {
   padding: .48rem .75rem;
   border-bottom: 1px solid var(--color-border-light);
   color: var(--color-text-secondary);
 }
+
+/* SHAP pills — subtle, not neon */
 .shap-pill {
   display: inline-block;
   padding: .1rem .45rem;
-  border-radius: 999px;
-  font-size: .74rem;
-  font-weight: 700;
+  border-radius: var(--radius-sm);
+  font-size: .72rem;
+  font-weight: 600;
 }
-.shap-pill.pos { background: #7F1D1D; color: #FEE2E2; border: 1px solid #EF4444; }
-.shap-pill.neg { background: #14532D; color: #D1FAE5; border: 1px solid #22C55E; }
+.shap-pill.pos { background: var(--color-high-bg);  color: var(--color-high);  border: 1px solid var(--color-high-border); }
+.shap-pill.neg { background: var(--color-low-bg);   color: var(--color-low);   border: 1px solid var(--color-low-border); }
 
-/* Filter / sort bar */
+/* Filter bar */
 .filter-bar {
   display: flex;
   gap: .75rem;
@@ -321,10 +325,10 @@
 .filter-bar select:focus { outline: none; border-color: var(--color-accent); }
 
 /* Active row highlight */
-.data-table tbody tr.active-row { background: rgba(245,158,11,0.15) !important; }
+.data-table tbody tr.active-row { background: rgba(76,126,224,.08) !important; }
 
 /* ============================================================
-   AI CHAT (sidebar)
+   AI CHAT
    ============================================================ */
 .chat-section {
   flex: 1;
@@ -365,8 +369,7 @@
   padding: .55rem .75rem;
   border-radius: var(--radius-md);
   font-size: .8rem;
-  line-height: 1.5;
-  /* Prevent long unbroken strings (ruleIds, codes) from overflowing */
+  line-height: 1.55;
   word-break: break-word;
   overflow-wrap: anywhere;
   min-width: 0;
@@ -377,7 +380,6 @@
   border: 1px solid var(--color-border);
   align-self: flex-start;
   border-bottom-left-radius: 2px;
-  /* Constrain to parent width so bubble never escapes the drawer */
   width: fit-content;
   max-width: min(92%, 100%);
 }
@@ -391,10 +393,9 @@
 }
 .chat-bubble p { margin-bottom: .3rem; color: inherit; }
 .chat-bubble p:last-child { margin-bottom: 0; }
-.chat-bubble strong { font-weight: 700; }
+.chat-bubble strong { font-weight: 600; }
 .chat-bubble code {
-  background: rgba(0,0,0,.07);
-  /* Allow code tokens to wrap rather than stretch the bubble */
+  background: rgba(0,0,0,.12);
   word-break: break-all;
   white-space: normal;
 }
@@ -409,7 +410,7 @@
 .chat-input-row {
   display: flex;
   gap: .5rem;
-  padding: .75rem 1rem .75rem;
+  padding: .75rem 1rem;
   border-top: 1px solid var(--color-border-light);
 }
 .chat-input {
@@ -438,71 +439,63 @@
   font-weight: 600;
   transition: background var(--transition);
 }
-.chat-send-btn:hover { background: var(--color-accent-dark); }
-.chat-send-btn:disabled { opacity: .5; cursor: not-allowed; }
+.chat-send-btn:hover    { background: var(--color-accent-dark); }
+.chat-send-btn:disabled { opacity: .45; cursor: not-allowed; }
 
-
-/* ============================================================
-   Chat mode badge — shows "✦ Gemini AI" or "⚡ Rule-based"
-   ============================================================ */
+/* Chat mode badge */
 .chat-mode-badge {
   display: inline-block;
-  font-size: .65rem;
+  font-size: .64rem;
   font-weight: 600;
-  padding: .15rem .45rem;
-  border-radius: 99px;
+  padding: .14rem .45rem;
+  border-radius: var(--radius-sm);
   letter-spacing: .02em;
   white-space: nowrap;
 }
 .chat-mode-badge.llm {
-  background: #1E3A5F;
-  color: #93C5FD;
-  border: 1px solid #3B82F6;
+  background: rgba(76,126,224,.12);
+  color: #7BA7E8;
+  border: 1px solid rgba(76,126,224,.25);
 }
 .chat-mode-badge.llm.rag-on {
-  background: linear-gradient(135deg, #1e1a4a, #2d1b69);
-  color: #c4b5fd;
-  border: 1px solid #7c3aed;
+  background: rgba(76,126,224,.15);
+  color: #93B8EE;
+  border: 1px solid rgba(76,126,224,.30);
 }
 .chat-mode-badge.rule {
-  background: #2A1F08;
-  color: #FCD34D;
-  border: 1px solid #F59E0B;
+  background: rgba(212,135,74,.10);
+  color: var(--color-medium);
+  border: 1px solid rgba(212,135,74,.25);
 }
 
-/* RAG source notice appended on bubbles when rule retrieval was used */
 .chat-rag-notice {
   margin-top: .45rem;
   padding-top: .35rem;
-  border-top: 1px solid rgba(124, 58, 237, .25);
+  border-top: 1px solid var(--color-border);
   font-size: .66rem;
-  color: #a78bfa;
+  color: var(--color-text-muted);
   font-style: normal;
 }
 
-/* Thinking animation inside chat bubbles */
-.chat-bubble.thinking { opacity: .7; font-style: italic; }
+.chat-bubble.thinking { opacity: .6; font-style: italic; }
 .thinking-dots em { animation: blink 1.2s infinite; }
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
 
-/* Initial summary styling */
+/* Initial summary — subtle left accent only */
 .chat-bubble.initial-summary {
-  background: linear-gradient(135deg, rgba(109, 40, 217, 0.08), rgba(124, 58, 237, 0.05));
-  border-left: 3px solid #8B5CF6 !important;
+  border-left: 2px solid var(--color-accent) !important;
   padding: 1rem 1.25rem;
   max-width: 100% !important;
 }
 
 .chat-message-system {
   text-align: center;
-  font-size: 0.72rem;
+  font-size: .70rem;
   color: var(--color-text-muted);
-  padding: 0.6rem 1rem;
-  font-style: italic;
-  opacity: 0.8;
+  padding: .5rem 1rem;
+  opacity: .7;
 }
 
-/* Fallback notice appended when LLM was expected but rule-based ran */
 .chat-fallback-notice {
   margin-top: .5rem;
   font-size: .68rem;
@@ -512,7 +505,7 @@
 }
 
 /* ============================================================
-   SHAP explanation expander
+   SHAP expander
    ============================================================ */
 .expander {
   border: 1px solid var(--color-border);
@@ -560,42 +553,36 @@
   flex-direction: column;
   gap: .55rem;
 }
-
 .claim-score-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
-
 .claim-score-label {
-  font-size: .72rem;
-  font-weight: 700;
+  font-size: .70rem;
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: .06em;
+  letter-spacing: .07em;
   color: var(--color-text-muted);
 }
-
 .claim-score-body {
   display: flex;
   align-items: baseline;
   gap: .5rem;
 }
-
 .claim-score-value {
-  font-size: 3rem;
-  font-weight: 800;
+  font-size: 2.8rem;
+  font-weight: 700;
   line-height: 1;
   color: var(--color-text-primary);
-  letter-spacing: -1px;
+  letter-spacing: -.5px;
 }
-
 .claim-score-bar-track {
-  height: 8px;
+  height: 5px;
   background: var(--color-border);
   border-radius: 99px;
   overflow: hidden;
 }
-
 .claim-score-fill {
   height: 100%;
   border-radius: 99px;
@@ -604,26 +591,23 @@
 .claim-score-fill.high   { background: var(--color-high); }
 .claim-score-fill.medium { background: var(--color-medium); }
 .claim-score-fill.low    { background: var(--color-low); }
-
 .claim-score-bands {
   display: flex;
-  gap: .5rem;
+  gap: .4rem;
   font-size: .68rem;
   color: var(--color-text-muted);
 }
 .claim-score-bands .band {
-  padding: .1rem .4rem;
-  border-radius: 99px;
+  padding: .08rem .38rem;
+  border-radius: var(--radius-sm);
   font-weight: 600;
 }
-.claim-score-bands .band.high   { background: var(--color-high-bg);   color: #FCA5A5; }
-.claim-score-bands .band.medium { background: var(--color-medium-bg); color: #FCD34D; }
-.claim-score-bands .band.low    { background: var(--color-low-bg);    color: #6EE7B7; }
-
+.claim-score-bands .band.high   { background: var(--color-high-bg);   color: var(--color-high);   border: 1px solid var(--color-high-border); }
+.claim-score-bands .band.medium { background: var(--color-medium-bg); color: var(--color-medium); border: 1px solid var(--color-medium-border); }
+.claim-score-bands .band.low    { background: var(--color-low-bg);    color: var(--color-low);    border: 1px solid var(--color-low-border); }
 .claim-score-level {
   font-size: .78rem;
-  font-weight: 700;
-  letter-spacing: .04em;
+  font-weight: 600;
   color: var(--color-text-muted);
 }
 .claim-score-level.high   { color: var(--color-high); }
@@ -631,18 +615,16 @@
 .claim-score-level.low    { color: var(--color-low); }
 
 /* ============================================================
-   ACTIVITY PREDICTIONS TABLE  (Overview tab)
+   ACTIVITY PREDICTIONS TABLE
    ============================================================ */
 .act-pred-table td { vertical-align: middle; }
 
-/* Row shading for denied activities */
 .act-pred-table tbody tr.row-denied {
-  background: rgba(244,63,94,0.08) !important;
-  border-left: 3px solid var(--color-high);
+  background: rgba(224,82,82,.06) !important;
+  border-left: 2px solid var(--color-high);
 }
-.act-pred-table tbody tr.row-denied:hover { background: rgba(244,63,94,0.14) !important; }
+.act-pred-table tbody tr.row-denied:hover { background: rgba(224,82,82,.10) !important; }
 
-/* Probability cell: value + mini bar */
 .act-prob-row {
   display: flex;
   align-items: center;
@@ -650,7 +632,7 @@
 }
 .act-prob-val {
   font-size: .82rem;
-  font-weight: 700;
+  font-weight: 600;
   min-width: 42px;
 }
 .act-prob-val.high   { color: var(--color-high); }
@@ -659,7 +641,7 @@
 
 .act-prob-bar-wrap {
   flex: 1;
-  height: 6px;
+  height: 4px;
   background: var(--color-border);
   border-radius: 99px;
   overflow: hidden;
@@ -673,35 +655,33 @@
 .act-prob-bar.medium { background: var(--color-medium); }
 .act-prob-bar.low    { background: var(--color-low); }
 
-/* Verdict pill */
+/* Verdict pill — muted, not neon */
 .denial-verdict {
   display: inline-block;
-  padding: .18rem .6rem;
-  border-radius: 999px;
-  font-size: .74rem;
-  font-weight: 700;
-  white-space: nowrap;
-}
-.denial-verdict.denied   { background: var(--color-high-bg);  color: #FCA5A5; }
-.denial-verdict.approved { background: var(--color-low-bg);   color: #6EE7B7; }
-
-/* CPT category badge */
-.cpt-badge {
-  display: inline-block;
-  padding: .1rem .45rem;
-  background: #1E3A5F;
-  color: #93C5FD;
-  border: 1px solid #3B82F6;
-  border-radius: 999px;
+  padding: .15rem .55rem;
+  border-radius: var(--radius-sm);
   font-size: .72rem;
   font-weight: 600;
   white-space: nowrap;
 }
+.denial-verdict.denied   { background: var(--color-high-bg);   color: var(--color-high);   border: 1px solid var(--color-high-border); }
+.denial-verdict.approved { background: var(--color-low-bg);    color: var(--color-low);    border: 1px solid var(--color-low-border); }
 
-/* SHAP driver pills cell */
+/* CPT badge — neutral slate, not bright blue */
+.cpt-badge {
+  display: inline-block;
+  padding: .1rem .45rem;
+  background: rgba(76,126,224,.10);
+  color: #7BA7E8;
+  border: 1px solid rgba(76,126,224,.22);
+  border-radius: var(--radius-sm);
+  font-size: .70rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
 .driver-pills-cell { white-space: nowrap; }
 
-/* Recommendation cell */
 .rec-cell {
   font-size: .78rem;
   color: var(--color-text-secondary);
@@ -710,7 +690,6 @@
   line-height: 1.4;
 }
 
-/* Empty state */
 .no-data-row {
   text-align: center;
   color: var(--color-text-muted);
@@ -719,21 +698,19 @@
 }
 
 /* ============================================================
-   ACTIVITIES FORM SECTION  (Claim entry form)
+   ACTIVITIES FORM SECTION
    ============================================================ */
 .activities-section {
   margin-top: 1.25rem;
   padding-top: 1rem;
   border-top: 1px solid var(--color-border-light);
 }
-
 .activities-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
   margin-bottom: .65rem;
 }
-
 .btn-add-act {
   background: var(--color-accent);
   color: #fff;
@@ -750,18 +727,14 @@
 .btn-add-act:hover { background: var(--color-accent-dark); }
 
 .activities-table-wrap { border-radius: var(--radius-sm); }
-
 .activities-table th,
 .activities-table td { padding: .4rem .6rem; }
-
-/* Constrain each activity column so the table stays compact */
 .activities-table td:nth-child(1) { width: 130px; }
 .activities-table td:nth-child(2) { width: 72px;  }
 .activities-table td:nth-child(3) { width: 120px; }
 .activities-table td:nth-child(4) { min-width: 170px; }
 .activities-table td:nth-child(5) { width: 44px; text-align: center; }
 
-/* Inline field inputs inside the activity table */
 .field-inline {
   padding: .35rem .55rem;
   border: 1px solid var(--color-border);
@@ -778,9 +751,8 @@
 .field-inline:focus {
   outline: none;
   border-color: var(--color-accent);
-  box-shadow: 0 0 0 2px rgba(59,130,246,.1);
+  box-shadow: 0 0 0 2px rgba(76,126,224,.10);
 }
-
 .btn-remove-act {
   background: none;
   border: none;
@@ -808,26 +780,23 @@
   margin-bottom: 1.25rem;
   flex-wrap: wrap;
 }
-
 .shap-activity-bar-left {
   display: flex;
   align-items: center;
   gap: .65rem;
 }
-
 .shap-activity-bar-label {
   font-size: .78rem;
   font-weight: 600;
   color: var(--color-text-muted);
   white-space: nowrap;
 }
-
 .shap-activity-select {
   padding: .4rem .75rem;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
   font-size: .84rem;
-  font-weight: 600;
+  font-weight: 500;
   font-family: var(--font);
   color: var(--color-text-primary);
   background: var(--color-surface);
@@ -837,9 +806,8 @@
 .shap-activity-select:focus {
   outline: none;
   border-color: var(--color-accent);
-  box-shadow: 0 0 0 3px rgba(59,130,246,.1);
+  box-shadow: 0 0 0 3px rgba(76,126,224,.10);
 }
-
 .shap-activity-badge-row {
   display: flex;
   align-items: center;
@@ -847,8 +815,8 @@
   flex-wrap: wrap;
 }
 
-/* ── All-activities SHAP comparison table ── */
+/* All-activities SHAP table */
 .shap-all-acts-table tbody tr { cursor: pointer; }
-.shap-all-acts-table tbody tr:hover { background: rgba(232,30,140,0.07) !important; }
-.shap-all-acts-table tbody tr.shap-row-active { background: rgba(245,158,11,0.12) !important; }
-.shap-all-acts-table tbody tr.shap-row-denied { border-left: 3px solid var(--color-high); }
+.shap-all-acts-table tbody tr:hover { background: rgba(76,126,224,.06) !important; }
+.shap-all-acts-table tbody tr.shap-row-active { background: rgba(76,126,224,.10) !important; }
+.shap-all-acts-table tbody tr.shap-row-denied { border-left: 2px solid var(--color-high); }

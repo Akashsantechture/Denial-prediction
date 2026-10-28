@@ -288,8 +288,13 @@ const AnalystAPI = (() => {
   async function _fetchTimeout(url, options = {}) {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
+    // Inject X-Region header from region manager
+    const headers = { ...options.headers };
+    if (window.regionManager) {
+      headers['X-Region'] = window.regionManager.getRegionHeader();
+    }
     try {
-      return await fetch(url, { ...options, signal: controller.signal });
+      return await fetch(url, { ...options, headers, signal: controller.signal });
     } finally {
       clearTimeout(timer);
     }

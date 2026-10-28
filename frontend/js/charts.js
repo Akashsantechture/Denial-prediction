@@ -28,13 +28,13 @@ const Charts = (() => {
   const PLOT_BG  = '#161323';
 
   const COLORS = {
-    high:     '#F43F5E',
-    medium:   '#F59E0B',
-    low:      '#10B981',
-    accent:   '#8B5CF6',
-    dark:     '#F0EEFF',
-    muted:    '#A89FC4',
-    gridline: '#2E2A40',
+    high:     '#E05252',
+    medium:   '#D4874A',
+    low:      '#3D9E6E',
+    accent:   '#4C7EE0',
+    dark:     '#E2E8F0',
+    muted:    '#4E5D78',
+    gridline: '#252D3D',
   };
 
   const PLOTLY_CFG = { responsive: true, displayModeBar: false };
@@ -71,20 +71,20 @@ const Charts = (() => {
       gauge: {
         axis: {
           range: [0, 100],
-          tickwidth: 1, tickcolor: '#6B6384',
-          tickfont: { size: 10, color: '#A89FC4' },
+          tickwidth: 1, tickcolor: COLORS.muted,
+          tickfont: { size: 10, color: COLORS.muted },
           ticksuffix: '%',
         },
-        bar:       { color: '#8B5CF6', thickness: 0.28 },
-        bgcolor:   '#1C1928',
+        bar:       { color: COLORS.accent, thickness: 0.26 },
+        bgcolor:   '#161B27',
         borderwidth: 0,
         steps: [
-          { range: [0,  35],  color: 'rgba(16,185,129,0.15)' },
-          { range: [35, 50],  color: 'rgba(245,158,11,0.15)' },
-          { range: [50, 100], color: 'rgba(244,63,94,0.15)'  },
+          { range: [0,  35],  color: 'rgba(61,158,110,0.12)'  },
+          { range: [35, 50],  color: 'rgba(212,135,74,0.12)'  },
+          { range: [50, 100], color: 'rgba(224,82,82,0.12)'   },
         ],
         threshold: {
-          line:      { color: '#F43F5E', width: 3 },
+          line:      { color: COLORS.high, width: 2 },
           thickness: 0.8,
           value:     prob_pct,
         },
@@ -150,7 +150,7 @@ const Charts = (() => {
         tickfont:  { size: 11 },
       },
       annotations: [{
-        text:      '<b style="color:#EF4444">Red</b> bars → DENIAL &nbsp;|&nbsp; <b style="color:#10B981">Green</b> bars → APPROVAL &nbsp;|&nbsp; Values in SHAP log-odds',
+        text:      'Red bars → DENIAL &nbsp;|&nbsp; Green bars → APPROVAL &nbsp;|&nbsp; Values in SHAP log-odds',
         showarrow: false,
         xref: 'paper', yref: 'paper',
         x: 0.5, y: -0.22,
@@ -197,10 +197,10 @@ const Charts = (() => {
         opacity: 0.9,
         color: contributions.map(c => Math.abs(c.value) / maxAbs),
         colorscale: [
-          [0,    '#3B82F6'],
-          [0.45, '#A3E635'],
-          [0.7,  '#F59E0B'],
-          [1,    '#EF4444'],
+          [0,    '#4C7EE0'],
+          [0.45, '#94A3B8'],
+          [0.7,  '#D4874A'],
+          [1,    '#E05252'],
         ],
         showscale: true,
         colorbar: {
@@ -287,7 +287,7 @@ const Charts = (() => {
         marker: {
           size: 7, opacity: 0.65,
           color: mismatch,
-          colorscale: [[0, '#BFDBFE'], [0.5, '#FEF08A'], [1, '#FCA5A5']],
+          colorscale: [[0, '#4C7EE0'], [0.5, '#94A3B8'], [1, '#E05252']],
           showscale: true,
           colorbar: {
             // Plain ticktext labels, no title to avoid rotation overlap

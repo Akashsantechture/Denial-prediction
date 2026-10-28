@@ -303,9 +303,9 @@ const Interactions = (() => {
       x: labels,
       y: labels,
       colorscale: [
-        [0,   '#3B82F6'],
-        [0.5, '#1E293B'],
-        [1,   '#EF4444'],
+        [0,   '#4C7EE0'],
+        [0.5, '#1C2233'],
+        [1,   '#E05252'],
       ],
       zmin: -absMax,
       zmax:  absMax,
@@ -395,9 +395,9 @@ const Interactions = (() => {
     if (!el) return;
 
     const colors = triples.map(t =>
-      t.direction === 'amplifying' ? '#EF4444'
-      : t.direction === 'conflicting' ? '#3B82F6'
-      : '#F59E0B'
+      t.direction === 'amplifying'  ? 'rgba(224,82,82,.75)'
+      : t.direction === 'conflicting' ? 'rgba(61,158,110,.75)'
+      : 'rgba(212,135,74,.75)'
     );
 
     Plotly.react(el, [{

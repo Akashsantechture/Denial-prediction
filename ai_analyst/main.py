@@ -59,9 +59,12 @@ async def lifespan(app: FastAPI):
 
     try:
         from .rag.rule_store import init_rule_store, count_rules
-        init_rule_store()
-        rule_count = count_rules()
-        print(f"✅ RAG rule store ready — {rule_count} rules indexed.")
+        init_rule_store("uae")
+        init_rule_store("ksa")
+        uae_count = count_rules("uae")
+        ksa_count = count_rules("ksa")
+        rule_count = uae_count + ksa_count
+        print(f"✅ RAG rule store ready — UAE: {uae_count} rules, KSA: {ksa_count} rules.")
     except Exception as exc:
         print(f"⚠️  RAG rule store init failed (RAG disabled): {exc}")
         rule_count = 0
@@ -76,7 +79,7 @@ async def lifespan(app: FastAPI):
     if rule_count > 0:
         try:
             from .rag.retriever import Retriever
-            retriever = Retriever()
+            retriever = Retriever(region="uae")
             print("✅ RAG Retriever initialised.")
         except Exception as exc:
             print(f"⚠️  RAG Retriever init failed (RAG disabled): {exc}")
@@ -84,7 +87,7 @@ async def lifespan(app: FastAPI):
     else:
         print(
             "ℹ️  RAG rule store is empty — RAG disabled. "
-            "Call POST /analyst/ingest-rules to index Thynk rules."
+            "Call POST /analyst/ingest-rules to index rules."
         )
 
     # --------------------------------------------------------
@@ -302,18 +305,25 @@ def analyst_chat(
 # ============================================================
 
 @app.post("/analyst/ingest-rules")
-def ingest_rules():
+def ingest_rules(
+    region: str = "uae",
+    x_region: str = Header(default=None, alias="X-Region"),
+):
 
     global retriever, analyst_service
+
+    target_region = (x_region or region).lower()
+    if target_region not in ("uae", "ksa"):
+        target_region = "uae"
 
     try:
 
         print("\n" + "=" * 80)
-        print("INGEST THYNK RULES → RAG STORE")
+        print(f"INGEST RULES → RAG STORE ({target_region.upper()})")
         print("=" * 80)
 
         from .rag.ingest import run_ingest
-        result = run_ingest()
+        result = run_ingest(region=target_region)
 
         if result["status"] != "ok":
             raise HTTPException(
@@ -328,13 +338,13 @@ def ingest_rules():
 
         from .rag.retriever import Retriever
 
-        retriever = Retriever()
+        retriever = Retriever(region=target_region)
 
         if analyst_service is not None:
             analyst_service.retriever = retriever
 
         print(
-            f"✅ Ingest complete — {result['ingested']} rules upserted, "
+            f"✅ Ingest complete for {target_region.upper()} — {result['ingested']} rules upserted, "
             f"{result['total_in_store']} total in store. "
             f"Retriever re-initialised."
         )
@@ -342,6 +352,7 @@ def ingest_rules():
 
         return {
             "status":          "ok",
+            "region":          target_region,
             "ingested":        result["ingested"],
             "total_in_store":  result["total_in_store"],
             "rag_enabled":     retriever is not None,

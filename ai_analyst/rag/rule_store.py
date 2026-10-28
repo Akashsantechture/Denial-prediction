@@ -49,8 +49,8 @@ _STORE_PATHS = {
 }
 
 _COLLECTION_NAMES = {
-    "uae": "chi_rules",
-    "ksa": "cchi_rules",
+    "uae": "uae_rules",
+    "ksa": "chi_rules",
 }
 
 # ------------------------------------------------------------------ #

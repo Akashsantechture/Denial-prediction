@@ -87,8 +87,8 @@ class RegionConfig:
 UAE_CONFIG = RegionConfig(
     # Identity
     region=Region.UAE,
-    regulator_name="CHI",
-    regulator_full_name="Council of Health Insurance Abu Dhabi",
+    regulator_name="DoH/DHA",
+    regulator_full_name="Department of Health Abu Dhabi / Dubai Health Authority",
     country_name="United Arab Emirates",
     
     # Models
@@ -97,7 +97,7 @@ UAE_CONFIG = RegionConfig(
     
     # RAG
     chroma_store_path="ai_analyst/rag/chroma_store_uae",
-    chroma_collection_name="chi_rules",
+    chroma_collection_name="uae_rules",
     rule_source_dir="Thynk/uae",
     claim_lookup_file="thynk-claimlookup.json",
     rag_rules_file="thynk-rag-rules.json",
@@ -124,8 +124,8 @@ UAE_CONFIG = RegionConfig(
 KSA_CONFIG = RegionConfig(
     # Identity
     region=Region.KSA,
-    regulator_name="CCHI",
-    regulator_full_name="Council of Cooperative Health Insurance",
+    regulator_name="CHI",
+    regulator_full_name="Council of Health Insurance (مجلس الضمان الصحي)",
     country_name="Kingdom of Saudi Arabia",
     
     # Models
@@ -134,10 +134,10 @@ KSA_CONFIG = RegionConfig(
     
     # RAG
     chroma_store_path="ai_analyst/rag/chroma_store_ksa",
-    chroma_collection_name="cchi_rules",
+    chroma_collection_name="chi_rules",
     rule_source_dir="Thynk/ksa",
-    claim_lookup_file="nphies-claimlookup.json",
-    rag_rules_file="nphies-rag-rules.json",
+    claim_lookup_file="ksa-claimlookup.json",
+    rag_rules_file="ksa-rag-rules.json",
     
     # Display
     currency="SAR",

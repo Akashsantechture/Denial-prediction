@@ -67,7 +67,7 @@ from ai_analyst.region_config import Region, get_region_config
 uae_config = get_region_config(Region.UAE)
 print(uae_config.regulator_name)      # "CHI"
 print(uae_config.model_version)       # "v3"
-print(uae_config.chroma_collection_name)  # "chi_rules"
+print(uae_config.chroma_collection_name)  # "uae_rules"
 
 # Get KSA configuration
 ksa_config = get_region_config(Region.KSA)
