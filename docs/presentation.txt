@@ -364,13 +364,13 @@ SLIDE 10 — ROADMAP & BUSINESS IMPACT
 
   SECTION A — Current State (Production-ready)
 
-  ✅  XGBoost model: 0.8466 AUC, 76% accuracy on UAE claims data
-  ✅  Real SHAP explanations for every activity on every claim
-  ✅  Multi-activity claim support with per-line breakdown
-  ✅  Gemini 2.5 Flash AI Analyst with transparent fallback
-  ✅  Fully containerised, Docker Compose deployment
-  ✅  REST API — ready for integration into existing RCM platforms
-  ✅  No client software required — runs entirely in the browser
+    XGBoost model: 0.8466 AUC, 76% accuracy on UAE claims data
+    Real SHAP explanations for every activity on every claim
+    Multi-activity claim support with per-line breakdown
+    Gemini 2.5 Flash AI Analyst with transparent fallback
+    Fully containerised, Docker Compose deployment
+    REST API — ready for integration into existing RCM platforms
+    No client software required — runs entirely in the browser
 
 
   SECTION B — Near-Term Roadmap

@@ -1,0 +1,259 @@
+[{
+  "claim_id": "105210",
+  "thynk_response": [
+    {
+      "severity": "WARNING",
+      "shortMessage": "CPT 83550 is predicted likely denied for Medical Necessity.",
+      "longMessage": "Review the clinical indication, diagnosis support, and receiver-specific medical necessity policy for iron-binding capacity testing. The prediction is not a confirmed denial.",
+      "episodeId": "105210",
+      "objectType": "activity",
+      "objectId": "83550",
+      "claimAmount": 604.8,
+      "activityAmount": 89.6,
+      "ruleId": "J_ML_MEDICAL_NECESSITY_83550",
+      "source_rule_id": "ML_MODEL_PREDICTION",
+      "packageName": "ML_recommendation",
+      "activityType": "CPT",
+      "code": "83550",
+      "denialReason": "Medical Necessity",
+      "topDrivers": [
+        "receiver id",
+        "Activity Code",
+        "CPT Category"
+      ],
+      "actions": [
+        "Verify the documented clinical indication and diagnosis support",
+        "Check the receiver-specific medical necessity policy"
+      ],
+      "candidate_rag_rule_ids": [],
+      "candidate_rag_mapping_status": "not_verified",
+      "is_confirmed_denial": false
+    },
+    {
+      "severity": "WARNING",
+      "shortMessage": "CPT 82728 is predicted likely denied for Medical Necessity.",
+      "longMessage": "Review the clinical indication and supporting documentation for ferritin testing. The existing iron-study bundling check is contextual information and does not confirm medical necessity as the denial reason.",
+      "episodeId": "105210",
+      "objectType": "activity",
+      "objectId": "82728",
+      "claimAmount": 604.8,
+      "activityAmount": 137.2,
+      "ruleId": "J_ML_MEDICAL_NECESSITY_82728",
+      "source_rule_id": "ML_MODEL_PREDICTION",
+      "packageName": "ML_recommendation",
+      "activityType": "CPT",
+      "code": "82728",
+      "denialReason": "Medical Necessity",
+      "topDrivers": [
+        "Activity Code",
+        "receiver id",
+        "CPT Category"
+      ],
+      "actions": [
+        "Verify ferritin testing indication and diagnosis support",
+        "Check the receiver-specific medical necessity policy",
+        "Review iron-study bundling separately against the applicable payer policy"
+      ],
+      "candidate_rag_rule_ids": [],
+      "candidate_rag_mapping_status": "not_verified",
+      "is_confirmed_denial": false
+    },
+    {
+      "severity": "WARNING",
+      "shortMessage": "CPT 83735 is predicted likely denied for Medical Necessity.",
+      "longMessage": "Review the clinical indication and documentation for magnesium testing. Existing lookup context references hypomagnesemia (E83.42) as supporting the test, so verify the diagnosis, documentation, and payer policy before taking corrective action.",
+      "episodeId": "105210",
+      "objectType": "activity",
+      "objectId": "83735",
+      "claimAmount": 604.8,
+      "activityAmount": 67.2,
+      "ruleId": "J_ML_MEDICAL_NECESSITY_83735",
+      "source_rule_id": "ML_MODEL_PREDICTION",
+      "packageName": "ML_recommendation",
+      "activityType": "CPT",
+      "code": "83735",
+      "denialReason": "Medical Necessity",
+      "topDrivers": [
+        "Activity Code",
+        "receiver id",
+        "CPT Category"
+      ],
+      "actions": [
+        "Verify the documented indication for magnesium testing",
+        "Confirm diagnosis support and receiver-specific policy",
+        "Reconcile the model prediction with the existing supportive diagnosis"
+      ],
+      "candidate_rag_rule_ids": [],
+      "candidate_rag_mapping_status": "not_verified",
+      "is_confirmed_denial": false
+    },
+    {
+      "severity": "WARNING",
+      "shortMessage": "CPT 83540 is predicted likely denied for Timely Filing.",
+      "longMessage": "Verify the service date, original submission date, resubmission history, and receiver-specific filing deadline. J-rule TF202.04 may be investigated as a candidate only after confirming its actual identifier, applicability, and policy requirements.",
+      "episodeId": "105210",
+      "objectType": "activity",
+      "objectId": "83540",
+      "claimAmount": 604.8,
+      "activityAmount": 64.4,
+      "ruleId": "J_ML_TIMELY_FILING_83540",
+      "source_rule_id": "ML_MODEL_PREDICTION",
+      "packageName": "ML_recommendation",
+      "activityType": "CPT",
+      "code": "83540",
+      "denialReason": "Timely Filing",
+      "topDrivers": [
+        "receiver id",
+        "Secondary: OB/GYN",
+        "Secondary: Health Status Factors"
+      ],
+      "actions": [
+        "Verify service and submission dates",
+        "Check the receiver-specific timely filing deadline",
+        "Review resubmission or appeal eligibility if the deadline was exceeded"
+      ],
+      "candidate_rag_rule_ids": [
+        "TF202.04"
+      ],
+      "candidate_rag_mapping_status": "conditional_candidate",
+      "is_confirmed_denial": false
+    }
+  ],
+  "active_flag_activity_codes": [
+    "83550",
+    "82728",
+    "83735",
+    "83540"
+  ]
+},
+
+{
+  "claim_id": "310598",
+  "thynk_response": [
+    {
+      "severity": "WARNING",
+      "shortMessage": "CPT 97110 is predicted likely denied for Duplicate.",
+      "longMessage": "The model predicts a duplicate-related denial risk for therapeutic exercise (97110). Review the activity against other service lines in the claim, including service dates, units, and supporting documentation. The prediction is not a confirmed denial.",
+      "episodeId": "310598",
+      "objectType": "activity",
+      "objectId": "97110",
+      "activityAmount": 116.0,
+      "ruleId": "J_ML_DUPLICATE_97110",
+      "source_rule_id": "ML_MODEL_PREDICTION",
+      "packageName": "ML_recommendation",
+      "activityType": "CPT",
+      "code": "97110",
+      "denialReason": "Duplicate",
+      "topDrivers": [
+        "network",
+        "Activity Code",
+        "Primary Diagnosis Code"
+      ],
+      "actions": [
+        "Check for repeated or overlapping 97110 service lines",
+        "Verify service dates, units, and supporting clinical documentation",
+        "Review the applicable network and payer duplicate-billing policy"
+      ],
+      "candidate_rag_rule_ids": [],
+      "candidate_rag_mapping_status": "not_verified",
+      "is_confirmed_denial": false
+    },
+    {
+      "severity": "WARNING",
+      "shortMessage": "CPT 97140 is predicted likely denied for Duplicate.",
+      "longMessage": "The model predicts a duplicate-related denial risk for manual therapy (97140). Check for repeated billing or overlapping services and confirm that the documentation supports a separately billable service. The prediction is not a confirmed denial.",
+      "episodeId": "310598",
+      "objectType": "activity",
+      "objectId": "97140",
+      "activityAmount": 200.0,
+      "ruleId": "J_ML_DUPLICATE_97140",
+      "source_rule_id": "ML_MODEL_PREDICTION",
+      "packageName": "ML_recommendation",
+      "activityType": "CPT",
+      "code": "97140",
+      "denialReason": "Duplicate",
+      "topDrivers": [
+        "network",
+        "Activity Code",
+        "Secondary Diagnosis Count"
+      ],
+      "actions": [
+        "Compare this activity with other billed service lines",
+        "Verify service dates, units, and documentation for distinct services",
+        "Check the receiver-specific duplicate and bundling policies"
+      ],
+      "candidate_rag_rule_ids": [],
+      "candidate_rag_mapping_status": "not_verified",
+      "is_confirmed_denial": false
+    },
+    {
+      "severity": "WARNING",
+      "shortMessage": "CPT 97530 is predicted likely denied for Duplicate.",
+      "longMessage": "The model predicts a duplicate-related denial risk for therapeutic activities (97530). Review other claim lines for repeated or overlapping services and verify that the documented therapeutic activities are distinct and supported. The prediction is not a confirmed denial.",
+      "episodeId": "310598",
+      "objectType": "activity",
+      "objectId": "97530",
+      "activityAmount": 126.0,
+      "ruleId": "J_ML_DUPLICATE_97530",
+      "source_rule_id": "ML_MODEL_PREDICTION",
+      "packageName": "ML_recommendation",
+      "activityType": "CPT",
+      "code": "97530",
+      "denialReason": "Duplicate",
+      "topDrivers": [
+        "network",
+        "Secondary Diagnosis Count",
+        "Primary Diagnosis Code"
+      ],
+      "actions": [
+        "Check for duplicate or overlapping therapeutic activity billing",
+        "Review documentation and service details to confirm distinct services",
+        "Verify the applicable receiver-specific duplicate-billing policy"
+      ],
+      "candidate_rag_rule_ids": [],
+      "candidate_rag_mapping_status": "not_verified",
+      "is_confirmed_denial": false
+    }
+  ],
+  "active_flag_activity_codes": [
+    "97110",
+    "97140",
+    "97530"
+  ]
+},
+{
+  "claim_id": "100021",
+  "thynk_response": [
+    {
+      "severity": "WARNING",
+      "shortMessage": "CPT 99202 is predicted likely denied for Coding.",
+      "longMessage": "The model predicts a coding-related denial risk for evaluation and management service 99202. Review the primary diagnosis code and category, and verify that the diagnosis supports the billed service under the applicable coding guidelines and payer policy. This prediction is not a confirmed denial.",
+      "episodeId": "100021",
+      "objectType": "activity",
+      "objectId": "99202",
+      "activityAmount": 209.72,
+      "ruleId": "J_ML_CODING_99202",
+      "source_rule_id": "ML_MODEL_PREDICTION",
+      "packageName": "ML_recommendation",
+      "activityType": "CPT",
+      "code": "99202",
+      "denialReason": "Coding",
+      "topDrivers": [
+        "Primary Diagnosis Category",
+        "Primary Diagnosis Code",
+        "Activity Code"
+      ],
+      "actions": [
+        "Validate the primary diagnosis code and category",
+        "Confirm that the diagnosis supports the billed evaluation and management service",
+        "Review applicable coding guidelines and receiver-specific payer requirements"
+      ],
+      "candidate_rag_rule_ids": [],
+      "candidate_rag_mapping_status": "not_verified",
+      "is_confirmed_denial": false
+    }
+  ],
+  "active_flag_activity_codes": [
+    "99202"
+  ]
+}]

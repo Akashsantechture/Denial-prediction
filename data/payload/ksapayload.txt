@@ -417,3 +417,505 @@
 
 real value - all 10 activities are approved 
 predicted - all 10was approved 
+
+  {
+    "claim_id": "10056981",
+    "facility": "Dhahran",
+    "facility_type": "Hospital",
+    "patient_age": 76,
+    "gender": "Male",
+    "policy_name": "Saudi Arabian Oil Company (Saudi Aramco)",
+    "payer_classification": "Saudi Aramco Medical Plan",
+    "payer_id": "102",
+    "receiver_id": "102",
+    "encounter_type": "IP",
+    "length_of_stay": 2,
+    "clinician_category": "General Medical Practice",
+    "department": "DHH CARDIOVASCULAR",
+    "claim_type": "Hospital Inpatient",
+    "claim_subtype": "emr",
+    "claim_gross": 27361.0,
+    "claim_net": 27361.0,
+    "primary_diagnosis_code": "I24.9",
+    "services": [
+      {
+        "service_code": "573500200",
+        "service_quantity": 1.0,
+        "service_gross": 3500.0,
+        "diagnoses": [{"diagnosis_code": "I24.9", "diagnosis_type": "Principal"}]
+      },
+      {
+        "service_code": "730000060",
+        "service_quantity": 1.0,
+        "service_gross": 502.0,
+        "diagnoses": [{"diagnosis_code": "I24.9", "diagnosis_type": "Principal"}]
+      },
+      {
+        "service_code": "730000070",
+        "service_quantity": 1.0,
+        "service_gross": 328.0,
+        "diagnoses": [{"diagnosis_code": "I24.9", "diagnosis_type": "Principal"}]
+      },
+      {
+        "service_code": "730000090",
+        "service_quantity": 1.0,
+        "service_gross": 800.4,
+        "diagnoses": [{"diagnosis_code": "I24.9", "diagnosis_type": "Principal"}]
+      },
+      {
+        "service_code": "730502170",
+        "service_quantity": 1.0,
+        "service_gross": 198.95,
+        "diagnoses": [{"diagnosis_code": "I24.9", "diagnosis_type": "Principal"}]
+      },
+      {
+        "service_code": "730502530",
+        "service_quantity": 1.0,
+        "service_gross": 260.0,
+        "diagnoses": [{"diagnosis_code": "I24.9", "diagnosis_type": "Principal"}]
+      },
+      {
+        "service_code": "730503670",
+        "service_quantity": 1.0,
+        "service_gross": 465.75,
+        "diagnoses": [{"diagnosis_code": "I24.9", "diagnosis_type": "Principal"}]
+      },
+      {
+        "service_code": "731001140",
+        "service_quantity": 1.0,
+        "service_gross": 363.18,
+        "diagnoses": [{"diagnosis_code": "I24.9", "diagnosis_type": "Principal"}]
+      },
+      {
+        "service_code": "836000000",
+        "service_quantity": 1.0,
+        "service_gross": 0.0,
+        "diagnoses": [{"diagnosis_code": "I24.9", "diagnosis_type": "Principal"}]
+      },
+      {
+        "service_code": "836000010",
+        "service_quantity": 1.0,
+        "service_gross": 287.5,
+        "diagnoses": [{"diagnosis_code": "I24.9", "diagnosis_type": "Principal"}]
+      },
+      {
+        "service_code": "836000030",
+        "service_quantity": 1.0,
+        "service_gross": 0.0,
+        "diagnoses": [{"diagnosis_code": "I24.9", "diagnosis_type": "Principal"}]
+      },
+      {
+        "service_code": "836000080",
+        "service_quantity": 1.0,
+        "service_gross": 690.0,
+        "diagnoses": [{"diagnosis_code": "I24.9", "diagnosis_type": "Principal"}]
+      },
+      {
+        "service_code": "850500130",
+        "service_quantity": 1.0,
+        "service_gross": 15570.0,
+        "diagnoses": [{"diagnosis_code": "I24.9", "diagnosis_type": "Principal"}]
+      },
+      {
+        "service_code": "850500180",
+        "service_quantity": 1.0,
+        "service_gross": 4335.22,
+        "diagnoses": [{"diagnosis_code": "I24.9", "diagnosis_type": "Principal"}]
+      }
+    ]
+  },
+
+
+
+  {
+    "claim_id": "10068854",
+    "facility": "Dhahran",
+    "facility_type": "Hospital",
+    "patient_age": 70,
+    "gender": "Female",
+    "policy_name": "Saudi Arabian Oil Company (Saudi Aramco)",
+    "payer_classification": "Saudi Aramco Medical Plan",
+    "payer_id": "102",
+    "receiver_id": "102",
+    "encounter_type": "OP",
+    "length_of_stay": 0,
+    "clinician_category": "General Medical Practice",
+    "department": "DHC ENDOCRINOLOGY CLINIC",
+    "claim_type": "Outpatient",
+    "claim_subtype": "op",
+    "claim_gross": 402.5,
+    "claim_net": 350.0,
+    "primary_diagnosis_code": "E11.9",
+    "services": [
+      {
+        "service_code": "836000020",
+        "service_quantity": 1.0,
+        "service_gross": 402.5,
+        "diagnoses": [{"diagnosis_code": "E11.9", "diagnosis_type": "Principal"}]
+      }
+    ]
+  },
+  {
+    "claim_id": "10497500",
+    "facility": "Dhahran",
+    "facility_type": "Hospital",
+    "patient_age": 31,
+    "gender": "Female",
+    "policy_name": "Saudi Arabian Oil Company (Saudi Aramco)",
+    "payer_classification": "Saudi Aramco Medical Plan",
+    "payer_id": "102",
+    "receiver_id": "102",
+    "encounter_type": "OP",
+    "length_of_stay": 0,
+    "clinician_category": "General Medical Practice",
+    "department": "DHC PRIMARY CARE CLINIC",
+    "claim_type": "Outpatient",
+    "claim_subtype": "op",
+    "claim_gross": 402.5,
+    "claim_net": 350.0,
+    "primary_diagnosis_code": "O26.89",
+    "services": [
+      {
+        "service_code": "836000020",
+        "service_quantity": 1.0,
+        "service_gross": 402.5,
+        "diagnoses": [{"diagnosis_code": "O26.89", "diagnosis_type": "Principal"}]
+      }
+    ]
+  },
+  {
+    "claim_id": "10548692",
+    "facility": "Dhahran",
+    "facility_type": "Hospital",
+    "patient_age": 28,
+    "gender": "Male",
+    "policy_name": "Saudi Arabian Oil Company (Saudi Aramco)",
+    "payer_classification": "Saudi Aramco Medical Plan",
+    "payer_id": "102",
+    "receiver_id": "102",
+    "encounter_type": "ER",
+    "length_of_stay": 0,
+    "clinician_category": "General Medical Practice",
+    "department": "DHH EMERGENCY DEPT",
+    "claim_type": "Emergency",
+    "claim_subtype": "emr",
+    "claim_gross": 1391.5,
+    "claim_net": 1210.0,
+    "primary_diagnosis_code": "R51",
+    "services": [
+      {
+        "service_code": "836000010",
+        "service_quantity": 1.0,
+        "service_gross": 287.5,
+        "diagnoses": [{"diagnosis_code": "R51", "diagnosis_type": "Principal"}]
+      },
+      {
+        "service_code": "730503730",
+        "service_quantity": 1.0,
+        "service_gross": 150.65,
+        "diagnoses": [{"diagnosis_code": "R51", "diagnosis_type": "Principal"}]
+      },
+      {
+        "service_code": "730500980",
+        "service_quantity": 1.0,
+        "service_gross": 149.5,
+        "diagnoses": [{"diagnosis_code": "R51", "diagnosis_type": "Principal"}]
+      },
+      {
+        "service_code": "730501620",
+        "service_quantity": 1.0,
+        "service_gross": 80.5,
+        "diagnoses": [{"diagnosis_code": "R51", "diagnosis_type": "Principal"}]
+      },
+      {
+        "service_code": "731001140",
+        "service_quantity": 1.0,
+        "service_gross": 363.18,
+        "diagnoses": [{"diagnosis_code": "R51", "diagnosis_type": "Principal"}]
+      },
+      {
+        "service_code": "730502170",
+        "service_quantity": 1.0,
+        "service_gross": 198.95,
+        "diagnoses": [{"diagnosis_code": "R51", "diagnosis_type": "Principal"}]
+      },
+      {
+        "service_code": "730504030",
+        "service_quantity": 1.0,
+        "service_gross": 364.55,
+        "diagnoses": [{"diagnosis_code": "R51", "diagnosis_type": "Principal"}]
+      }
+    ]
+  }
+
+  ------------------------------------pending----------------------------------
+  {
+    "claim_id": "10674581",
+    "facility": "Dhahran",
+    "facility_type": "Hospital",
+    "patient_age": 40,
+    "gender": "Female",
+    "policy_name": "Saudi Arabian Oil Company (Saudi Aramco)",
+    "payer_classification": "Saudi Aramco Medical Plan",
+    "payer_id": "102",
+    "receiver_id": "102",
+    "encounter_type": "ER",
+    "length_of_stay": 0,
+    "clinician_category": "General Medical Practice",
+    "department": "DHH EMERGENCY DEPT",
+    "claim_type": "Emergency",
+    "claim_subtype": "emr",
+    "claim_gross": 2906.53,
+    "claim_net": 2527.81,
+    "primary_diagnosis_code": "L98.7",
+    "services": [
+      {
+        "service_code": "836000010",
+        "service_quantity": 1.0,
+        "service_gross": 287.5,
+        "diagnoses": [
+          {"diagnosis_code": "L98.7", "diagnosis_type": "Principal"},
+          {"diagnosis_code": "Y83.8", "diagnosis_type": "Secondary"},
+          {"diagnosis_code": "T81.3", "diagnosis_type": "Secondary"}
+        ]
+      },
+      {
+        "service_code": "730503730",
+        "service_quantity": 1.0,
+        "service_gross": 150.65,
+        "diagnoses": [
+          {"diagnosis_code": "L98.7", "diagnosis_type": "Principal"},
+          {"diagnosis_code": "Y83.8", "diagnosis_type": "Secondary"},
+          {"diagnosis_code": "T81.3", "diagnosis_type": "Secondary"}
+        ]
+      },
+      {
+        "service_code": "730500980",
+        "service_quantity": 1.0,
+        "service_gross": 149.5,
+        "diagnoses": [
+          {"diagnosis_code": "L98.7", "diagnosis_type": "Principal"},
+          {"diagnosis_code": "Y83.8", "diagnosis_type": "Secondary"},
+          {"diagnosis_code": "T81.3", "diagnosis_type": "Secondary"}
+        ]
+      },
+      {
+        "service_code": "730000030",
+        "service_quantity": 1.0,
+        "service_gross": 336.95,
+        "diagnoses": [
+          {"diagnosis_code": "L98.7", "diagnosis_type": "Principal"},
+          {"diagnosis_code": "Y83.8", "diagnosis_type": "Secondary"},
+          {"diagnosis_code": "T81.3", "diagnosis_type": "Secondary"}
+        ]
+      },
+      {
+        "service_code": "731000080",
+        "service_quantity": 1.0,
+        "service_gross": 284.05,
+        "diagnoses": [
+          {"diagnosis_code": "L98.7", "diagnosis_type": "Principal"},
+          {"diagnosis_code": "Y83.8", "diagnosis_type": "Secondary"},
+          {"diagnosis_code": "T81.3", "diagnosis_type": "Secondary"}
+        ]
+      },
+      {
+        "service_code": "730501620",
+        "service_quantity": 1.0,
+        "service_gross": 80.5,
+        "diagnoses": [
+          {"diagnosis_code": "L98.7", "diagnosis_type": "Principal"},
+          {"diagnosis_code": "Y83.8", "diagnosis_type": "Secondary"},
+          {"diagnosis_code": "T81.3", "diagnosis_type": "Secondary"}
+        ]
+      },
+      {
+        "service_code": "731001140",
+        "service_quantity": 1.0,
+        "service_gross": 363.18,
+        "diagnoses": [
+          {"diagnosis_code": "L98.7", "diagnosis_type": "Principal"},
+          {"diagnosis_code": "Y83.8", "diagnosis_type": "Secondary"},
+          {"diagnosis_code": "T81.3", "diagnosis_type": "Secondary"}
+        ]
+      },
+      {
+        "service_code": "730000090",
+        "service_quantity": 1.0,
+        "service_gross": 800.4,
+        "diagnoses": [
+          {"diagnosis_code": "L98.7", "diagnosis_type": "Principal"},
+          {"diagnosis_code": "Y83.8", "diagnosis_type": "Secondary"},
+          {"diagnosis_code": "T81.3", "diagnosis_type": "Secondary"}
+        ]
+      },
+      {
+        "service_code": "730502170",
+        "service_quantity": 1.0,
+        "service_gross": 198.95,
+        "diagnoses": [
+          {"diagnosis_code": "L98.7", "diagnosis_type": "Principal"},
+          {"diagnosis_code": "Y83.8", "diagnosis_type": "Secondary"},
+          {"diagnosis_code": "T81.3", "diagnosis_type": "Secondary"}
+        ]
+      },
+      {
+        "service_code": "730504030",
+        "service_quantity": 1.0,
+        "service_gross": 364.55,
+        "diagnoses": [
+          {"diagnosis_code": "L98.7", "diagnosis_type": "Principal"},
+          {"diagnosis_code": "Y83.8", "diagnosis_type": "Secondary"},
+          {"diagnosis_code": "T81.3", "diagnosis_type": "Secondary"}
+        ]
+      }
+    ]
+  }
+
+  -------------------------------------pending----------------------------------------
+  {
+    "claim_id": "9729864",
+    "facility": "Dhahran",
+    "facility_type": "Hospital",
+    "patient_age": 42,
+    "gender": "Female",
+    "policy_name": "Saudi Arabian Oil Company (Saudi Aramco)",
+    "payer_classification": "Saudi Aramco Medical Plan",
+    "payer_id": "102",
+    "receiver_id": "102",
+    "encounter_type": "OP",
+    "length_of_stay": 0,
+    "clinician_category": "General Medical Practice",
+    "department": "DHC DERMATOLOGY CLINIC",
+    "claim_type": "Outpatient",
+    "claim_subtype": "op",
+    "claim_gross": 402.5,
+    "claim_net": 350.0,
+    "primary_diagnosis_code": "L70.0",
+    "services": [
+      {
+        "service_code": "836000020",
+        "service_quantity": 1.0,
+        "service_gross": 402.5,
+        "diagnoses": [{"diagnosis_code": "L70.0", "diagnosis_type": "Principal"}]
+      }
+    ]
+  },
+  {
+    "claim_id": "9812971",
+    "facility": "Dhahran",
+    "facility_type": "Hospital",
+    "patient_age": 55,
+    "gender": "Female",
+    "policy_name": "Saudi Arabian Oil Company (Saudi Aramco)",
+    "payer_classification": "Saudi Aramco Medical Plan",
+    "payer_id": "102",
+    "receiver_id": "102",
+    "encounter_type": "OP",
+    "length_of_stay": 0,
+    "clinician_category": "General Medical Practice",
+    "department": "DHC OPHTHALMOLOGY CLINIC",
+    "claim_type": "Outpatient",
+    "claim_subtype": "op",
+    "claim_gross": 402.5,
+    "claim_net": 350.0,
+    "primary_diagnosis_code": "H40.9",
+    "services": [
+      {
+        "service_code": "836000020",
+        "service_quantity": 1.0,
+        "service_gross": 402.5,
+        "diagnoses": [{"diagnosis_code": "H40.9", "diagnosis_type": "Principal"}]
+      }
+    ]
+  },
+  {
+    "claim_id": "9821733",
+    "facility": "Dhahran",
+    "facility_type": "Hospital",
+    "patient_age": 62,
+    "gender": "Male",
+    "policy_name": "Saudi Arabian Oil Company (Saudi Aramco)",
+    "payer_classification": "Saudi Aramco Medical Plan",
+    "payer_id": "102",
+    "receiver_id": "102",
+    "encounter_type": "OP",
+    "length_of_stay": 0,
+    "clinician_category": "General Medical Practice",
+    "department": "DHC UROLOGY CLINIC",
+    "claim_type": "Outpatient",
+    "claim_subtype": "op",
+    "claim_gross": 402.5,
+    "claim_net": 350.0,
+    "primary_diagnosis_code": "N40",
+    "services": [
+      {
+        "service_code": "836000020",
+        "service_quantity": 1.0,
+        "service_gross": 402.5,
+        "diagnoses": [{"diagnosis_code": "N40", "diagnosis_type": "Principal"}]
+      }
+    ]
+  },
+  {
+    "claim_id": "9833383",
+    "facility": "Dhahran",
+    "facility_type": "Hospital",
+    "patient_age": 50,
+    "gender": "Female",
+    "policy_name": "Saudi Arabian Oil Company (Saudi Aramco)",
+    "payer_classification": "Saudi Aramco Medical Plan",
+    "payer_id": "102",
+    "receiver_id": "102",
+    "encounter_type": "OP",
+    "length_of_stay": 0,
+    "clinician_category": "General Medical Practice",
+    "department": "DHC RHEUMATOLOGY CLINIC",
+    "claim_type": "Outpatient",
+    "claim_subtype": "op",
+    "claim_gross": 402.5,
+    "claim_net": 350.0,
+    "primary_diagnosis_code": "M05.9",
+    "services": [
+      {
+        "service_code": "836000020",
+        "service_quantity": 1.0,
+        "service_gross": 402.5,
+        "diagnoses": [
+          {"diagnosis_code": "M05.9", "diagnosis_type": "Principal"},
+          {"diagnosis_code": "E11.9", "diagnosis_type": "Secondary"},
+          {"diagnosis_code": "M15.9", "diagnosis_type": "Secondary"},
+          {"diagnosis_code": "Z00.0", "diagnosis_type": "Secondary"}
+        ]
+      }
+    ]
+  },
+  {
+    "claim_id": "9945182",
+    "facility": "Dhahran",
+    "facility_type": "Hospital",
+    "patient_age": 34,
+    "gender": "Female",
+    "policy_name": "Saudi Arabian Oil Company (Saudi Aramco)",
+    "payer_classification": "Saudi Aramco Medical Plan",
+    "payer_id": "102",
+    "receiver_id": "102",
+    "encounter_type": "OP",
+    "length_of_stay": 0,
+    "clinician_category": "General Medical Practice",
+    "department": "DHC OBSTETRICS CLINIC",
+    "claim_type": "Outpatient",
+    "claim_subtype": "op",
+    "claim_gross": 402.5,
+    "claim_net": 350.0,
+    "primary_diagnosis_code": "Z34.90",
+    "services": [
+      {
+        "service_code": "836000020",
+        "service_quantity": 1.0,
+        "service_gross": 402.5,
+        "diagnoses": [{"diagnosis_code": "Z34.90", "diagnosis_type": "Principal"}]
+      }
+    ]
+  }
+]

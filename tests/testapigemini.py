@@ -24,7 +24,7 @@ print(response.text)
 #         contents="Reply with exactly: Gemini API is working"
 #     )
 
-#     print("\n✅ API Connection Successful")
+#     print("\n API Connection Successful")
 #     print("Response:")
 #     print(response.text)
 

@@ -34,14 +34,18 @@ from typing import Any, Dict, List
 logger = logging.getLogger(__name__)
 
 # Project root — two levels up from this file
-_PROJECT_ROOT    = Path(__file__).resolve().parent.parent.parent
-_LOOKUP_PATH     = _PROJECT_ROOT / "Thynk" / "thynk-claimlookup.json"
-_RAG_RULES_PATH  = _PROJECT_ROOT / "Thynk" / "thynk-rag-rules.json"
+_PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 
 
 # ------------------------------------------------------------------ #
-# Rule extraction + deduplication
+# Rules excluded from ingestion
+# Add rule_ids here to permanently suppress them from the RAG store.
+# These are removed from ChromaDB on delete and blocked from re-ingest.
 # ------------------------------------------------------------------ #
+
+_EXCLUDED_RULE_IDS = {
+    "K215.01_Lab_Panel_Bundling_Check",   # removed — not applicable
+}
 
 def _extract_rules(data: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     """
@@ -207,6 +211,10 @@ def run_ingest(region: str = "uae") -> Dict[str, Any]:
         merged[rule["rule_id"]] = rule
     for rule in rag_rules:                    # overwrites on conflict
         merged[rule["rule_id"]] = rule
+
+    # ── Apply exclusion list ───────────────────────────────────
+    for excluded_id in _EXCLUDED_RULE_IDS:
+        merged.pop(excluded_id, None)
 
     rules = list(merged.values())
     logger.info(

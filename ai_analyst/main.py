@@ -45,7 +45,7 @@ async def lifespan(app: FastAPI):
 
     try:
         init_db()
-        print("✅ PostgreSQL initialized successfully.")
+        print(" PostgreSQL initialized successfully.")
     except Exception as exc:
         print("❌ PostgreSQL initialization failed.")
         print(str(exc))
@@ -64,7 +64,7 @@ async def lifespan(app: FastAPI):
         uae_count = count_rules("uae")
         ksa_count = count_rules("ksa")
         rule_count = uae_count + ksa_count
-        print(f"✅ RAG rule store ready — UAE: {uae_count} rules, KSA: {ksa_count} rules.")
+        print(f" RAG rule store ready — UAE: {uae_count} rules, KSA: {ksa_count} rules.")
     except Exception as exc:
         print(f"⚠️  RAG rule store init failed (RAG disabled): {exc}")
         rule_count = 0
@@ -80,7 +80,7 @@ async def lifespan(app: FastAPI):
         try:
             from .rag.retriever import Retriever
             retriever = Retriever(region="uae")
-            print("✅ RAG Retriever initialised.")
+            print(" RAG Retriever initialised.")
         except Exception as exc:
             print(f"⚠️  RAG Retriever init failed (RAG disabled): {exc}")
             retriever = None
@@ -104,7 +104,7 @@ async def lifespan(app: FastAPI):
         )
 
         rag_status = "enabled" if retriever is not None else "disabled"
-        print(f"✅ AI Analyst initialised successfully (RAG {rag_status}).")
+        print(f" AI Analyst initialised successfully (RAG {rag_status}).")
 
     except Exception as exc:
         print("\n❌ AI Analyst initialization failed:")
@@ -344,7 +344,7 @@ def ingest_rules(
             analyst_service.retriever = retriever
 
         print(
-            f"✅ Ingest complete for {target_region.upper()} — {result['ingested']} rules upserted, "
+            f" Ingest complete for {target_region.upper()} — {result['ingested']} rules upserted, "
             f"{result['total_in_store']} total in store. "
             f"Retriever re-initialised."
         )

@@ -167,6 +167,8 @@ class Retriever:
             "The following regulatory compliance and payer rules are semantically relevant to the",
             "current question and claim context. Use them to provide",
             "detailed rule-level explanations and fix recommendations.",
+            "The longMessage contains accepted diagnoses, conditions, and fix instructions —",
+            "use it fully when building recommendations. Cross-reference with claim diagnoses.",
             "Only cite rule IDs that appear below.",
             "",
         ]
@@ -179,7 +181,7 @@ class Retriever:
                 f"Severity     : {rule['severity']}",
                 f"Applies to   : {rule['object_type']}",
                 f"Issue        : {rule['short_message']}",
-                f"Detail       : {rule['long_message']}",
+                f"Full Detail  : {rule['long_message']}",
                 "",
             ]
 

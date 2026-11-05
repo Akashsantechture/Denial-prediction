@@ -372,7 +372,7 @@ prdicted:documentation,documentation,documentation
       ]
     },
     {
-      "activity_code": "83540",
+      "activity_code": "97110",
       "activity_quantity": 1.0,
       "activity_gross": 64.4,
       "diagnoses": [
@@ -405,6 +405,8 @@ prdicted:documentation,documentation,documentation
   ]
 }
 
+
+67809
 
 
 RAG QUESTIONS
@@ -465,4 +467,93 @@ pred: timely filling,approved, medical_necessacity,medical_necessacity,medical_n
 
 actual: documentation
 pred: timely_filling
+
+
+{
+    "claim_id": "633935",
+    "patient_age": 35,
+    "gender": "Male",
+    "nationality": "JORDANIAN",
+    "encounter_type": "OP",
+    "length_of_stay": 0,
+    "claim_gross": 604.8,
+    "claim_net": 604.8,
+    "clinician_profession": "FAMILY/GENERAL PRACTICE",
+    "clinician_category": "General Medical Practice",
+    "facility_type": "Hospital",
+    "payer_classification": "Insurance",
+    "primary_diagnosis_code": "O99.013",
+    "payer_id": "INS026",
+    "payer_name": "NATIONAL HEALTH INSURANCE COMPANY (DAMAN)",
+    "receiver_id": "INS026",
+    "network": "Unknown Network",
+    "activities": [
+      {
+        "activity_code": "84443",
+        "activity_quantity": 1.0,
+        "activity_gross": 168.0,
+        "diagnoses": [
+          {
+            "diagnosis_code": "O99.013",
+            "diagnosis_type": "Principal"
+          }
+        ]
+      },
+      {
+        "activity_code": "85025",
+        "activity_quantity": 1.0,
+        "activity_gross": 78.4,
+        "diagnoses": [
+          {
+            "diagnosis_code": "O99.013",
+            "diagnosis_type": "Principal"
+          }
+        ]
+      },
+      {
+        "activity_code": "86038",
+        "activity_quantity": 1.0,
+        "activity_gross": 89.6,
+        "diagnoses": [
+          {
+            "diagnosis_code": "O99.013",
+            "diagnosis_type": "Principal"
+          }
+        ]
+      },
+      {
+        "activity_code": "82728",
+        "activity_quantity": 1.0,
+        "activity_gross": 137.2,
+        "diagnoses": [
+          {
+            "diagnosis_code": "O99.013",
+            "diagnosis_type": "Principal"
+          }
+        ]
+      },
+      {
+        "activity_code": "86256",
+        "activity_quantity": 1.0,
+        "activity_gross": 67.2,
+        "diagnoses": [
+          {
+            "diagnosis_code": "O99.013",
+            "diagnosis_type": "Principal"
+          }
+        ]
+      },
+      {
+        "activity_code": "99212",
+        "activity_quantity": 1.0,
+        "activity_gross": 64.4,
+        "diagnoses": [
+          {
+            "diagnosis_code": "O99.013",
+            "diagnosis_type": "Principal"
+          }
+        ]
+      }
+    ]
+  }
 

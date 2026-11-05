@@ -1,8 +1,8 @@
 import pandas as pd
 
 # 1. Define your file paths
-excel_file_path = "C:\\Users\\akash.subramani.SANTECHTURE\\Downloads\\Rules List- ML model.xlsx"  # Replace with your actual file name
-json_file_path = 'output.json'
+excel_file_path = r"C:\Users\akash.subramani.SANTECHTURE\Desktop\thynk-originalresponse.xlsx" # Replace with your actual file name
+json_file_path = r"C:\Users\akash.subramani.SANTECHTURE\Desktop\output.json"
 
 # 2. Read the Excel file
 # pandas automatically picks up headers: SI.NO, RNum, Name, Package, etc.

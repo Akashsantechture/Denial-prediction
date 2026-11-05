@@ -2,6 +2,11 @@
 
 This directory contains healthcare claim validation rules organized by region.
 
+
+python -m ai_analyst.rag.ingest --region uae                                                                            
+uvicorn ai_analyst.main:app --reload --port 8060        
+
+uvicorn main:app --reload --port 8000                                                                                
 ## Directory Structure
 
 ```

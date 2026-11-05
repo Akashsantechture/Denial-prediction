@@ -681,6 +681,15 @@
 }
 
 .driver-pills-cell { white-space: nowrap; }
+.driver-pills-cell .shap-pill,
+.driver-pills-cell .shap-pill.pos,
+.driver-pills-cell .shap-pill.neg {
+  background: transparent;
+  border: none;
+  color: var(--color-text-primary);
+  font-weight: 500;
+  padding: 0 .2rem;
+}
 
 .rec-cell {
   font-size: .78rem;
@@ -820,3 +829,19 @@
 .shap-all-acts-table tbody tr:hover { background: rgba(76,126,224,.06) !important; }
 .shap-all-acts-table tbody tr.shap-row-active { background: rgba(76,126,224,.10) !important; }
 .shap-all-acts-table tbody tr.shap-row-denied { border-left: 2px solid var(--color-high); }
+
+/* SHAP all-activities driver cells — plain white text, no coloured pills */
+.shap-all-acts-table td .shap-pill,
+.shap-all-acts-table td .shap-pill.pos,
+.shap-all-acts-table td .shap-pill.neg {
+  background: transparent;
+  border: none;
+  color: var(--color-text-primary);
+  font-weight: 500;
+  padding: 0;
+}
+
+/* At-risk KPI value — always white regardless of level */
+#kpi-claim-score .kpi-value {
+  color: var(--color-text-primary) !important;
+}

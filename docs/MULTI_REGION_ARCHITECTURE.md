@@ -55,7 +55,7 @@ denial-prediction/
 
 | Region | Code | Regulator | Claim System | Currency | Status |
 |--------|------|-----------|--------------|----------|--------|
-| UAE    | `uae` | CHI Abu Dhabi | Thynk | AED (د.إ) | ✅ Production |
+| UAE    | `uae` | CHI Abu Dhabi | Thynk | AED (د.إ) |  Production |
 | KSA    | `ksa` | CCHI | Nphies | SAR (ر.س) | 🚧 In Training |
 
 ### Configuration API
@@ -95,7 +95,7 @@ Region-specific validation rule files:
 
 ## Migration Path
 
-### Phase 1: Structure Setup ✅
+### Phase 1: Structure Setup 
 - Created region-specific directories
 - Copied existing UAE files to `uae/` subdirectories
 - Created placeholder KSA directories
@@ -158,10 +158,10 @@ All existing code continues to work without changes:
 ## Next Steps
 
 ### Immediate (No Code Changes)
-- ✅ Directory structure created
-- ✅ UAE files copied to region folders
-- ✅ KSA placeholders created
-- ✅ Documentation added
+-  Directory structure created
+-  UAE files copied to region folders
+-  KSA placeholders created
+-  Documentation added
 
 ### Short Term (Backend Integration)
 - [ ] Update `retriever.py` to accept region parameter

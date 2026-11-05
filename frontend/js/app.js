@@ -358,12 +358,25 @@
       ['ICD Category',   API.deriveIcdCategory(payload.primary_diagnosis_code)],
       ['LOS',            `${payload.length_of_stay} day${payload.length_of_stay !== 1 ? 's' : ''}`],
       ['Encounter',      payload.encounter_type],
-      ['Clinician',      payload.clinician_profession],
-      ['Facility',       payload.facility_type],
-      ['Payer',          payload.payer_name || payload.payer_classification],
-      ['Payer ID',       payload.payer_id || '—'],
-      ['Network',        payload.network || '—'],
+      ['Clinician',      payload.clinician_profession || payload.clinician_category || '—'],
+      // Secondary diagnoses — collect unique codes across all activities/services
+      (() => {
+        const lineItems = payload.activities ?? payload.services ?? [];
+        const seen = new Set();
+        lineItems.forEach(item => {
+          (item.diagnoses ?? []).forEach(d => {
+            if (d.diagnosis_type?.toLowerCase() !== 'principal' &&
+                d.diagnosis_type?.toLowerCase() !== 'primary') {
+              seen.add(d.diagnosis_code);
+            }
+          });
+        });
+        return ['Secondary ICD', seen.size > 0 ? [...seen].join(', ') : '—'];
+      })(),
       ['Receiver',       payload.receiver_id || '—'],
+      ['Payer',          payload.payer_name || payload.payer_classification || '—'],
+      ['Network',        payload.network || '—'],
+      ['Facility',       payload.facility || payload.facility_type || '—'],
     ]);
 
     // Action banner — top-level recommendation from highest-risk prediction
@@ -426,15 +439,6 @@
           <td>${typeof gross === 'number'
             ? `${currencyCode} ${gross.toLocaleString(currencyLocale, { minimumFractionDigits: 2 })}`
             : gross}</td>
-          <td>
-            <div class="act-prob-row">
-              <span class="act-prob-val ${lvl}">${pct}%</span>
-              <div class="act-prob-bar-wrap">
-                <div class="act-prob-bar ${lvl}"
-                     style="width:${Math.min(parseFloat(pct), 100)}%"></div>
-              </div>
-            </div>
-          </td>
           <td><span class="denial-verdict ${denied ? 'denied' : 'approved'}">
             ${denied ? '⚠ Likely Denied' : '✓ Likely Approved'}
           </span></td>
@@ -656,7 +660,6 @@
           <td>${idx + 1}</td>
           <td><code>${pred.activity_code}</code></td>
           ${isKSA ? '' : `<td><span class="cpt-badge">${pred.cpt_category || '—'}</span></td>`}
-          <td><span class="act-prob-val ${lvl}">${pct}%</span></td>
           <td><span class="denial-verdict ${denied ? 'denied' : 'approved'}">
             ${denied ? '⚠ Denied' : '✓ Approved'}
           </span></td>
@@ -1014,7 +1017,7 @@
     const table = document.getElementById(tableId);
     if (!table) return;
     table.innerHTML = rows
-      .map(([label, value]) => `<tr><td>${label}</td><td>${value}</td></tr>`)
+      .map(([label, value]) => `<tr><td>${label}</td><td style="word-break:break-word;max-width:160px;">${value}</td></tr>`)
       .join('');
   }
 

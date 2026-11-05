@@ -1,0 +1,17 @@
+thynk-rag-rules.json
+       ↓  (run_ingest)
+   _load_rag_rules()        reads flat rule objects
+       ↓
+   _build_chunk()           converts each rule to a text string
+       ↓
+   Embedder.embed_batch()   calls Gemini embedding-001 API → 3072-dim vectors
+       ↓
+   ChromaDB upsert          stores vectors in chroma_store_uae/
+       ↓  (at chat time)
+   Retriever.query()        embeds the user query via Gemini API again
+       ↓
+   similarity_search()      cosine search in ChromaDB
+       ↓  (if similarity ≥ 0.40)
+   _format()                builds the RETRIEVED RULEBOOK CONTEXT block
+       ↓
+   LLM prompt               Gemini sees the rules and cites them in response

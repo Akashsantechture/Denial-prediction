@@ -65,7 +65,7 @@ for i in range(len(records)):
             
             # Simple match logic: If Actual is Denied, we want High risk. If Actual is Approved, we want Low/Medium.
             if (actual_status == "Denied" and pred_risk == "HIGH") or (actual_status == "Approved" and pred_risk != "HIGH"):
-                match_status = "✅ MATCH"
+                match_status = " MATCH"
             else:
                 match_status = "❌ MISMATCH"
 
@@ -99,7 +99,7 @@ print(df_results.to_string(index=False))
 print("="*65)
 
 # Calculate Accuracy
-matches = len(df_results[df_results['Validation'] == '✅ MATCH'])
+matches = len(df_results[df_results['Validation'] == ' MATCH'])
 total = len(df_results)
 accuracy = (matches / total) * 100
 print(f"\nModel Validation Accuracy on Sample: {accuracy:.1f}%\n")

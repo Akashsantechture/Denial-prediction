@@ -119,7 +119,7 @@ class AnalystService:
                             query_parts.append(msg)
                 
                 query_text = " | ".join(query_parts) if query_parts else "Claim overview and compliance"
-                retrieved_rules = region_retriever.query(query_text, top_k=5)
+                retrieved_rules = region_retriever.query(query_text, top_k=8)
                 rag_used = retrieved_rules is not None
                 
                 if rag_used:

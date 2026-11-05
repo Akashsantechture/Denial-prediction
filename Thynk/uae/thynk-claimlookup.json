@@ -1,362 +1,477 @@
-[
-  {
-    "claim_id": "100036",
-    "thynk_response": [
-      {
-        "severity": "CRITICAL",
-        "shortMessage": "Encounter Status is required as a mandatory under Encounter Info. Please add in Patient Info details.",
-        "longMessage": "As per Minimum Data Set (MDS) by DoH/DHA, need to add Encounter Status only as per the list provided below, \n Encounter Status - Planned , Arrived , Triaged , In Progress , On Leave , Finished , Cancelled , Entered in Error , Unknown ",
-        "episodeId": "100036",
-        "objectType": "claim",
-        "objectId": "100036",
-        "claimAmount": 209.72,
-        "activityAmount": null,
-        "ruleId": "K610.01_MDS_Encounter_Info_Encounter_No_Status",
-        "packageName": "Core_validation",
-        "activityType": null,
-        "code": null,
-        "actions": null,
-        "denialCodes": null,
-        "referenceLinks": []
-      },
-      {
-        "severity": "CRITICAL",
-        "shortMessage": "Coverage Class Type is required as a mandatory under Patient Info. Please add in Patient Info details.",
-        "longMessage": "As per Minimum Data Set (MDS) by DoH/DHA, need to add Coverage Class Type only as per the list provided below, \n1] Coverage Class Type - Group , SubGroup , Plan , SubPlan , Class , SubClass , Sequence , RX BIN , RX PCN , RX Id , RX Group ",
-        "episodeId": "100036",
-        "objectType": "claim",
-        "objectId": "100036",
-        "claimAmount": 209.72,
-        "activityAmount": null,
-        "ruleId": "K601.01_MDS_Patient_Info_Coverage_Class_Type",
-        "packageName": "Code_guidelines",
-        "activityType": null,
-        "code": null,
-        "actions": null,
-        "denialCodes": null,
-        "referenceLinks": []
-      },
-      {
-        "severity": "SEVERE",
-        "shortMessage": "Primary diagnosis code Z02.9 requires supporting clinical documentation for administrative examination purpose.",
-        "longMessage": "When administrative examination code Z02.9 (Encounter for administrative examination, unspecified) is selected as primary diagnosis, secondary specific reason for exam or medical necessity certificate must be attached as per DoH/DHA guidelines.",
-        "episodeId": "100036",
-        "objectType": "diagnosis",
-        "objectId": "Z02.9",
-        "claimAmount": 209.72,
-        "activityAmount": null,
-        "ruleId": "K312.01_Diagnosis_Admin_Exam_Supporting_Doc",
-        "packageName": "Code_guidelines",
-        "activityType": null,
-        "code": "Z02.9",
-        "actions": null,
-        "denialCodes": null,
-        "referenceLinks": []
-      },
-      {
-        "severity": "INFO",
-        "shortMessage": "Evaluation and Management code 99202 validated for Outpatient Family Medicine consultation.",
-        "longMessage": "CPT code 99202 (Office/Outpatient Visit New Patient) quantity 1.0 and gross 209.72 matched with fee schedule for Family Medicine specialty.",
-        "episodeId": "100036",
-        "objectType": "activity",
-        "objectId": "99202",
-        "claimAmount": 209.72,
-        "activityAmount": 209.72,
-        "ruleId": "K101.01_EM_Code_Specialty_Match",
-        "packageName": "Core_validation",
-        "activityType": "CPT",
-        "code": "99202",
-        "actions": null,
-        "denialCodes": null,
-        "referenceLinks": []
-      }
-    ]
-  },
-  {
-    "claim_id": "77693",
-    "thynk_response": [
-      {
-        "severity": "CRITICAL",
-        "shortMessage": "Encounter Status is required as a mandatory under Encounter Info. Please add in Patient Info details.",
-        "longMessage": "As per Minimum Data Set (MDS) by DoH/DHA, need to add Encounter Status only as per the list provided below, \n Encounter Status - Planned , Arrived , Triaged , In Progress , On Leave , Finished , Cancelled , Entered in Error , Unknown ",
-        "episodeId": "77693",
-        "objectType": "claim",
-        "objectId": "77693",
-        "claimAmount": 715.0,
-        "activityAmount": null,
-        "ruleId": "K610.01_MDS_Encounter_Info_Encounter_No_Status",
-        "packageName": "Core_validation",
-        "activityType": null,
-        "code": null,
-        "actions": null,
-        "denialCodes": null,
-        "referenceLinks": []
-      },
-      {
-        "severity": "CRITICAL",
-        "shortMessage": "Coverage Class Type is required as a mandatory under Patient Info. Please add in Patient Info details.",
-        "longMessage": "As per Minimum Data Set (MDS) by DoH/DHA, need to add Coverage Class Type only as per the list provided below, \n1] Coverage Class Type - Group , SubGroup , Plan , SubPlan , Class , SubClass , Sequence , RX BIN , RX PCN , RX Id , RX Group ",
-        "episodeId": "77693",
-        "objectType": "claim",
-        "objectId": "77693",
-        "claimAmount": 715.0,
-        "activityAmount": null,
-        "ruleId": "K601.01_MDS_Patient_Info_Coverage_Class_Type",
-        "packageName": "Code_guidelines",
-        "activityType": null,
-        "code": null,
-        "actions": null,
-        "denialCodes": null,
-        "referenceLinks": []
-      },
-      {
-        "severity": "SEVERE",
-        "shortMessage": "Clinician Profession and Category are required mandatory fields.",
-        "longMessage": "Clinician details are missing in claim information. Clinician Profession and Clinician Category must be populated for claims processing under DoH/DHA regulations.",
-        "episodeId": "77693",
-        "objectType": "claim",
-        "objectId": "77693",
-        "claimAmount": 715.0,
-        "activityAmount": null,
-        "ruleId": "K105.02_Clinician_Info_Missing",
-        "packageName": "Core_validation",
-        "activityType": null,
-        "code": null,
-        "actions": null,
-        "denialCodes": null,
-        "referenceLinks": []
-      },
-      {
-        "severity": "SEVERE",
-        "shortMessage": "Medical Necessity check failed: Lipid panel (CPT 80061) billed under Headache (R51).",
-        "longMessage": "Primary diagnosis R51 (Headache) does not support medical necessity for activity code 80061 (Lipid Panel). Please attach additional secondary diagnosis or clinical justification.",
-        "episodeId": "77693",
-        "objectType": "activity",
-        "objectId": "80061",
-        "claimAmount": 715.0,
-        "activityAmount": 352.0,
-        "ruleId": "K210.04_Medical_Necessity_Diagnosis_Mismatch",
-        "packageName": "Code_guidelines",
-        "activityType": "CPT",
-        "code": "80061",
-        "actions": null,
-        "denialCodes": null,
-        "referenceLinks": []
-      },
-      {
-        "severity": "WARNING",
-        "shortMessage": "Activity gross amount is zero for procedure 71010.",
-        "longMessage": "Radiology procedure 71010 (Chest X-Ray Single View) has activity gross set to 0.0. Verify if item was bundled or unbilled.",
-        "episodeId": "77693",
-        "objectType": "activity",
-        "objectId": "71010",
-        "claimAmount": 715.0,
-        "activityAmount": 0.0,
-        "ruleId": "K102.01_Activity_Zero_Gross",
-        "packageName": "Core_validation",
-        "activityType": "CPT",
-        "code": "71010",
-        "actions": null,
-        "denialCodes": null,
-        "referenceLinks": []
-      }
-    ]
-  },
-  {
-    "claim_id": "105210",
-    "thynk_response": [
-      {
-        "severity": "SEVERE",
-        "shortMessage": "When an ICD from maternity is coded, it is mandatory to provide grid maternity flag under ITEM as Yes or True.",
-        "longMessage": "As per Minimum Data Set (MDS) by DoH/DHA, Grid maternity flag is a mandatory mark flag and should be provided as YES or TRUE if the patient is pregnant, else NO or FALSE under the ITEM category. Claim 105210 includes primary diagnosis O99.013 (Anemia complicating pregnancy, third trimester) which is a maternity ICD code. The grid maternity flag was not set in the submitted claim.",
-        "episodeId": "105210",
-        "objectType": "diagnosis",
-        "objectId": "O99.013",
-        "claimAmount": 604.8,
-        "activityAmount": null,
-        "ruleId": "K593.01_MDS_Item_Mandatory_Grid_Maternity_Flag",
-        "packageName": "Code_guidelines",
-        "activityType": null,
-        "code": "O99.013",
-        "actions": null,
-        "denialCodes": null,
-        "referenceLinks": []
-      },
-      {
-        "severity": "SEVERE",
-        "shortMessage": "Unspecified anemia code D64.9 should be replaced with specific anemia type when maternity/pregnancy diagnosis O99.013 is billed.",
-        "longMessage": "When O99.013 (Anemia complicating pregnancy, third trimester) is coded, generic unspecified code D64.9 is inappropriate without specifying the anemia type. Given that E83.42 (Hypomagnesaemia) is also present as a secondary diagnosis, consider whether the anemia is related to nutritional deficiency (D50.9 iron deficiency, D51.9 B12 deficiency, or D52.9 folate deficiency) and replace D64.9 with the clinically appropriate specific code.",
-        "episodeId": "105210",
-        "objectType": "diagnosis",
-        "objectId": "D64.9",
-        "claimAmount": 604.8,
-        "activityAmount": null,
-        "ruleId": "K378.02_Diagnosis_Specificity_Maternity_Anemia",
-        "packageName": "Code_guidelines",
-        "activityType": null,
-        "code": "D64.9",
-        "actions": null,
-        "denialCodes": null,
-        "referenceLinks": []
-      },
-      {
-        "severity": "WARNING",
-        "shortMessage": "Multiple iron study lab tests billed concurrently (82728 Ferritin, 83540 Iron, 83550 Iron Binding Capacity).",
-        "longMessage": "CPT codes 82728 (Ferritin), 83540 (Iron serum), and 83550 (Iron binding capacity) are all billed in the same encounter. These three tests together form a complete iron panel and payer bundling guidelines may require they be submitted as a panel rather than individually. Verify against the applicable DoH/DHA fee schedule and bundling rules. The iron panel is clinically supported by the secondary diagnosis D64.9 (anemia) and maternity diagnosis O99.013.",
-        "episodeId": "105210",
-        "objectType": "activity",
-        "objectId": "82728",
-        "claimAmount": 604.8,
-        "activityAmount": 137.2,
-        "ruleId": "K215.01_Lab_Panel_Bundling_Check",
-        "packageName": "Core_validation",
-        "activityType": "CPT",
-        "code": "82728",
-        "actions": null,
-        "denialCodes": null,
-        "referenceLinks": []
-      },
-      {
-        "severity": "WARNING",
-        "shortMessage": "TSH test (84443) medical necessity requires thyroid-related diagnosis alongside maternity complication.",
-        "longMessage": "CPT 84443 (Thyroid Stimulating Hormone) is billed under primary diagnosis O99.013 (Anemia complicating pregnancy, third trimester). While R00.2 (Palpitations) is present as a secondary diagnosis which can indicate thyroid dysfunction, a specific thyroid diagnosis (E03.9 Hypothyroidism, E05.90 Hyperthyroidism) would strengthen medical necessity. Palpitations in pregnancy with anemia can be cardiac or thyroid in origin — if thyroid pathology is confirmed, add the specific thyroid ICD code to fully justify 84443.",
-        "episodeId": "105210",
-        "objectType": "activity",
-        "objectId": "84443",
-        "claimAmount": 604.8,
-        "activityAmount": 168.0,
-        "ruleId": "K312.04_Activity_Medical_Necessity_TSH_Maternity",
-        "packageName": "Code_guidelines",
-        "activityType": "CPT",
-        "code": "84443",
-        "actions": null,
-        "denialCodes": null,
-        "referenceLinks": []
-      },
-      {
-        "severity": "INFO",
-        "shortMessage": "Magnesium test (83735) is clinically supported by secondary diagnosis E83.42 (Hypomagnesaemia).",
-        "longMessage": "CPT 83735 (Magnesium serum) is billed with secondary diagnosis E83.42 (Hypomagnesaemia) present on this encounter. The test is clinically appropriate and medically justified. No bundling or necessity concern identified for this activity. Magnesium monitoring is also relevant in the context of maternity (O99.013) and palpitations (R00.2).",
-        "episodeId": "105210",
-        "objectType": "activity",
-        "objectId": "83735",
-        "claimAmount": 604.8,
-        "activityAmount": 67.2,
-        "ruleId": "K101.04_Activity_Validated_Magnesium_E8342",
-        "packageName": "Core_validation",
-        "activityType": "CPT",
-        "code": "83735",
-        "actions": null,
-        "denialCodes": null,
-        "referenceLinks": []
-      },
-      {
-        "severity": "INFO",
-        "shortMessage": "CBC (85025) is clinically appropriate for anemia monitoring in maternity.",
-        "longMessage": "CPT 85025 (Complete Blood Count with differential) is clinically justified by primary diagnosis O99.013 (Anemia complicating pregnancy) and secondary D64.9 (unspecified anemia). CBC is standard of care for anemia monitoring in pregnancy. No bundling or necessity concern identified.",
-        "episodeId": "105210",
-        "objectType": "activity",
-        "objectId": "85025",
-        "claimAmount": 604.8,
-        "activityAmount": 78.4,
-        "ruleId": "K101.05_Activity_Validated_CBC_Maternity_Anemia",
-        "packageName": "Core_validation",
-        "activityType": "CPT",
-        "code": "85025",
-        "actions": null,
-        "denialCodes": null,
-        "referenceLinks": []
-      }
-    ]
-  },
-  {
-    "claim_id": "310598",
-    "thynk_response": [
-      {
-        "severity": "CRITICAL",
-        "shortMessage": "Encounter Status is required as a mandatory under Encounter Info. Please add in Patient Info details.",
-        "longMessage": "As per Minimum Data Set (MDS) by DoH/DHA, need to add Encounter Status only as per the list provided below, \n Encounter Status - Planned , Arrived , Triaged , In Progress , On Leave , Finished , Cancelled , Entered in Error , Unknown ",
-        "episodeId": "310598",
-        "objectType": "claim",
-        "objectId": "310598",
-        "claimAmount": 442.0,
-        "activityAmount": null,
-        "ruleId": "K610.01_MDS_Encounter_Info_Encounter_No_Status",
-        "packageName": "Core_validation",
-        "activityType": null,
-        "code": null,
-        "actions": null,
-        "denialCodes": null,
-        "referenceLinks": []
-      },
-      {
-        "severity": "CRITICAL",
-        "shortMessage": "Coverage Class Type is required as a mandatory under Patient Info. Please add in Patient Info details.",
-        "longMessage": "As per Minimum Data Set (MDS) by DoH/DHA, need to add Coverage Class Type only as per the list provided below, \n1] Coverage Class Type - Group , SubGroup , Plan , SubPlan , Class , SubClass , Sequence , RX BIN , RX PCN , RX Id , RX Group ",
-        "episodeId": "310598",
-        "objectType": "claim",
-        "objectId": "310598",
-        "claimAmount": 442.0,
-        "activityAmount": null,
-        "ruleId": "K601.01_MDS_Patient_Info_Coverage_Class_Type",
-        "packageName": "Code_guidelines",
-        "activityType": null,
-        "code": null,
-        "actions": null,
-        "denialCodes": null,
-        "referenceLinks": []
-      },
-      {
-        "severity": "SEVERE",
-        "shortMessage": "Concurrent billing of Physical Therapy services 97110 and 97140 requires Modifier 59 / XE.",
-        "longMessage": "CPT 97110 (Therapeutic Exercises) and CPT 97140 (Manual Therapy) billed in the same session require appropriate distinct procedural modifier (59/XE) to establish independent 15-minute service delivery units.",
-        "episodeId": "310598",
-        "objectType": "activity",
-        "objectId": "97140",
-        "claimAmount": 442.0,
-        "activityAmount": 200.0,
-        "ruleId": "K204.01_CCI_Bundling_Physical_Therapy_Modifier_Required",
-        "packageName": "Core_validation",
-        "activityType": "CPT",
-        "code": "97140",
-        "actions": null,
-        "denialCodes": null,
-        "referenceLinks": []
-      },
-      {
-        "severity": "SEVERE",
-        "shortMessage": "Sequelae code I69.359 requires primary/underlying condition or specific hemiplegia side details.",
-        "longMessage": "Diagnosis I69.359 (Hemi-plegia and hemiparesis following cerebral infarction affecting unspecified side) is an unspecified sequela code. Specify dominant/non-dominant side (I69.351-I69.354) for rehabilitation medical necessity.",
-        "episodeId": "310598",
-        "objectType": "diagnosis",
-        "objectId": "I69.359",
-        "claimAmount": 442.0,
-        "activityAmount": null,
-        "ruleId": "K382.01_Diagnosis_Specificity_Stroke_Sequelae",
-        "packageName": "Code_guidelines",
-        "activityType": null,
-        "code": "I69.359",
-        "actions": null,
-        "denialCodes": null,
-        "referenceLinks": []
-      },
-      {
-        "severity": "INFO",
-        "shortMessage": "Physiotherapy encounter validated under Allied Health profession.",
-        "longMessage": "Physical medicine and rehabilitation activities 97110, 97140, and 97530 correctly mapped to clinician specialty Physiotherapy And Rehabilitation.",
-        "episodeId": "310598",
-        "objectType": "claim",
-        "objectId": "310598",
-        "claimAmount": 442.0,
-        "activityAmount": null,
-        "ruleId": "K108.01_Clinician_Specialty_Activity_Match",
-        "packageName": "Core_validation",
-        "activityType": null,
-        "code": null,
-        "actions": null,
-        "denialCodes": null,
-        "referenceLinks": []
-      }
-    ]
-  }
-]
+[{
+  "claim_id": "105210",
+  "thynk_response": [
+    {
+      "severity": "SEVERE",
+      "shortMessage": "CPT 83550 is not medically necessary as per the given conditions. Please see the long message below for your reference of conditions to be provided as per documentation.",
+      "longMessage": "IRON BINDING TEST is medically necessary for conditions like benign and malignant neoplasms, typhoid fever, salmonella enteritis, TB , hepatitis (all types), merkel cell carcinoma, liver cell carcinoma, follicular lymphoma, hodgkin lymphoma. Anemias(refractory, B12, folat deficiency, drug induced folat), end stage renal disease, CKD, long term use of drugs, toxic liver disease etc.",
+      "episodeId": "105210",
+      "objectType": "activity",
+      "objectId": "83550",
+      "claimAmount": 604.8,
+      "activityAmount": 89.6,
+      "ruleId": "J248.01_Crosswalk",
+      "source_rule_id": "Thynk_validaion",
+      "packageName": "Thynk_rules_recommendation",
+      "activityType": "CPT",
+      "code": "83550",
+      "denialReason": "Medical Necessity",
+      "topDrivers": [
+        "receiver id",
+        "Activity Code",
+        "CPT Category"
+      ],
+      "actions": [
+        "Don't infer missing documentation",
+        "Verify the documented clinical indication and diagnosis support",
+        "Check the receiver-specific medical necessity policy"
+      ],
+      "candidate_rag_rule_ids": [],
+      "candidate_rag_mapping_status": "not_verified",
+      "is_confirmed_denial": false
+    },
+    {
+      "severity": "SEVERE",
+      "shortMessage": "CPT 83735 is not medically necessary as per the given conditions. Please see the long message below for your reference of conditions to be provided as per documentation.",
+      "longMessage": "ASSAY OF FERRITIN is indicated for neoplasms benign / malignant, Ca in situ, diabetes, disease of blood & blood forming agents, anemias, renal disorders, metabolic & immunity disorders, HCKD, CKD, cardiomyopathy, heart blocks, dysarrythmia, HF, Mallory-Weiss syndrome, Gastric/ duodenal/peptic/gastrojejunal ulcer, gastritis, enteritis, colitis, diseases of liver, GI Bleeding, intestinal malabsorption, menstural disorders, testicular atrophy, pruritis, arthropathy, joint pains, hemolytic disease, drop in hematocrit value, elevation of LDH, enzymes, toxic effect of lead, poisoning by iron compunds, HIV,S/P Transplant, dialysis, infectious & parasytic diseases",
+      "objectType": "activity",
+      "objectId": "82728",
+      "claimAmount": 604.8,
+      "activityAmount": 137.2,
+      "ruleId": "J248.01_Crosswalk",
+      "source_rule_id": "Thynk_validaion",
+      "packageName": "Thynk_rules_recommendation",
+      "activityType": "CPT",
+      "code": "82728",
+      "denialReason": "Medical Necessity",
+      "topDrivers": [
+        "Activity Code",
+        "receiver id",
+        "CPT Category"
+      ],
+      "actions": [
+        "Verify ferritin testing indication and diagnosis support",
+        "Check the receiver-specific medical necessity policy",
+        "Review iron-study bundling separately against the applicable payer policy",
+        "Your existing iron-study lookup is a separate clue, not proof of a medical-necessity denial"
+      ],
+      "candidate_rag_rule_ids": [],
+      "candidate_rag_mapping_status": "not_verified",
+      "is_confirmed_denial": false
+    },
+    {
+      "severity": "SEVERE",
+      "shortMessage": "CPT 83735 is not medically necessary as per the given conditions. Please see the long message below for your reference of conditions to be provided as per documentation.",
+      "longMessage": "ASSAY OF MAGNESIUM is medically necessary for combined signs and symptoms related to hypocalcemia, hypokalemia, hypomagnesia, hypermagnesia, muscle weakness, myopathy, neuropathy, muscle twitching and tingling, confusion, cardian arrhythmias and seizures, malnutrition, malabsorption, alcoholism, hypoparathyroidism, hyperparathyroidism, hypothyroidism, prolonged and chronic diarrhea, dehydration, long-term use of diuretics, kidney failure, addison disease, uncontrolled diabetes, electrolyte imbalance, hemodialysis, cirrhosis, hyperaldosteronism, pancreatitis, ulcerative colitis, buns, crohn's disease, alcohol dependence, drug/chem abuse. Pregnancy related complications may include preeclampsia, varicose veins, genital varices, HELLP syndrome, gestational edema, peripheral neuritis, cervical shortening, deep phlebothrombosis, cardiac arrest due to anesth during preg, placentitis, placenta infarction and other related conditions etc.",
+      "episodeId": "105210",
+      "objectType": "activity",
+      "objectId": "83735",
+      "claimAmount": 604.8,
+      "activityAmount": 67.2,
+      "ruleId": "J248.01_Crosswalk",
+      "source_rule_id": "Thynk_validaion",
+      "packageName": "Thynk_rules_recommendation",
+      "activityType": "CPT",
+      "code": "83735",
+      "denialReason": "Medical Necessity",
+      "topDrivers": [
+        "Activity Code",
+        "receiver id",
+        "CPT Category"
+      ],
+      "actions": [
+        "Verify the documented indication for magnesium testing",
+        "Confirm diagnosis support and receiver-specific policy",
+        "Reconcile the model prediction with the existing supportive diagnosis",
+        "E83.42 is present in the claim and may support the service; investigate rather than automatically treating it as unsupported."
+      ],
+      "candidate_rag_rule_ids": [],
+      "candidate_rag_mapping_status": "not_verified",
+      "is_confirmed_denial": false
+    }
+  ],
+  "active_flag_activity_codes": [
+    "83550",
+    "82728",
+    "83735"
+  ]
+},
+
+{
+  "claim_id": "645070",
+  "thynk_response": [
+    {
+      "severity": "SEVERE",
+      "shortMessage": "CPT 86038 is not medically necessary as per the given conditions. Please see the long message below for your reference of conditions to be provided as per documentation.",
+      "longMessage": "ANTINUCLEAR ANTIBODIES are medically necessary when someone shows signs and symptoms of autoimmune diseases like low grade fever, fatigue, weakness,hair loss,muscle pain,numbness,joint pain etc. other autoimmune conditions may includes (but not limited to) rheumatoid arthritis,celiac disease,grave disease,adison syndrome,autoimmune thyroiditis,autoimmune hepatitis,mysthenia gravis,multiple sclerosis,psoriasis,SLE,scleroderma, other inflamtion /damage to organ and tissues including kidney, lungs and heart etc.",
+      "episodeId": "645070",
+      "objectType": "activity",
+      "objectId": "86038",
+      "claimAmount": 502.0,
+      "activityAmount": 51.6,
+      "ruleId": "J248.01_Crosswalk",
+      "source_rule_id": "Thynk_validaion",
+      "packageName": "Thynk_rules_recommendation",
+      "activityType": "CPT",
+      "code": "86038",
+      "denialReason": "Medical Necessity",
+      "topDrivers": [
+        "Activity Code",
+        "CPT Category",
+        "network"
+      ],
+      "actions": [
+        "Verify documented clinical indication for autoimmune screening",
+        "Ensure specific secondary diagnosis supporting ANA testing is linked",
+        "Check network-specific medical necessity policy"
+      ],
+      "candidate_rag_rule_ids": [],
+      "candidate_rag_mapping_status": "not_verified",
+      "is_confirmed_denial": false
+    },
+    {
+      "severity": "SEVERE",
+      "shortMessage": "CPT 84520 is not medically necessary as per the given conditions. Please see the long message below for your reference of conditions to be provided as per documentation.",
+      "longMessage": "ASSAY OF UREA NITROGEN BUN Test is indicated for Diabetes with Renal manifestations, aldosteronism, amyloidosis, HCKD, HH & CKD , benign and malignant HT, Renal disorders, abnormal results of function study of kidney, pre-op exam, s/p kidney transplant and related complications, injury to renal vessels & abdominal aorta, septic shock, pre-operative examination, psoriasis, urticaria, gout, ESRD, HRT, BPH. Other cond may include alcoholic hepatitis, MS, cirrhosis, fatty liver etc, toxic liver disease, cardiogenic shock. Pregnancy related comp may include gestational DM, diabetes in neonate, dehydration of newborn, renal disease etc.",
+      "episodeId": "645070",
+      "objectType": "activity",
+      "objectId": "84520",
+      "claimAmount": 502.0,
+      "activityAmount": 16.8,
+      "ruleId": "J248.01_Crosswalk",
+      "source_rule_id": "Thynk_validaion",
+      "packageName": "Thynk_rules_recommendation",
+      "activityType": "CPT",
+      "code": "84520",
+      "denialReason": "Medical Necessity",
+      "topDrivers": [
+        "Activity Code",
+        "CPT Category",
+        "network"
+      ],
+      "actions": [
+        "Review whether BUN is already bundled inside CMP (80053)",
+        "Confirm renal/metabolic diagnosis support beyond M54.12",
+        "Verify network-specific medical necessity policy"
+      ],
+      "candidate_rag_rule_ids": [],
+      "candidate_rag_mapping_status": "not_verified",
+      "is_confirmed_denial": false
+    },
+    {
+      "severity": "SEVERE",
+      "shortMessage": "CPT 84443 is not medically necessary as per the given conditions. Please see the long message below for your reference of conditions to be provided as per documentation.",
+      "longMessage": "ASSAY THYROID STIM HORMONE is medically indicated for all types of thyroid conditions, DM, hormonal disorders, psychiatric disorders (major depressive disorders, bipolar disorder, brief psychotic disorder, anxiety), kidney disorders, and other symptoms like abnormal weight loss, LOC, palpitation or altered memory loss. Other cond may include as TB, benign and malignant neoplasms, Multiple endocrine neoplasia [MEN], pregnancy related cond (HELLP syndrome), adverse effect of drugs and poisoning etc can be well justified.",
+      "episodeId": "645070",
+      "objectType": "activity",
+      "objectId": "84443",
+      "claimAmount": 502.0,
+      "activityAmount": 72.0,
+      "ruleId": "J248.01_Crosswalk",
+      "source_rule_id": "Thynk_validaion",
+      "packageName": "Thynk_rules_recommendation",
+      "activityType": "CPT",
+      "code": "84443",
+      "denialReason": "Medical Necessity",
+      "topDrivers": [
+        "CPT Category",
+        "network",
+        "Secondary Diagnosis Count"
+      ],
+      "actions": [
+        "Add clinical indication for TSH testing (e.g., fatigue, weight change, hypothyroidism)",
+        "Ensure secondary diagnosis count reflects patient's systemic presentation",
+        "Check payer-specific coverage rules"
+      ],
+      "candidate_rag_rule_ids": [],
+      "candidate_rag_mapping_status": "not_verified",
+      "is_confirmed_denial": false
+    },
+    {
+      "severity": "SEVERE",
+      "shortMessage": "CPT 84295 is not medically necessary as per the given conditions. Please see the long message below for your reference of conditions to be provided as per documentation.",
+      "longMessage": "ASSAY OF SERUM SODIUM is medically indicated in assessing acid-base balance, water balance, water intoxication, and dehydration of the body. It is ordered to help diagnose the cause of signs and symptoms such as vomiting and diarrhea, weakness, metabolic acidosis, dehydration, usually ordered as part of an electrolyte panel, a basic metabolic panel, or a comprehensive metabolic panel, which are ordered frequently as part of a routine physical exam, used to assess for hyponatremia or hypernatremia, hypercalcemia or hypocalcemia, and hyperkalemia or hypokalemia and help diagnose liver disease, kidney disease, cardiac failure, pregnancy, burns, and osmotic diuresis and nephritic syndrome with C3 glomerulonephritis. Also cond like orgna transplant and related complications, device/prosthesis leakage, displacement related malfunctions and complications etc can be well justified too.",
+      "episodeId": "645070",
+      "objectType": "activity",
+      "objectId": "84295",
+      "claimAmount": 502.0,
+      "activityAmount": 21.6,
+      "ruleId": "J248.01_Crosswalk",
+      "source_rule_id": "Thynk_validaion",
+      "packageName": "Thynk_rules_recommendation",
+      "activityType": "CPT",
+      "code": "84295",
+      "denialReason": "Medical Necessity",
+      "topDrivers": [
+        "CPT Category",
+        "Secondary Diagnosis Count",
+        "Activity Code"
+      ],
+      "actions": [
+        "Check for duplicate billing with CMP (80053)",
+        "Verify electrolyte disturbance diagnosis support",
+        "Check payer policy for separate electrolyte testing"
+      ],
+      "candidate_rag_rule_ids": [],
+      "candidate_rag_mapping_status": "not_verified",
+      "is_confirmed_denial": false
+    },
+    {
+      "severity": "SEVERE",
+      "shortMessage": "CPT 84132 is not medically necessary as per the given conditions. Please see the long message below for your reference of conditions to be provided as per documentation.",
+      "longMessage": "ASSAY OF SERUM POTASSIUM is medically indicated to help diagnose the cause of signs and symptoms such as vomiting, diarrhea, alcoholism, folic acid deficiency and weakness. It is used in assessing conditions like end-stage renal failure, hemolysis, trauma, Addison's disease, metabolic acidosis, acute starvation and dehydration, evaluation of electrolyte balance, cardiac arrhythmia, muscular weakness, hepatic encephalopathy, and renal failure. It is usually ordered as part of an electrolyte panel, basic metabolic panel, or comprehensive metabolic panel, which are ordered frequently as part of a routine physical exam, used to assess for hyperkalemia or hypokalemia, and help diagnose kidney diseases and heart problems. Benign and malignant neoplasms, Hep A, B,C &E. Conditions like Kaposi's sarcoma of soft tissue, nodular scler Hodgkin lymph, anemia and other defeciencies, Hereditary factor VIII deficiency, drug/chem diabetes w diabetic neuropathic arthropathy, von Gierke disease, Fabry (-Anderson) disease, Gaucher disease, alcoholism, disorders of nerves (eg: trigeminal, vagus etc), organ transplant related complications like Kidney, lung, complications related to prosthesis, stents, grafts etc, lymphomas like Burkitt, Mantle etc, poisnoning by drugs.",
+      "episodeId": "645070",
+      "objectType": "activity",
+      "objectId": "84132",
+      "claimAmount": 502.0,
+      "activityAmount": 20.4,
+      "ruleId": "J248.01_Crosswalk",
+      "source_rule_id": "Thynk_validaion",
+      "packageName": "Thynk_rules_recommendation",
+      "activityType": "CPT",
+      "code": "84132",
+      "denialReason": "Medical Necessity",
+      "topDrivers": [
+        "CPT Category",
+        "Activity Code",
+        "network"
+      ],
+      "actions": [
+        "Check unbundling relative to CMP 80053",
+        "Confirm underlying diagnosis support for serum potassium testing",
+        "Review payer bundling policy"
+      ],
+      "candidate_rag_rule_ids": [],
+      "candidate_rag_mapping_status": "not_verified",
+      "is_confirmed_denial": false
+    },
+    {
+      "severity": "SEVERE",
+      "shortMessage": "CPT 83036 is not medically necessary as per the given conditions. Please see the long message below for your reference of conditions to be provided as per documentation.",
+      "longMessage": "GLYCOSYLATED HEMOGLOBIN TEST is indicated for diabetes mellitus (all types), abnormal glucose tolerance of mother during pregnancy, hypoglycemic coma, post-surgical hypoinsulinemia, insulin poisoning, abnormal glucose levels, multiple endocrine neoplasia, disorders of carbohydrate transport & metabolism, diseases of the pancreas, disorders of mineral metabolism, long-term use of insulin or other medication, endocrine, metabolic & immunity disorders, drug or chemical induced DM. Pregnancy related complications include pre-existing type 2 DM in pregnancy, gestational DM, abnormal glucose complicating pregnancy, abnormal weight gain/loss. The test may able be justified in cases of insulin poisoning, underdosing of insulin, and mechanical complications associated with insulin administration, such as leakage, breakdown or malfunction of insulin delivery devices.",
+      "episodeId": "645070",
+      "objectType": "activity",
+      "objectId": "83036",
+      "claimAmount": 502.0,
+      "activityAmount": 42.0,
+      "ruleId": "J248.01_Crosswalk",
+      "source_rule_id": "Thynk_validaion",
+      "packageName": "Thynk_rules_recommendation",
+      "activityType": "CPT",
+      "code": "83036",
+      "denialReason": "Medical Necessity",
+      "topDrivers": [
+        "Activity Code",
+        "CPT Category",
+        "network"
+      ],
+      "actions": [
+        "Verify diabetes or glycemic control documentation",
+        "Ensure secondary diagnosis code for diabetes or hyper/hypoglycemia is present",
+        "Check network-specific medical necessity policy"
+      ],
+      "candidate_rag_rule_ids": [],
+      "candidate_rag_mapping_status": "not_verified",
+      "is_confirmed_denial": false
+    },
+    {
+      "severity": "SEVERE",
+      "shortMessage": "CPT 82607 is not medically necessary as per the given conditions. Please see the long message below for your reference of conditions to be provided as per documentation.",
+      "longMessage": "VITAMIN B-12 test is indicated for malignant neoplasm of stomach, pernicious anemia, anemia unspecified, cytopenia (all types), familial polycythemia, dementia,mononeuritis, peripheral /poly neuropathy, orthostatic HT, glossydynia, enteritis, chronic pancreatitis, celiac disease, lack of co-ordination, dizziness & guidiness, memory loss, ileostomy status, intestinal bypass, disturbance of skin sensation, postgastric surgery syndrome, refractory anemia related conditions, other specified nutritional anemias, aplastic anemia, congenital dyserythropoietic anemia and other specified anemias etc.",
+      "episodeId": "645070",
+      "objectType": "activity",
+      "objectId": "82607",
+      "claimAmount": 502.0,
+      "activityAmount": 64.8,
+      "ruleId": "J248.01_Crosswalk",
+      "source_rule_id": "Thynk_validaion",
+      "packageName": "Thynk_rules_recommendation",
+      "activityType": "CPT",
+      "code": "82607",
+      "denialReason": "Medical Necessity",
+      "topDrivers": [
+        "Activity Code",
+        "CPT Category",
+        "network"
+      ],
+      "actions": [
+        "Verify presence of peripheral neuropathy or anemia diagnoses",
+        "Reconcile cervical radiculopathy (M54.12) with B12 deficiency testing criteria",
+        "Review payer coverage policy"
+      ],
+      "candidate_rag_rule_ids": [],
+      "candidate_rag_mapping_status": "not_verified",
+      "is_confirmed_denial": false
+    },
+    {
+      "severity": "SEVERE",
+      "shortMessage": "CPT 80053 is not medically necessary as per the given conditions. Please see the long message below for your reference of conditions to be provided as per documentation.",
+      "longMessage": "COMPREHENSIVE METABOLIC PANEL is done to evaluate organ function and check for conditions such as diabetes, liver disease, and kidney disease, hypertension, long term medication use. intestinal infectious diseases, viral infection & diseases of CNS, other viral diseases, malignancy, S&S of weakness and fatigue, loss of appetitie, nausea, vomiting, generalized/RUQ abdominal pain, jaundice, dark urine, light coloured stool, pruritus and edema. Other cond include TB, wilson'disease, alcoholic liver disease, human herpesvirus 6 encephalitis, biploar disorder, lacerations, injuries, burns, contusions, poisoning, toxix effects of drugs, STEMI, Pregnancy related comp may include, pre-exist hyp chronic kidney disease, eclampsia",
+      "episodeId": "645070",
+      "objectType": "activity",
+      "objectId": "80053",
+      "claimAmount": 502.0,
+      "activityAmount": 127.6,
+      "ruleId": "J248.01_Crosswalk",
+      "source_rule_id": "Thynk_validaion",
+      "packageName": "Thynk_rules_recommendation",
+      "activityType": "CPT",
+      "code": "80053",
+      "denialReason": "Medical Necessity",
+      "topDrivers": [
+        "CPT Category",
+        "network",
+        "Activity Code"
+      ],
+      "actions": [
+        "Verify systemic or organ evaluation clinical indication",
+        "Reconcile CMP bundling with individual electrolyte codes billed on same claim",
+        "Confirm payer medical necessity guidelines"
+      ],
+      "candidate_rag_rule_ids": [],
+      "candidate_rag_mapping_status": "not_verified",
+      "is_confirmed_denial": false
+    }
+  ],
+  "active_flag_activity_codes": [
+    "86038",
+    "84520",
+    "84443",
+    "84295",
+    "84132",
+    "83036",
+    "82607",
+    "80053"
+  ]
+},
+
+{
+  "claim_id": "310598",
+  "thynk_response": [
+    {
+      "severity": "WARNING",
+      "shortMessage": "CPT 97110 is  likely denied for Duplicate.",
+      "longMessage": "The model predicts a duplicate-related denial risk for therapeutic exercise (97110). Review the activity against other service lines in the claim, including service dates, units, and supporting documentation. The prediction is not a confirmed denial.",
+      "episodeId": "310598",
+      "objectType": "activity",
+      "objectId": "97110",
+      "activityAmount": 116.0,
+      "ruleId": "J1120.01_DUPLICATE_97110",
+      "source_rule_id": "Thynk_validaion",
+      "packageName": "Thynk_rules_recommendation",
+      "activityType": "CPT",
+      "code": "97110",
+      "denialReason": "Duplicate",
+      "topDrivers": [
+        "network",
+        "Activity Code",
+        "Primary Diagnosis Code"
+      ],
+      "actions": [
+        "Check for repeated or overlapping 97110 service lines",
+        "Verify service dates, units, and supporting clinical documentation",
+        "Review the applicable network and payer duplicate-billing policy"
+      ],
+      "candidate_rag_rule_ids": [],
+      "candidate_rag_mapping_status": "not_verified",
+      "is_confirmed_denial": false
+    },
+    {
+      "severity": "WARNING",
+      "shortMessage": "CPT 97140 is  likely denied for Duplicate.",
+      "longMessage": "The model predicts a duplicate-related denial risk for manual therapy (97140). Check for repeated billing or overlapping services and confirm that the documentation supports a separately billable service. The prediction is not a confirmed denial.",
+      "episodeId": "310598",
+      "objectType": "activity",
+      "objectId": "97140",
+      "activityAmount": 200.0,
+      "ruleId": "J_ML_DUPLICATE_97140",
+      "source_rule_id": "Thynk_validaion",
+      "packageName": "Thynk_rules_recommendation",
+      "activityType": "CPT",
+      "code": "97140",
+      "denialReason": "Duplicate",
+      "topDrivers": [
+        "network",
+        "Activity Code",
+        "Secondary Diagnosis Count"
+      ],
+      "actions": [
+        "Compare this activity with other billed service lines",
+        "Verify service dates, units, and documentation for distinct services",
+        "Check the receiver-specific duplicate and bundling policies"
+      ],
+      "candidate_rag_rule_ids": [],
+      "candidate_rag_mapping_status": "not_verified",
+      "is_confirmed_denial": false
+    },
+    {
+      "severity": "WARNING",
+      "shortMessage": "CPT 97530 is  likely denied for Duplicate.",
+      "longMessage": "The model predicts a duplicate-related denial risk for therapeutic activities (97530). Review other claim lines for repeated or overlapping services and verify that the documented therapeutic activities are distinct and supported. The prediction is not a confirmed denial.",
+      "episodeId": "310598",
+      "objectType": "activity",
+      "objectId": "97530",
+      "activityAmount": 126.0,
+      "ruleId": "J_ML_DUPLICATE_97530",
+      "source_rule_id": "Thynk_validaion",
+      "packageName": "Thynk_rules_recommendation",
+      "activityType": "CPT",
+      "code": "97530",
+      "denialReason": "Duplicate",
+      "topDrivers": [
+        "network",
+        "Secondary Diagnosis Count",
+        "Primary Diagnosis Code"
+      ],
+      "actions": [
+        "Check for duplicate or overlapping therapeutic activity billing",
+        "Review documentation and service details to confirm distinct services",
+        "Verify the applicable receiver-specific duplicate-billing policy"
+      ],
+      "candidate_rag_rule_ids": [],
+      "candidate_rag_mapping_status": "not_verified",
+      "is_confirmed_denial": false
+    }
+  ],
+  "active_flag_activity_codes": [
+    "97110",
+    "97140",
+    "97530"
+  ]
+},
+{
+  "claim_id": "100021",
+  "thynk_response": [
+    {
+      "severity": "WARNING",
+      "shortMessage": "CPT 99202 is  likely denied for Coding.",
+      "longMessage": "The model predicts a coding-related denial risk for evaluation and management service 99202. Review the primary diagnosis code and category, and verify that the diagnosis supports the billed service under the applicable coding guidelines and payer policy. This prediction is not a confirmed denial.",
+      "episodeId": "100021",
+      "objectType": "activity",
+      "objectId": "99202",
+      "activityAmount": 209.72,
+      "ruleId": "J_ML_CODING_99202",
+      "source_rule_id": "Thynk_validaion",
+      "packageName": "Thynk_rules_recommendation",
+      "activityType": "CPT",
+      "code": "99202",
+      "denialReason": "Coding",
+      "topDrivers": [
+        "Primary Diagnosis Category",
+        "Primary Diagnosis Code",
+        "Activity Code"
+      ],
+      "actions": [
+        "Validate the primary diagnosis code and category",
+        "Confirm that the diagnosis supports the billed evaluation and management service",
+        "Review applicable coding guidelines and receiver-specific payer requirements"
+      ],
+      "candidate_rag_rule_ids": [],
+      "candidate_rag_mapping_status": "not_verified",
+      "is_confirmed_denial": false
+    }
+  ],
+  "active_flag_activity_codes": [
+    "99202"
+  ]
+}]

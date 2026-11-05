@@ -1,0 +1,1 @@
+uvicorn ai_analyst.main:app --reload --port 8060
