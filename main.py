@@ -748,6 +748,9 @@ def predict_ksa(request: KSAClaimRequest):
         for idx, service in enumerate(request.services):
 
             denial_probability = float(probabilities[idx])
+            # KSA model trained threshold=0.50 but AUC=0.574 — probabilities
+            # cluster in 0.20-0.48 range. Using 0.40 to surface more denials
+            # until model is retrained with larger dataset.
             predicted_denial   = denial_probability >= 0.40
             reason_confidence  = float(np.max(reason_probabilities[idx]))
             predicted_reason   = str(reason_labels[idx]) if predicted_denial else None

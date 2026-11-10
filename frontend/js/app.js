@@ -107,6 +107,106 @@
   }
 
   // ------------------------------------------------------------------ //
+  // ------------------------------------------------------------------ //
+  // Live KPI Strip — fetches from /stats/summary every 60 seconds
+  // ------------------------------------------------------------------ //
+  async function loadLiveKPIs() {
+    const ANALYST = 'http://127.0.0.1:8060';
+    const region  = window.regionManager?.getRegionCode() || 'uae';
+
+    // Fetch all three in parallel
+    const [data, trend, metrics] = await Promise.all([
+      AnalystAPI.stats().catch(() => null),
+      fetch(`${ANALYST}/stats/trend`).then(r => r.ok ? r.json() : []).catch(() => []),
+      fetch(`${ANALYST}/stats/model-metrics?region=${region}`).then(r => r.ok ? r.json() : null).catch(() => null),
+    ]);
+
+    if (!data) {
+      // Still render model metrics even if stats fails
+      _renderModelMetrics(metrics, region);
+      return;
+    }
+
+    // Card 1 — Claims Processed
+    const totalEl = document.getElementById('lkpi-total-val');
+    const totalSub = document.getElementById('lkpi-total-sub');
+    if (totalEl) totalEl.textContent = data.total_claims.toLocaleString();
+    if (totalSub) {
+      totalSub.textContent = data.today_claims > 0
+        ? `▲${data.today_claims} today`
+        : 'None today';
+      totalSub.className = 'live-kpi-sub' + (data.today_claims > 0 ? ' up' : '');
+    }
+
+    // Card 2 — Avg Denial Score
+    const avgEl = document.getElementById('lkpi-avg-val');
+    const avgSub = document.getElementById('lkpi-avg-sub');
+    if (avgEl) avgEl.textContent = `${data.avg_denial_pct.toFixed(1)}%`;
+    if (avgSub) {
+      if (data.avg_denial_delta !== null) {
+        const sign = data.avg_denial_delta >= 0 ? '▲' : '▼';
+        const cls  = data.avg_denial_delta >= 0 ? 'up' : 'down';
+        avgSub.textContent = `${sign}${Math.abs(data.avg_denial_delta).toFixed(1)}% vs last week`;
+        avgSub.className   = `live-kpi-sub ${cls}`;
+      } else {
+        avgSub.textContent = 'Across all claims';
+        avgSub.className   = 'live-kpi-sub';
+      }
+    }
+
+    // Card 3 — Denial Trend sparkline (14-day)
+    // Card 3 — Denial Trend sparkline (14-day)
+    const trendSub = document.getElementById('lkpi-trend-sub');
+    const trendData = trend || [];
+    if (trendData.length > 0) {
+      const vals  = trendData.map(d => d.avg_pct);
+      const dates = trendData.map(d => d.day);
+      const first = vals[0], last = vals[vals.length - 1];
+      const delta = (last - first).toFixed(1);
+      const trendDir = last >= first ? 'up' : 'down';
+      if (trendSub) {
+        trendSub.textContent = `${trendDir === 'up' ? '▲' : '▼'}${Math.abs(delta)}% over ${trendData.length}d`;
+        trendSub.className   = `live-kpi-sub ${trendDir}`;
+      }
+      const trendEl = document.getElementById('lkpi-trend-chart');
+      if (trendEl && window.Plotly) {
+        const lineCol = trendDir === 'up' ? '#E05252' : '#3D9E6E';
+        Plotly.react(trendEl, [{
+          type: 'scatter', mode: 'lines',
+          x: dates, y: vals,
+          line: { color: lineCol, width: 2 },
+          fill: 'tozeroy',
+          fillcolor: trendDir === 'up' ? 'rgba(224,82,82,.12)' : 'rgba(61,158,110,.12)',
+        }], {
+          margin: { l: 0, r: 0, t: 0, b: 0 },
+          paper_bgcolor: 'rgba(0,0,0,0)',
+          plot_bgcolor:  'rgba(0,0,0,0)',
+          xaxis: { visible: false },
+          yaxis: { visible: false },
+          showlegend: false,
+          height: 52,
+        }, { displayModeBar: false, responsive: true });
+      }
+    } else {
+      if (trendSub) trendSub.textContent = 'Not enough data yet';
+    }
+
+    // Card 4 — Model Metrics
+    _renderModelMetrics(metrics, region);
+  }
+
+  function _renderModelMetrics(metrics, region) {
+    const uaeFallback = { roc_auc: 0.8753, pr_auc: 0.8143, accuracy: 0.7887, precision: 0.6866 };
+    const ksaFallback = { roc_auc: 0.5740, pr_auc: 0.3803, accuracy: 0.6101, precision: 0.3834 };
+    const m   = metrics || (region === 'ksa' ? ksaFallback : uaeFallback);
+    const fmt = v => v != null ? (v * 100).toFixed(1) + '%' : '—';
+    const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+    set('lm-auc',  fmt(m.roc_auc));
+    set('lm-pr',   fmt(m.pr_auc));
+    set('lm-acc',  fmt(m.accuracy));
+    set('lm-prec', fmt(m.precision));
+  }
+
   // Health check
   // ------------------------------------------------------------------ //
   async function checkHealth() {
@@ -1036,6 +1136,9 @@
   document.addEventListener('DOMContentLoaded', () => {
     initTabs();
     checkHealth();
+    loadLiveKPIs();
+    // Refresh KPIs every 60 seconds
+    setInterval(loadLiveKPIs, 60_000);
     initActivityManager();
     initChat();
     initICDControls();

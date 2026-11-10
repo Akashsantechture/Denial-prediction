@@ -138,6 +138,80 @@
     /* Verdict banner sits just below the nav */
     .verdict-banner { margin-top: 0; }
 
+    /* ── Live KPI Strip ──────────────────────────────────── */
+    .live-kpi-strip {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: .75rem;
+      padding: .85rem 1.5rem .5rem;
+      background: var(--color-surface);
+      border-bottom: 1px solid var(--color-border);
+    }
+    @media (max-width: 900px) {
+      .live-kpi-strip { grid-template-columns: 1fr 1fr; }
+    }
+    .live-kpi-card {
+      background: var(--color-surface-alt);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: .75rem 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: .2rem;
+      transition: border-color 200ms;
+    }
+    .live-kpi-card:hover { border-color: var(--color-accent); }
+    .live-kpi-label {
+      font-size: .68rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .07em;
+      color: var(--color-text-muted);
+    }
+    .live-kpi-value {
+      font-size: 1.45rem;
+      font-weight: 700;
+      color: var(--color-text-primary);
+      line-height: 1.1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .live-kpi-sub {
+      font-size: .72rem;
+      color: var(--color-text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .live-kpi-sub.up   { color: var(--color-high); }
+    .live-kpi-sub.down { color: var(--color-low); }
+
+    /* Force readable text in light mode */
+    [data-theme="light"] .live-kpi-label        { color: #4A5568; }
+    [data-theme="light"] .live-kpi-value        { color: #16202E; }
+    [data-theme="light"] .live-kpi-sub          { color: #4A5568; }
+    [data-theme="light"] .live-kpi-metric-label { color: #4A5568; }
+    [data-theme="light"] .live-kpi-metric-val   { color: #16202E; }
+
+    /* Model metrics mini-grid inside KPI card */
+    .live-kpi-model-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: .15rem .5rem;
+      margin-top: .2rem;
+    }
+    .live-kpi-metric-label {
+      font-size: .68rem;
+      color: var(--color-text-muted);
+    }
+    .live-kpi-metric-val {
+      font-size: .68rem;
+      font-weight: 700;
+      color: var(--color-text-primary);
+      text-align: right;
+    }
+
     /* ── Form input mode toggle ─────────────────────────────────── */
     .input-mode-toggle {
       display: flex;
@@ -677,9 +751,8 @@
       line-height: 1;
       display: block;
     }
-    [data-theme="light"] .theme-toggle-btn {
-      background: var(--color-surface-alt);
-      border-color: var(--color-border);
+    [data-theme="light"] .top-nav-logo img:first-child {
+      filter: invert(1) brightness(0.2);
     }
 
     /* ── Chat float button ───────────────────────────────────── */
@@ -850,6 +923,34 @@
            TAB 1 — OVERVIEW
            ============================================================ -->
       <div id="tab-overview" class="tab-panel active">
+
+        <!-- ── Live KPI Strip ─────────────────────────────── -->
+        <div id="live-kpi-strip" class="live-kpi-strip">
+          <div class="live-kpi-card" id="lkpi-total">
+            <div class="live-kpi-label">Claims Processed</div>
+            <div class="live-kpi-value" id="lkpi-total-val">—</div>
+            <div class="live-kpi-sub" id="lkpi-total-sub">Loading…</div>
+          </div>
+          <div class="live-kpi-card" id="lkpi-avg">
+            <div class="live-kpi-label">Avg Denial Score</div>
+            <div class="live-kpi-value" id="lkpi-avg-val">—</div>
+            <div class="live-kpi-sub" id="lkpi-avg-sub">Loading…</div>
+          </div>
+          <div class="live-kpi-card" id="lkpi-trend">
+            <div class="live-kpi-label">Denial Trend</div>
+            <div id="lkpi-trend-chart" style="height:52px;width:100%;"></div>
+            <div class="live-kpi-sub" id="lkpi-trend-sub">Loading…</div>
+          </div>
+          <div class="live-kpi-card" id="lkpi-model">
+            <div class="live-kpi-label">Model Performance</div>
+            <div class="live-kpi-model-grid" id="lkpi-model-grid">
+              <span class="live-kpi-metric-label">AUC-ROC</span><span class="live-kpi-metric-val" id="lm-auc">—</span>
+              <span class="live-kpi-metric-label">PR-AUC</span><span class="live-kpi-metric-val" id="lm-pr">—</span>
+              <span class="live-kpi-metric-label">Accuracy</span><span class="live-kpi-metric-val" id="lm-acc">—</span>
+              <span class="live-kpi-metric-label">Precision</span><span class="live-kpi-metric-val" id="lm-prec">—</span>
+            </div>
+          </div>
+        </div>
 
         <!-- Form is inside Overview only -->
         <div class="form-card">

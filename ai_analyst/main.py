@@ -145,6 +145,201 @@ app.add_middleware(
 
 
 # ============================================================
+# LIVE STATS — KPI STRIP
+# ============================================================
+#
+# Aggregates across analyst_claim_intelligence.evidence JSON.
+# All queries are read-only and use raw SQL for performance.
+# Returns null-safe results so the frontend can always render.
+# ============================================================
+
+@app.get("/stats/summary")
+def stats_summary():
+    """
+    Returns 4 KPI cards for the live dashboard strip:
+      1. total_claims     — total claims processed (+ today count)
+      2. avg_denial_pct   — average denial probability across all claims
+      3. top_risk_factor  — most frequently occurring top SHAP feature
+      4. riskiest_payer   — payer with highest avg denial probability
+    """
+    from .db.database import SessionLocal
+    from sqlalchemy import text
+
+    db = SessionLocal()
+    try:
+        # ── 1. Total claims + today count ─────────────────────
+        total_row = db.execute(text("""
+            SELECT
+                COUNT(*) AS total,
+                COUNT(*) FILTER (
+                    WHERE created_at >= CURRENT_DATE
+                ) AS today
+            FROM analyst_claim_intelligence
+        """)).fetchone()
+
+        total_claims = int(total_row.total or 0)
+        today_claims = int(total_row.today or 0)
+
+        # ── 2. Average denial probability ─────────────────────
+        avg_row = db.execute(text("""
+            SELECT
+                ROUND(AVG(
+                    (evidence->'prediction'->>'claim_denial_probability_pct')::numeric
+                ), 1) AS avg_pct,
+                ROUND(AVG(
+                    (evidence->'prediction'->>'claim_denial_probability_pct')::numeric
+                ) FILTER (
+                    WHERE created_at >= CURRENT_DATE - INTERVAL '7 days'
+                    AND created_at < CURRENT_DATE
+                ), 1) AS last_week_pct
+            FROM analyst_claim_intelligence
+            WHERE evidence->'prediction'->>'claim_denial_probability_pct' IS NOT NULL
+        """)).fetchone()
+
+        avg_denial_pct     = float(avg_row.avg_pct or 0)
+        last_week_avg      = float(avg_row.last_week_pct or 0) if avg_row.last_week_pct else None
+        avg_delta          = round(avg_denial_pct - last_week_avg, 1) if last_week_avg else None
+
+        # ── 3. Top risk factor (most frequent top SHAP feature) ─
+        factor_row = db.execute(text("""
+            SELECT
+                shap_elem->>'feature' AS feature,
+                COUNT(*) AS frequency
+            FROM analyst_claim_intelligence,
+                 jsonb_array_elements((evidence->'top_shap_contributions')::jsonb) AS shap_elem
+            WHERE (shap_elem->>'shap_value')::numeric > 0
+            GROUP BY feature
+            ORDER BY frequency DESC
+            LIMIT 1
+        """)).fetchone()
+
+        top_factor       = factor_row.feature if factor_row else "—"
+        top_factor_count = int(factor_row.frequency) if factor_row else 0
+
+        # ── 4. Riskiest payer (highest avg denial score) ──────
+        payer_row = db.execute(text("""
+            SELECT
+                COALESCE(
+                    NULLIF(evidence->'claim'->>'payer_name', ''),
+                    NULLIF(evidence->'claim'->>'payer_classification', ''),
+                    'Unknown'
+                ) AS payer_name,
+                ROUND(AVG(
+                    (evidence->'prediction'->>'claim_denial_probability_pct')::numeric
+                ), 1) AS avg_denial_pct,
+                COUNT(*) AS claim_count
+            FROM analyst_claim_intelligence
+            WHERE evidence->'prediction'->>'claim_denial_probability_pct' IS NOT NULL
+            GROUP BY payer_name
+            HAVING COUNT(*) >= 1
+            ORDER BY avg_denial_pct DESC
+            LIMIT 1
+        """)).fetchone()
+
+        riskiest_payer       = payer_row.payer_name if payer_row else "—"
+        riskiest_payer_pct   = float(payer_row.avg_denial_pct) if payer_row else 0.0
+        riskiest_payer_count = int(payer_row.claim_count) if payer_row else 0
+
+        return {
+            "total_claims":          total_claims,
+            "today_claims":          today_claims,
+            "avg_denial_pct":        avg_denial_pct,
+            "avg_denial_delta":      avg_delta,
+            "top_risk_factor":       top_factor,
+            "top_risk_factor_count": top_factor_count,
+            "riskiest_payer":        riskiest_payer,
+            "riskiest_payer_pct":    riskiest_payer_pct,
+            "riskiest_payer_count":  riskiest_payer_count,
+            "trend":                 [],   # populated separately via /stats/trend
+        }
+
+    except Exception as exc:
+        print(f"[Stats] Query failed: {exc}")
+        return {
+            "total_claims": 0, "today_claims": 0,
+            "avg_denial_pct": 0.0, "avg_denial_delta": None,
+            "top_risk_factor": "—", "top_risk_factor_count": 0,
+            "riskiest_payer": "—", "riskiest_payer_pct": 0.0,
+            "riskiest_payer_count": 0, "trend": [],
+        }
+    finally:
+        db.close()
+
+
+@app.get("/stats/trend")
+def stats_trend():
+    """
+    Returns 14-day daily average denial probability for the sparkline.
+    """
+    from .db.database import SessionLocal
+    from sqlalchemy import text
+
+    db = SessionLocal()
+    try:
+        rows = db.execute(text("""
+            SELECT
+                DATE(created_at)::text AS day,
+                ROUND(AVG(
+                    (evidence->'prediction'->>'claim_denial_probability_pct')::numeric
+                ), 1) AS avg_pct
+            FROM analyst_claim_intelligence
+            WHERE created_at >= CURRENT_DATE - INTERVAL '14 days'
+              AND evidence->'prediction'->>'claim_denial_probability_pct' IS NOT NULL
+            GROUP BY DATE(created_at)
+            ORDER BY day ASC
+        """)).fetchall()
+
+        return [{"day": r.day, "avg_pct": float(r.avg_pct)} for r in rows]
+
+    except Exception as exc:
+        print(f"[Stats/Trend] Query failed: {exc}")
+        return []
+    finally:
+        db.close()
+
+
+@app.get("/stats/model-metrics")
+def stats_model_metrics():
+    """
+    Returns model performance metrics from the metrics.json file.
+    Region-aware: reads from models/uae or models/ksa based on query param.
+    """
+    import json
+    from fastapi import Query
+    from pathlib import Path
+
+    region = "uae"  # default — frontend passes ?region=ksa for KSA
+    base   = Path(__file__).resolve().parent.parent
+
+    # Try new region-aware path first, fall back to legacy
+    paths_to_try = [
+        base / "models" / region / "prediction_score" / "metrics.json",
+        base / "models" / "xgboost" / "metrics.json",
+    ]
+
+    for path in paths_to_try:
+        if path.exists():
+            try:
+                metrics = json.loads(path.read_text(encoding="utf-8"))
+                return {
+                    "region":    region,
+                    "roc_auc":   metrics.get("roc_auc"),
+                    "pr_auc":    metrics.get("pr_auc"),
+                    "accuracy":  metrics.get("accuracy"),
+                    "precision": metrics.get("precision"),
+                    "recall":    metrics.get("recall"),
+                    "f1":        metrics.get("f1"),
+                    "train_rows": metrics.get("train_rows"),
+                    "test_rows":  metrics.get("test_rows"),
+                }
+            except Exception:
+                pass
+
+    return {"region": region, "roc_auc": None, "pr_auc": None,
+            "accuracy": None, "precision": None, "recall": None, "f1": None}
+
+
+# ============================================================
 # HEALTH
 # ============================================================
 

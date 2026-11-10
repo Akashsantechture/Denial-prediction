@@ -1,0 +1,3 @@
+POST https://stage-thynk2-api.santechture.com/thynk-gateway/auth-service/auth/login-by-key
+
+POST https://stage-thynk2-api.santechture.com/thynk-gateway/integration-service/api/v1/services/validate

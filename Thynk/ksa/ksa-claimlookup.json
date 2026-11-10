@@ -1,193 +1,113 @@
 [
   {
+  "claim_id": "10605752",
+  "thynk_response": [
+      {
+        "severity": "SEVERE",
+        "shortMessage": "Service code [83600-00-20] is not eligible under routine child health examination [Z00.1] for patient age [0] as per payer policy guidelines.",
+        "longMessage": "SBS code [83600-00-20] is flagged for Eligibility under Saudi Aramco Medical Plan (Payer ID: 102) when billed solely with routine examination diagnosis Z00.1 for an infant (Age 0). Preventive well-baby visits require appropriate preventive E&M service mapping or a definitive clinical diagnosis if a diagnostic/specialist consultation was performed.",
+        "episodeId": "10605752",
+        "objectType": "service",
+        "objectId": "836000020",
+        "claimAmount": 1239.7,
+        "activityAmount": 402.5,
+        "ruleId": "K97.01_CrossWalk",
+        "source_rule_id": "Thynk_validaion",
+        "packageName": "Thynk_rules_recommendation",
+        "activityType": "SBS",
+        "code": "836000020",
+        "denialReason": "Eligibility",
+        "topDrivers": [
+          "Patient Age",
+          "service code",
+          "primary diagnosis"
+        ],
+        "actions": [
+          "Verify policy benefit coverage for preventive pediatric visits under Saudi Aramco Medical Plan",
+          "Confirm whether service code 83600-00-20 matches the facility's mapped preventive well-baby consultation code",
+          "If the visit addressed a specific neonatal symptom or condition, append the definitive clinical ICD-10-AM code alongside Z00.1"
+        ],
+        "candidate_rag_rule_ids": [
+          "K97.01_CrossWalk",
+          "K731.01_SGH_Service_Validation_Provider_Code_Mapping"
+        ],
+        "candidate_rag_mapping_status": "not_verified",
+        "is_confirmed_denial": false
+      },
+      {
+        "severity": "SEVERE",
+        "shortMessage": "Kindly provide an eligible and medically indicated diagnosis for the billed SBS code [73050-35-30] under routine examination [Z00.1].",
+        "longMessage": "Billed SBS code [73050-35-30] (Total Bilirubin Assay) is not covered as a routine screening service under Z00.1 (Routine child health examination) for patient age 0. Diagnostic laboratory tests require a clinical symptom, abnormal finding, or neonatal condition (such as neonatal jaundice P59.9 or feeding/metabolic evaluation) to meet plan eligibility criteria.",
+        "episodeId": "10605752",
+        "objectType": "service",
+        "objectId": "730503530",
+        "claimAmount": 1239.7,
+        "activityAmount": 417.45,
+        "ruleId": "K97.01_CrossWalk",
+        "source_rule_id": "Thynk_validaion",
+        "packageName": "Thynk_rules_recommendation",
+        "activityType": "SBS",
+        "code": "730503530",
+        "denialReason": "Eligibility",
+        "topDrivers": [
+          "Patient Age",
+          "service code",
+          "primary diagnosis"
+        ],
+        "actions": [
+          "Verify if routine neonatal screening benefits under Policy 102 include biochemical bilirubin testing under Z00.1",
+          "Check clinical notes for documented neonatal jaundice or clinical signs justifying diagnostic testing",
+          "Add the supporting neonatal ICD-10-AM diagnosis code if clinically documented"
+        ],
+        "candidate_rag_rule_ids": [
+          "K97.01_CrossWalk"
+        ],
+        "candidate_rag_mapping_status": "not_verified",
+        "is_confirmed_denial": false
+      },
+      {
+        "severity": "SEVERE",
+        "shortMessage": "Kindly provide an eligible and medically indicated diagnosis or required authorization for the billed SBS code [73050-35-50].",
+        "longMessage": "Billed SBS code [73050-35-50] is flagged for Eligibility when submitted with primary diagnosis Z00.1 (Routine child health examination) for patient age 0. Under KSA CHI and payer guidelines, specialized/hormonal or direct bilirubin assays are excluded from routine preventive well-baby packages unless supported by a specific clinical diagnosis or prior authorization.",
+        "episodeId": "10605752",
+        "objectType": "service",
+        "objectId": "730503550",
+        "claimAmount": 1239.7,
+        "activityAmount": 419.75,
+        "ruleId": "K97.01_CrossWalk",
+        "source_rule_id": "Thynk_validaion",
+        "packageName": "Thynk_rules_recommendation",
+        "activityType": "SBS",
+        "code": "730503550",
+        "denialReason": "Eligibility",
+        "topDrivers": [
+          "Patient Age",
+          "service code",
+          "primary diagnosis"
+        ],
+        "actions": [
+          "Check payer-specific benefit exclusions for diagnostic lab assays billed under preventive code Z00.1",
+          "Verify if pre-authorization is required for SBS code 73050-35-50 under Saudi Aramco Medical Plan",
+          "Link a specific clinical diagnosis supporting the medical necessity and benefit eligibility of the assay"
+        ],
+        "candidate_rag_rule_ids": [
+          "K97.01_CrossWalk",
+          "K61.01_Hormonal_Tests_Approval"
+        ],
+        "candidate_rag_mapping_status": "not_verified",
+        "is_confirmed_denial": false
+      }
+    ],
+    "active_flag_activity_codes": [
+      "836000020",
+      "730503530",
+      "730503550"
+    ]
+  },
+  {
     "claim_id": "10674581",
-    "thynk_response": [
-      {
-        "severity": "CRITICAL",
-        "shortMessage": "Encounter Status is required as a mandatory field under NPHIES Encounter Resource.",
-        "longMessage": "As per Minimum Data Set (MDS) by CHI and NPHIES specifications, Encounter Status must be provided as one of: Planned, Arrived, Triaged, In Progress, On Leave, Finished, Cancelled, Entered in Error, Unknown. Emergency encounter 10674581 requires status 'Finished' matching post-debridement patient discharge.",
-        "episodeId": "10674581",
-        "objectType": "claim",
-        "objectId": "10674581",
-        "claimAmount": 3207.06,
-        "activityAmount": null,
-        "ruleId": "CHI_MDS_001_Encounter_Status",
-        "packageName": "Core_validation",
-        "activityType": null,
-        "code": null,
-        "actions": null,
-        "denialCodes": null,
-        "referenceLinks": []
-      },
-      {
-        "severity": "SEVERE",
-        "shortMessage": "Post-operative surgical wound complication requires primary or secondary ICD-10 cross-linkage.",
-        "longMessage": "Primary diagnosis L98.7 (Skin and subcutaneous tissue condition) billed in Emergency encounter with surgical debridement services (730000030, 730000090, 730500980) requires secondary cross-linkage to T81.3 (Disruption of operation wound) and Y83.8 under CHI surgical coding guidelines.",
-        "episodeId": "10674581",
-        "objectType": "diagnosis",
-        "objectId": "L98.7",
-        "claimAmount": 3207.06,
-        "activityAmount": null,
-        "ruleId": "CHI_CODING_002_Surgical_Complication_Linkage",
-        "packageName": "Code_guidelines",
-        "activityType": null,
-        "code": "L98.7",
-        "actions": null,
-        "denialCodes": null,
-        "referenceLinks": []
-      },
-      {
-        "severity": "INFO",
-        "shortMessage": "Emergency services and wound care validated under Saudi Aramco Medical Plan.",
-        "longMessage": "All 12 surgical emergency and dressing activities validated against Dhahran Emergency Department fee schedule. Emergency encounter satisfies retrospective notification criteria within 24 hours.",
-        "episodeId": "10674581",
-        "objectType": "claim",
-        "objectId": "10674581",
-        "claimAmount": 3207.06,
-        "activityAmount": 3207.06,
-        "ruleId": "CHI_EMERGENCY_001_Aramco_Validation",
-        "packageName": "Core_validation",
-        "activityType": "ACHI",
-        "code": "730000030",
-        "actions": null,
-        "denialCodes": null,
-        "referenceLinks": []
-      }
-    ]
-  },
-  {
-    "claim_id": "9609350",
-    "thynk_response": [
-      {
-        "severity": "CRITICAL",
-        "shortMessage": "Coverage Class Type is required under Patient Info as per CHI MDS.",
-        "longMessage": "As per Minimum Data Set (MDS) by CHI, Coverage Class Type must be submitted for every claim through NPHIES. Accepted values: Group, SubGroup, Plan, Class. Missing coverage class will cause NPHIES intake rejection.",
-        "episodeId": "9609350",
-        "objectType": "claim",
-        "objectId": "9609350",
-        "claimAmount": 350.0,
-        "activityAmount": null,
-        "ruleId": "CHI_MDS_002_Coverage_Class_Type",
-        "packageName": "Core_validation",
-        "activityType": null,
-        "code": null,
-        "actions": null,
-        "denialCodes": null,
-        "referenceLinks": []
-      },
-      {
-        "severity": "WARNING",
-        "shortMessage": "Diagnosis L50.8 (Other urticaria) should specify chronic vs acute presentation.",
-        "longMessage": "When billing dermatological consultation 836000020, diagnosis L50.8 should be supplemented with clinical documentation confirming allergy triggers or response to antihistamine therapy per CHI dermatology guidelines.",
-        "episodeId": "9609350",
-        "objectType": "diagnosis",
-        "objectId": "L50.8",
-        "claimAmount": 350.0,
-        "activityAmount": null,
-        "ruleId": "CHI_CODING_001_Unspecified_Codes",
-        "packageName": "Code_guidelines",
-        "activityType": null,
-        "code": "L50.8",
-        "actions": null,
-        "denialCodes": null,
-        "referenceLinks": []
-      },
-      {
-        "severity": "INFO",
-        "shortMessage": "Specialist outpatient consultation 836000020 validated under CEER corporate policy.",
-        "longMessage": "Consultation gross 350.00 SAR conforms to CEER National Automotive corporate fee schedule for outpatient specialty clinic.",
-        "episodeId": "9609350",
-        "objectType": "activity",
-        "objectId": "836000020",
-        "claimAmount": 350.0,
-        "activityAmount": 350.0,
-        "ruleId": "CHI_SPECIALTY_001_EM_Code_Specialty",
-        "packageName": "Core_validation",
-        "activityType": "CPT",
-        "code": "836000020",
-        "actions": null,
-        "denialCodes": null,
-        "referenceLinks": []
-      }
-    ]
-  },
-  {
-    "claim_id": "10068854",
-    "thynk_response": [
-      {
-        "severity": "SEVERE",
-        "shortMessage": "Primary diagnosis I25.10 justifies outpatient cardiovascular consultation.",
-        "longMessage": "Patient age 67 with Atherosclerotic heart disease of native coronary artery (I25.10) requires ongoing cardiac monitoring. Ensure baseline 12-lead ECG is documented within the past 6 months as per CHI chronic cardiology management protocols.",
-        "episodeId": "10068854",
-        "objectType": "diagnosis",
-        "objectId": "I25.10",
-        "claimAmount": 250.0,
-        "activityAmount": null,
-        "ruleId": "CHI_MED_NEC_001_Diagnosis_Procedure_Mismatch",
-        "packageName": "Code_guidelines",
-        "activityType": null,
-        "code": "I25.10",
-        "actions": null,
-        "denialCodes": null,
-        "referenceLinks": []
-      },
-      {
-        "severity": "INFO",
-        "shortMessage": "Cardiology outpatient visit 836000010 validated under SADARA Chemical Company plan.",
-        "longMessage": "Cardiovascular consultation service 836000010 (250.00 SAR) matched fee schedule and clinician specialty credentials registered with Saudi Commission for Health Specialties (SCFHS).",
-        "episodeId": "10068854",
-        "objectType": "activity",
-        "objectId": "836000010",
-        "claimAmount": 250.0,
-        "activityAmount": 250.0,
-        "ruleId": "CHI_CLINICIAN_001_SCFHS_Specialty_Validated",
-        "packageName": "Core_validation",
-        "activityType": "CPT",
-        "code": "836000010",
-        "actions": null,
-        "denialCodes": null,
-        "referenceLinks": []
-      }
-    ]
-  },
-  {
-    "claim_id": "9833383",
-    "thynk_response": [
-      {
-        "severity": "SEVERE",
-        "shortMessage": "Unspecified SLE code M32.9 requires organ involvement specificity.",
-        "longMessage": "ICD-10 code M32.9 (Systemic lupus erythematosus, unspecified) should be replaced with specific organ-manifestation codes (e.g. M32.10 SLE with organ involvement or M32.8 other forms of SLE) to support medical necessity for complex rheumatology workup per CHI coding directives.",
-        "episodeId": "9833383",
-        "objectType": "diagnosis",
-        "objectId": "M32.9",
-        "claimAmount": 350.0,
-        "activityAmount": null,
-        "ruleId": "CHI_CODING_001_Unspecified_Codes",
-        "packageName": "Code_guidelines",
-        "activityType": null,
-        "code": "M32.9",
-        "actions": null,
-        "denialCodes": null,
-        "referenceLinks": []
-      },
-      {
-        "severity": "INFO",
-        "shortMessage": "Consultation 836000020 validated for chronic autoimmune evaluation.",
-        "longMessage": "Outpatient specialty visit 836000020 (350.00 SAR) conforms to Saudi Aramco medical plan rheumatology coverage rules.",
-        "episodeId": "9833383",
-        "objectType": "activity",
-        "objectId": "836000020",
-        "claimAmount": 350.0,
-        "activityAmount": 350.0,
-        "ruleId": "CHI_SPECIALTY_001_EM_Code_Specialty",
-        "packageName": "Core_validation",
-        "activityType": "CPT",
-        "code": "836000020",
-        "actions": null,
-        "denialCodes": null,
-        "referenceLinks": []
-      }
-    ]
+    "thynk_response": [],
+    "active_flag_activity_codes": []
   },
   {
     "claim_id": "10533951",
@@ -468,62 +388,6 @@
         "packageName": "Core_validation",
         "activityType": null,
         "code": null,
-        "actions": null,
-        "denialCodes": null,
-        "referenceLinks": []
-      }
-    ]
-  },
-  {
-    "claim_id": "10605752",
-    "thynk_response": [
-      {
-        "severity": "CRITICAL",
-        "shortMessage": "Denied activities 730503530 and 730503550: Medical necessity not established under routine infant exam.",
-        "longMessage": "Services 730503530 (363.00 SAR) and 730503550 (365.00 SAR) denied with code MN-1-1: Service is not clinically justified based on clinical practice guideline without additional supporting diagnosis. Newborn routine exam Z00.1 covers standard healthy checks; invasive blood testing requires a specific pathology diagnosis under CHI regulations.",
-        "episodeId": "10605752",
-        "objectType": "activity",
-        "objectId": "730503530",
-        "claimAmount": 1078.0,
-        "activityAmount": 363.0,
-        "ruleId": "CHI_MED_NEC_001_Diagnosis_Procedure_Mismatch",
-        "packageName": "Code_guidelines",
-        "activityType": "ACHI",
-        "code": "730503530",
-        "actions": "ADD_SECONDARY_DX",
-        "denialCodes": ["MN-1-1"],
-        "referenceLinks": []
-      },
-      {
-        "severity": "CRITICAL",
-        "shortMessage": "Service 730503550 denied under clinical guideline justification check (MN-1-1).",
-        "longMessage": "CPT/ACHI 730503550 (365.00 SAR) denied under NPHIES validation rule MN-1-1. To appeal under CHI 30-day timeline, submit pediatrician clinical notes and attach neonatal secondary indication.",
-        "episodeId": "10605752",
-        "objectType": "activity",
-        "objectId": "730503550",
-        "claimAmount": 1078.0,
-        "activityAmount": 365.0,
-        "ruleId": "CHI_GENERAL_001_Denial_Appeal_Process",
-        "packageName": "Core_validation",
-        "activityType": "ACHI",
-        "code": "730503550",
-        "actions": "APPEAL_REQUIRED",
-        "denialCodes": ["MN-1-1"],
-        "referenceLinks": []
-      },
-      {
-        "severity": "INFO",
-        "shortMessage": "Well-baby infant consultation 836000020 approved (350.00 SAR).",
-        "longMessage": "Routine pediatrician consultation 836000020 conforms to Saudi Aramco newborn preventive schedule.",
-        "episodeId": "10605752",
-        "objectType": "activity",
-        "objectId": "836000020",
-        "claimAmount": 1078.0,
-        "activityAmount": 350.0,
-        "ruleId": "CHI_SPECIALTY_001_EM_Code_Specialty",
-        "packageName": "Core_validation",
-        "activityType": "CPT",
-        "code": "836000020",
         "actions": null,
         "denialCodes": null,
         "referenceLinks": []

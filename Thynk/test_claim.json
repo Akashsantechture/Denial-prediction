@@ -1,0 +1,55 @@
+
+{
+  "header": {
+    "receiverId": "YOUR_RECEIVER_ID"
+  },
+  "claim": {
+    "episodeId": "KSA-TEST-001",
+    "memberId": "TEST-MEMBER-001",
+    "payerId": "YOUR_PAYER_ID",
+    "ProviderID": "YOUR_PROVIDER_ID",
+    "gross": 1000.0,
+    "patientShare": 100.0,
+    "net": 900.0,
+    "encounter": {
+      "facilityId": "YOUR_FACILITY_ID",
+      "type": 1,
+      "patientId": "TEST-PATIENT-001",
+      "start": "2026-10-15T09:00:00",
+      "startType": 1,
+      "authorisation": {
+        "start": "2026-10-15",
+        "end": "2026-10-15",
+        "verbal": false
+      }
+    },
+    "diagnosis": [
+      {
+        "type": "Principal",
+        "code": "YOUR_VALID_ICD_CODE",
+        "id": "DIAG-001"
+      }
+    ],
+    "activity": [
+      {
+        "Id": "ACT-001",
+        "start": "2026-10-15T09:00:00",
+        "type": 3,
+        "code": "YOUR_VALID_CPT_CODE",
+        "quantity": 1.0,
+        "net": 900.0,
+        "clinician": "YOUR_CLINICIAN_ID",
+        "list": 1000.0,
+        "gross": 1000.0,
+        "patientShare": 100.0
+      }
+    ],
+    "contract": {
+      "packageName": "YOUR_PACKAGE_NAME",
+      "network": "YOUR_NETWORK",
+      "policy": "YOUR_POLICY_NAME"
+    }
+  }
+}
+
+

@@ -1,0 +1,1009 @@
+[
+  {
+    "claim_id": "PHR64203",
+    "facility": "Dhahran",
+    "facility_type": null,
+    "patient_age": 31,
+    "gender": "Female",
+    "policy_name": "NCCI - TAHAKOM - 52404490",
+    "payer_classification": "CLASS VIP",
+    "payer_id": "7000911508",
+    "receiver_id": "7000911508",
+    "encounter_type": "OP",
+    "length_of_stay": 0,
+    "clinician_category": null,
+    "department": "Pharmacy",
+    "claim_type": "Pharmacy",
+    "claim_subtype": "OutPatient",
+    "claim_gross": 196.0,
+    "claim_net": 186.2,
+    "primary_diagnosis_code": "P92.0",
+    "services": [
+      {
+        "service_code": "99999999999999",
+        "service_quantity": 2.0,
+        "service_gross": 196.0,
+        "diagnoses": [
+          {
+            "diagnosis_code": "P92.0",
+            "diagnosis_type": "Principal"
+          },
+          {
+            "diagnosis_code": "K90.4",
+            "diagnosis_type": "Secondary"
+          },
+          {
+            "diagnosis_code": "K90.8",
+            "diagnosis_type": "Secondary"
+          },
+          {
+            "diagnosis_code": "L20.8",
+            "diagnosis_type": "Secondary"
+          },
+          {
+            "diagnosis_code": "L22",
+            "diagnosis_type": "Secondary"
+          },
+          {
+            "diagnosis_code": "P92.9",
+            "diagnosis_type": "Secondary"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "claim_id": "PHR64305",
+    "facility": "10000300248034",
+    "facility_type": null,
+    "patient_age": 26,
+    "gender": "Female",
+    "policy_name": "NCCI - SAUDI RED CRESCENT AUTHORITY - 54420747",
+    "payer_classification": "CLASS VIP",
+    "payer_id": "7000911508",
+    "receiver_id": "7000911508",
+    "encounter_type": 4,
+    "length_of_stay": 0,
+    "clinician_category": null,
+    "department": "Pharmacy",
+    "claim_type": "Pharmacy",
+    "claim_subtype": "OutPatient",
+    "claim_gross": 41.4,
+    "claim_net": 39.33,
+    "primary_diagnosis_code": "Z34.8",
+    "services": [
+      {
+        "service_code": "96677000000292",
+        "service_quantity": 1.0,
+        "service_gross": 20.4,
+        "diagnoses": [
+          {
+            "diagnosis_code": "Z34.8",
+            "diagnosis_type": "Principal"
+          }
+        ]
+      },
+      {
+        "service_code": "99999999999996",
+        "service_quantity": 1.0,
+        "service_gross": 21.0,
+        "diagnoses": [
+          {
+            "diagnosis_code": "Z34.8",
+            "diagnosis_type": "Principal"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "claim_id": "PHR65999",
+    "facility": "10000300248034",
+    "facility_type": null,
+    "patient_age": 0,
+    "gender": "Female",
+    "policy_name": "NCCI - SAUDI GROUND SERVICES CO - 56651214",
+    "payer_classification": "CLASS B+",
+    "payer_id": "7000911508",
+    "receiver_id": "7000911508",
+    "encounter_type": 4,
+    "length_of_stay": 0,
+    "clinician_category": null,
+    "department": "Pharmacy",
+    "claim_type": "Professional",
+    "claim_subtype": "OutPatient",
+    "claim_gross": 50.4,
+    "claim_net": 47.88,
+    "primary_diagnosis_code": "Z34.0",
+    "services": [
+      {
+        "service_code": "96677000000292",
+        "service_quantity": 1.0,
+        "service_gross": 20.4,
+        "diagnoses": [
+          {
+            "diagnosis_code": "Z34.0",
+            "diagnosis_type": "Principal"
+          }
+        ]
+      },
+      {
+        "service_code": "06281080001697",
+        "service_quantity": 1.0,
+        "service_gross": 30.0,
+        "diagnoses": [
+          {
+            "diagnosis_code": "Z34.0",
+            "diagnosis_type": "Principal"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "claim_id": "VCR110222",
+    "facility": "10000300248034",
+    "facility_type": null,
+    "patient_age": 13,
+    "gender": "Female",
+    "policy_name": "NCCI - ALPHA STAR AVIATION SERVICES COMPANY - 52410488",
+    "payer_classification": "C",
+    "payer_id": "7000911508",
+    "receiver_id": "7000911508",
+    "encounter_type": 4,
+    "length_of_stay": 0,
+    "clinician_category": null,
+    "department": "Investigations",
+    "claim_type": "Professional",
+    "claim_subtype": "OutPatient",
+    "claim_gross": 3017.0,
+    "claim_net": 2413.6,
+    "primary_diagnosis_code": "D50.9",
+    "services": [
+      {
+        "service_code": "730500980",
+        "service_quantity": 1.0,
+        "service_gross": 72.0,
+        "diagnoses": [
+          {
+            "diagnosis_code": "D50.9",
+            "diagnosis_type": "Principal"
+          },
+          {
+            "diagnosis_code": "A09.0",
+            "diagnosis_type": "Secondary"
+          },
+          {
+            "diagnosis_code": "R10.4",
+            "diagnosis_type": "Secondary"
+          },
+          {
+            "diagnosis_code": "R53",
+            "diagnosis_type": "Secondary"
+          }
+        ]
+      },
+      {
+        "service_code": "730501620",
+        "service_quantity": 1.0,
+        "service_gross": 55.0,
+        "diagnoses": [
+          {
+            "diagnosis_code": "D50.9",
+            "diagnosis_type": "Principal"
+          },
+          {
+            "diagnosis_code": "A09.0",
+            "diagnosis_type": "Secondary"
+          },
+          {
+            "diagnosis_code": "R10.4",
+            "diagnosis_type": "Secondary"
+          },
+          {
+            "diagnosis_code": "R53",
+            "diagnosis_type": "Secondary"
+          }
+        ]
+      },
+      {
+        "service_code": "730501850",
+        "service_quantity": 1.0,
+        "service_gross": 211.0,
+        "diagnoses": [
+          {
+            "diagnosis_code": "D50.9",
+            "diagnosis_type": "Principal"
+          },
+          {
+            "diagnosis_code": "A09.0",
+            "diagnosis_type": "Secondary"
+          },
+          {
+            "diagnosis_code": "R10.4",
+            "diagnosis_type": "Secondary"
+          },
+          {
+            "diagnosis_code": "R53",
+            "diagnosis_type": "Secondary"
+          }
+        ]
+      },
+      {
+        "service_code": "730503590",
+        "service_quantity": 1.0,
+        "service_gross": 86.0,
+        "diagnoses": [
+          {
+            "diagnosis_code": "D50.9",
+            "diagnosis_type": "Principal"
+          },
+          {
+            "diagnosis_code": "A09.0",
+            "diagnosis_type": "Secondary"
+          },
+          {
+            "diagnosis_code": "R10.4",
+            "diagnosis_type": "Secondary"
+          },
+          {
+            "diagnosis_code": "R53",
+            "diagnosis_type": "Secondary"
+          }
+        ]
+      },
+      {
+        "service_code": "730503600",
+        "service_quantity": 1.0,
+        "service_gross": 86.0,
+        "diagnoses": [
+          {
+            "diagnosis_code": "D50.9",
+            "diagnosis_type": "Principal"
+          },
+          {
+            "diagnosis_code": "A09.0",
+            "diagnosis_type": "Secondary"
+          },
+          {
+            "diagnosis_code": "R10.4",
+            "diagnosis_type": "Secondary"
+          },
+          {
+            "diagnosis_code": "R53",
+            "diagnosis_type": "Secondary"
+          }
+        ]
+      },
+      {
+        "service_code": "730503550",
+        "service_quantity": 1.0,
+        "service_gross": 352.0,
+        "diagnoses": [
+          {
+            "diagnosis_code": "D50.9",
+            "diagnosis_type": "Principal"
+          },
+          {
+            "diagnosis_code": "A09.0",
+            "diagnosis_type": "Secondary"
+          },
+          {
+            "diagnosis_code": "R10.4",
+            "diagnosis_type": "Secondary"
+          },
+          {
+            "diagnosis_code": "R53",
+            "diagnosis_type": "Secondary"
+          }
+        ]
+      },
+      {
+        "service_code": "731001140",
+        "service_quantity": 1.0,
+        "service_gross": 203.0,
+        "diagnoses": [
+          {
+            "diagnosis_code": "D50.9",
+            "diagnosis_type": "Principal"
+          },
+          {
+            "diagnosis_code": "A09.0",
+            "diagnosis_type": "Secondary"
+          },
+          {
+            "diagnosis_code": "R10.4",
+            "diagnosis_type": "Secondary"
+          },
+          {
+            "diagnosis_code": "R53",
+            "diagnosis_type": "Secondary"
+          }
+        ]
+      },
+      {
+        "service_code": "730500530",
+        "service_quantity": 1.0,
+        "service_gross": 506.0,
+        "diagnoses": [
+          {
+            "diagnosis_code": "D50.9",
+            "diagnosis_type": "Principal"
+          },
+          {
+            "diagnosis_code": "A09.0",
+            "diagnosis_type": "Secondary"
+          },
+          {
+            "diagnosis_code": "R10.4",
+            "diagnosis_type": "Secondary"
+          },
+          {
+            "diagnosis_code": "R53",
+            "diagnosis_type": "Secondary"
+          }
+        ]
+      },
+      {
+        "service_code": "730502111",
+        "service_quantity": 1.0,
+        "service_gross": 1025.0,
+        "diagnoses": [
+          {
+            "diagnosis_code": "D50.9",
+            "diagnosis_type": "Principal"
+          },
+          {
+            "diagnosis_code": "A09.0",
+            "diagnosis_type": "Secondary"
+          },
+          {
+            "diagnosis_code": "R10.4",
+            "diagnosis_type": "Secondary"
+          },
+          {
+            "diagnosis_code": "R53",
+            "diagnosis_type": "Secondary"
+          }
+        ]
+      },
+      {
+        "service_code": "730501040",
+        "service_quantity": 1.0,
+        "service_gross": 421.0,
+        "diagnoses": [
+          {
+            "diagnosis_code": "D50.9",
+            "diagnosis_type": "Principal"
+          },
+          {
+            "diagnosis_code": "A09.0",
+            "diagnosis_type": "Secondary"
+          },
+          {
+            "diagnosis_code": "R10.4",
+            "diagnosis_type": "Secondary"
+          },
+          {
+            "diagnosis_code": "R53",
+            "diagnosis_type": "Secondary"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "claim_id": "VCR110925",
+    "facility": "10000300248034",
+    "facility_type": null,
+    "patient_age": 24,
+    "gender": "Male",
+    "policy_name": "NCCI - Osama Azraq Company for - 52453762",
+    "payer_classification": "CLASS A",
+    "payer_id": "7000911508",
+    "receiver_id": "7000911508",
+    "encounter_type": 4,
+    "length_of_stay": 0,
+    "clinician_category": null,
+    "department": "Investigations",
+    "claim_type": "Professional",
+    "claim_subtype": "OutPatient",
+    "claim_gross": 1072.0,
+    "claim_net": 857.6,
+    "primary_diagnosis_code": "D50.9",
+    "services": [
+      {
+        "service_code": "731000080",
+        "service_quantity": 1.0,
+        "service_gross": 157.0,
+        "diagnoses": [
+          {
+            "diagnosis_code": "D50.9",
+            "diagnosis_type": "Principal"
+          },
+          {
+            "diagnosis_code": "D51.9",
+            "diagnosis_type": "Secondary"
+          },
+          {
+            "diagnosis_code": "E03.9",
+            "diagnosis_type": "Secondary"
+          },
+          {
+            "diagnosis_code": "E11.72",
+            "diagnosis_type": "Secondary"
+          },
+          {
+            "diagnosis_code": "E55.9",
+            "diagnosis_type": "Secondary"
+          }
+        ]
+      },
+      {
+        "service_code": "730501850",
+        "service_quantity": 1.0,
+        "service_gross": 211.0,
+        "diagnoses": [
+          {
+            "diagnosis_code": "D50.9",
+            "diagnosis_type": "Principal"
+          },
+          {
+            "diagnosis_code": "D51.9",
+            "diagnosis_type": "Secondary"
+          },
+          {
+            "diagnosis_code": "E03.9",
+            "diagnosis_type": "Secondary"
+          },
+          {
+            "diagnosis_code": "E11.72",
+            "diagnosis_type": "Secondary"
+          },
+          {
+            "diagnosis_code": "E55.9",
+            "diagnosis_type": "Secondary"
+          }
+        ]
+      },
+      {
+        "service_code": "730501310",
+        "service_quantity": 1.0,
+        "service_gross": 352.0,
+        "diagnoses": [
+          {
+            "diagnosis_code": "D50.9",
+            "diagnosis_type": "Principal"
+          },
+          {
+            "diagnosis_code": "D51.9",
+            "diagnosis_type": "Secondary"
+          },
+          {
+            "diagnosis_code": "E03.9",
+            "diagnosis_type": "Secondary"
+          },
+          {
+            "diagnosis_code": "E11.72",
+            "diagnosis_type": "Secondary"
+          },
+          {
+            "diagnosis_code": "E55.9",
+            "diagnosis_type": "Secondary"
+          }
+        ]
+      },
+      {
+        "service_code": "730503550",
+        "service_quantity": 1.0,
+        "service_gross": 352.0,
+        "diagnoses": [
+          {
+            "diagnosis_code": "D50.9",
+            "diagnosis_type": "Principal"
+          },
+          {
+            "diagnosis_code": "D51.9",
+            "diagnosis_type": "Secondary"
+          },
+          {
+            "diagnosis_code": "E03.9",
+            "diagnosis_type": "Secondary"
+          },
+          {
+            "diagnosis_code": "E11.72",
+            "diagnosis_type": "Secondary"
+          },
+          {
+            "diagnosis_code": "E55.9",
+            "diagnosis_type": "Secondary"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "claim_id": "VCR112196",
+    "facility": "10000300248034",
+    "facility_type": null,
+    "patient_age": 32,
+    "gender": "Female",
+    "policy_name": "NCCI - Higher Institute of Paper and Industrial - 52736462",
+    "payer_classification": "B",
+    "payer_id": "7000911508",
+    "receiver_id": "7000911508",
+    "encounter_type": 4,
+    "length_of_stay": 0,
+    "clinician_category": null,
+    "department": "Consultations",
+    "claim_type": "Professional",
+    "claim_subtype": "OutPatient",
+    "claim_gross": 177.0,
+    "claim_net": 177.0,
+    "primary_diagnosis_code": "S83.41",
+    "services": [
+      {
+        "service_code": "836000020",
+        "service_quantity": 1.0,
+        "service_gross": 177.0,
+        "diagnoses": [
+          {
+            "diagnosis_code": "S83.41",
+            "diagnosis_type": "Principal"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "claim_id": "VCR112367",
+    "facility": "10000300248034",
+    "facility_type": null,
+    "patient_age": 13,
+    "gender": "Male",
+    "policy_name": "TAWUNIYA - \tGENERAL AUTH OF CIVIL AVIATION - 55113116",
+    "payer_classification": "CLASS VIP",
+    "payer_id": "7000911508",
+    "receiver_id": "7000911508",
+    "encounter_type": 4,
+    "length_of_stay": 0,
+    "clinician_category": null,
+    "department": "Consultations",
+    "claim_type": "Pharmacy",
+    "claim_subtype": "OutPatient",
+    "claim_gross": 177.0,
+    "claim_net": 177.0,
+    "primary_diagnosis_code": "S60.0",
+    "services": [
+      {
+        "service_code": "836000020",
+        "service_quantity": 1.0,
+        "service_gross": 177.0,
+        "diagnoses": [
+          {
+            "diagnosis_code": "S60.0",
+            "diagnosis_type": "Principal"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "claim_id": "VCR109936",
+    "facility": "10000300248034",
+    "facility_type": null,
+    "patient_age": 29,
+    "gender": "Female",
+    "policy_name": "NCCI - SAUDI GROUND SERVICES CO - 56651214",
+    "payer_classification": "CLASS B+",
+    "payer_id": "7000911508",
+    "receiver_id": "7000911508",
+    "encounter_type": 4,
+    "length_of_stay": 0,
+    "clinician_category": null,
+    "department": "Investigations",
+    "claim_type": "Professional",
+    "claim_subtype": "OutPatient",
+    "claim_gross": 637.0,
+    "claim_net": 477.75,
+    "primary_diagnosis_code": "N92.6",
+    "services": [
+      {
+        "service_code": "550650000",
+        "service_quantity": 1.0,
+        "service_gross": 637.0,
+        "diagnoses": [
+          {
+            "diagnosis_code": "N92.6",
+            "diagnosis_type": "Principal"
+          },
+          {
+            "diagnosis_code": "E22.1",
+            "diagnosis_type": "Secondary"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "claim_id": "VCR110279",
+    "facility": "10000300248034",
+    "facility_type": null,
+    "patient_age": 29,
+    "gender": "Female",
+    "policy_name": "NCCI - SAUDI GROUND SERVICES CO - 56651214",
+    "payer_classification": "CLASS B",
+    "payer_id": "7000911508",
+    "receiver_id": "7000911508",
+    "encounter_type": 4,
+    "length_of_stay": 0,
+    "clinician_category": null,
+    "department": "Investigations",
+    "claim_type": "Professional",
+    "claim_subtype": "OutPatient",
+    "claim_gross": 2511.0,
+    "claim_net": 2008.8,
+    "primary_diagnosis_code": "R63.0",
+    "services": [
+      {
+        "service_code": "731000900",
+        "service_quantity": 1.0,
+        "service_gross": 64.0,
+        "diagnoses": [
+          {
+            "diagnosis_code": "R63.0",
+            "diagnosis_type": "Principal"
+          },
+          {
+            "diagnosis_code": "A49.9",
+            "diagnosis_type": "Secondary"
+          },
+          {
+            "diagnosis_code": "E61.1",
+            "diagnosis_type": "Secondary"
+          },
+          {
+            "diagnosis_code": "R23.1",
+            "diagnosis_type": "Secondary"
+          },
+          {
+            "diagnosis_code": "R47.8",
+            "diagnosis_type": "Secondary"
+          },
+          {
+            "diagnosis_code": "R50.9",
+            "diagnosis_type": "Secondary"
+          },
+          {
+            "diagnosis_code": "R53",
+            "diagnosis_type": "Secondary"
+          },
+          {
+            "diagnosis_code": "Z55.3",
+            "diagnosis_type": "Secondary"
+          }
+        ]
+      },
+      {
+        "service_code": "730502120",
+        "service_quantity": 1.0,
+        "service_gross": 172.0,
+        "diagnoses": [
+          {
+            "diagnosis_code": "R63.0",
+            "diagnosis_type": "Principal"
+          },
+          {
+            "diagnosis_code": "A49.9",
+            "diagnosis_type": "Secondary"
+          },
+          {
+            "diagnosis_code": "E61.1",
+            "diagnosis_type": "Secondary"
+          },
+          {
+            "diagnosis_code": "R23.1",
+            "diagnosis_type": "Secondary"
+          },
+          {
+            "diagnosis_code": "R47.8",
+            "diagnosis_type": "Secondary"
+          },
+          {
+            "diagnosis_code": "R50.9",
+            "diagnosis_type": "Secondary"
+          },
+          {
+            "diagnosis_code": "R53",
+            "diagnosis_type": "Secondary"
+          },
+          {
+            "diagnosis_code": "Z55.3",
+            "diagnosis_type": "Secondary"
+          }
+        ]
+      },
+      {
+        "service_code": "730000340",
+        "service_quantity": 1.0,
+        "service_gross": 1120.0,
+        "diagnoses": [
+          {
+            "diagnosis_code": "R63.0",
+            "diagnosis_type": "Principal"
+          },
+          {
+            "diagnosis_code": "A49.9",
+            "diagnosis_type": "Secondary"
+          },
+          {
+            "diagnosis_code": "E61.1",
+            "diagnosis_type": "Secondary"
+          },
+          {
+            "diagnosis_code": "R23.1",
+            "diagnosis_type": "Secondary"
+          },
+          {
+            "diagnosis_code": "R47.8",
+            "diagnosis_type": "Secondary"
+          },
+          {
+            "diagnosis_code": "R50.9",
+            "diagnosis_type": "Secondary"
+          },
+          {
+            "diagnosis_code": "R53",
+            "diagnosis_type": "Secondary"
+          },
+          {
+            "diagnosis_code": "Z55.3",
+            "diagnosis_type": "Secondary"
+          }
+        ]
+      },
+      {
+        "service_code": "731001140",
+        "service_quantity": 1.0,
+        "service_gross": 203.0,
+        "diagnoses": [
+          {
+            "diagnosis_code": "R63.0",
+            "diagnosis_type": "Principal"
+          },
+          {
+            "diagnosis_code": "A49.9",
+            "diagnosis_type": "Secondary"
+          },
+          {
+            "diagnosis_code": "E61.1",
+            "diagnosis_type": "Secondary"
+          },
+          {
+            "diagnosis_code": "R23.1",
+            "diagnosis_type": "Secondary"
+          },
+          {
+            "diagnosis_code": "R47.8",
+            "diagnosis_type": "Secondary"
+          },
+          {
+            "diagnosis_code": "R50.9",
+            "diagnosis_type": "Secondary"
+          },
+          {
+            "diagnosis_code": "R53",
+            "diagnosis_type": "Secondary"
+          },
+          {
+            "diagnosis_code": "Z55.3",
+            "diagnosis_type": "Secondary"
+          }
+        ]
+      },
+      {
+        "service_code": "730000090",
+        "service_quantity": 1.0,
+        "service_gross": 570.0,
+        "diagnoses": [
+          {
+            "diagnosis_code": "R63.0",
+            "diagnosis_type": "Principal"
+          },
+          {
+            "diagnosis_code": "A49.9",
+            "diagnosis_type": "Secondary"
+          },
+          {
+            "diagnosis_code": "E61.1",
+            "diagnosis_type": "Secondary"
+          },
+          {
+            "diagnosis_code": "R23.1",
+            "diagnosis_type": "Secondary"
+          },
+          {
+            "diagnosis_code": "R47.8",
+            "diagnosis_type": "Secondary"
+          },
+          {
+            "diagnosis_code": "R50.9",
+            "diagnosis_type": "Secondary"
+          },
+          {
+            "diagnosis_code": "R53",
+            "diagnosis_type": "Secondary"
+          },
+          {
+            "diagnosis_code": "Z55.3",
+            "diagnosis_type": "Secondary"
+          }
+        ]
+      },
+      {
+        "service_code": "730000070",
+        "service_quantity": 1.0,
+        "service_gross": 382.0,
+        "diagnoses": [
+          {
+            "diagnosis_code": "R63.0",
+            "diagnosis_type": "Principal"
+          },
+          {
+            "diagnosis_code": "A49.9",
+            "diagnosis_type": "Secondary"
+          },
+          {
+            "diagnosis_code": "E61.1",
+            "diagnosis_type": "Secondary"
+          },
+          {
+            "diagnosis_code": "R23.1",
+            "diagnosis_type": "Secondary"
+          },
+          {
+            "diagnosis_code": "R47.8",
+            "diagnosis_type": "Secondary"
+          },
+          {
+            "diagnosis_code": "R50.9",
+            "diagnosis_type": "Secondary"
+          },
+          {
+            "diagnosis_code": "R53",
+            "diagnosis_type": "Secondary"
+          },
+          {
+            "diagnosis_code": "Z55.3",
+            "diagnosis_type": "Secondary"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "claim_id": "VCR111055",
+    "facility": "10000300248034",
+    "facility_type": null,
+    "patient_age": 37,
+    "gender": "Female",
+    "policy_name": "NCCI - SAUDI GROUND SERVICES CO - 56651214",
+    "payer_classification": "CLASS B+",
+    "payer_id": "7000911508",
+    "receiver_id": "7000911508",
+    "encounter_type": 4,
+    "length_of_stay": 0,
+    "clinician_category": null,
+    "department": "Consultations",
+    "claim_type": "Professional",
+    "claim_subtype": "OutPatient",
+    "claim_gross": 177.0,
+    "claim_net": 177.0,
+    "primary_diagnosis_code": "K12.3",
+    "services": [
+      {
+        "service_code": "836000020",
+        "service_quantity": 1.0,
+        "service_gross": 177.0,
+        "diagnoses": [
+          {
+            "diagnosis_code": "K12.3",
+            "diagnosis_type": "Principal"
+          },
+          {
+            "diagnosis_code": "J06.9",
+            "diagnosis_type": "Secondary"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "claim_id": "VCR109627",
+    "facility": "10000300248034",
+    "facility_type": null,
+    "patient_age": 44,
+    "gender": "Female",
+    "policy_name": "NCCI - ABDULLATEEF JAMEEL LTD CO - 52217462",
+    "payer_classification": "CLASS B",
+    "payer_id": "7000911508",
+    "receiver_id": "7000911508",
+    "encounter_type": 4,
+    "length_of_stay": 0,
+    "clinician_category": null,
+    "department": "Investigations",
+    "claim_type": "Professional",
+    "claim_subtype": "OutPatient",
+    "claim_gross": 1126.0,
+    "claim_net": 900.8,
+    "primary_diagnosis_code": "Z35.8",
+    "services": [
+      {
+        "service_code": "731000950",
+        "service_quantity": 1.0,
+        "service_gross": 142.0,
+        "diagnoses": [
+          {
+            "diagnosis_code": "Z35.8",
+            "diagnosis_type": "Principal"
+          }
+        ]
+      },
+      {
+        "service_code": "731000850",
+        "service_quantity": 1.0,
+        "service_gross": 117.0,
+        "diagnoses": [
+          {
+            "diagnosis_code": "Z35.8",
+            "diagnosis_type": "Principal"
+          }
+        ]
+      },
+      {
+        "service_code": "730503590",
+        "service_quantity": 1.0,
+        "service_gross": 86.0,
+        "diagnoses": [
+          {
+            "diagnosis_code": "Z35.8",
+            "diagnosis_type": "Principal"
+          }
+        ]
+      },
+      {
+        "service_code": "730503600",
+        "service_quantity": 1.0,
+        "service_gross": 86.0,
+        "diagnoses": [
+          {
+            "diagnosis_code": "Z35.8",
+            "diagnosis_type": "Principal"
+          }
+        ]
+      },
+      {
+        "service_code": "731002270",
+        "service_quantity": 1.0,
+        "service_gross": 203.0,
+        "diagnoses": [
+          {
+            "diagnosis_code": "Z35.8",
+            "diagnosis_type": "Principal"
+          }
+        ]
+      },
+      {
+        "service_code": "730504890",
+        "service_quantity": 1.0,
+        "service_gross": 492.0,
+        "diagnoses": [
+          {
+            "diagnosis_code": "Z35.8",
+            "diagnosis_type": "Principal"
+          }
+        ]
+      }
+    ]
+  }
+]

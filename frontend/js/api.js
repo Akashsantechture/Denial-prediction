@@ -360,5 +360,13 @@ const AnalystAPI = (() => {
     }
   }
 
-  return { createSession, chat, deleteSession, health, BASE_URL };
+  async function stats() {
+    try {
+      const r = await _fetchTimeout(`${BASE_URL}/stats/summary`);
+      if (r.status === 200) return r.json();
+      return null;
+    } catch (_) { return null; }
+  }
+
+  return { createSession, chat, deleteSession, health, stats, BASE_URL };
 })();
