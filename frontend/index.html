@@ -857,6 +857,9 @@
   <button class="top-nav-tab" data-tab="interactions">
     <img src="assets/interactions.png" alt="" /> Interactions
   </button>
+  <button class="top-nav-tab" data-tab="knowledgebase">
+    <img src="assets/shapanalysis.png" alt="" /> Knowledge Base
+  </button>
 
   <div class="top-nav-spacer"></div>
 
@@ -917,6 +920,7 @@
         <button class="tab-btn" data-tab="shap">SHAP Analysis</button>
         <button class="tab-btn" data-tab="icd">ICD Drill-Down</button>
         <button class="tab-btn" data-tab="interactions">Interactions</button>
+        <button class="tab-btn" data-tab="knowledgebase">Knowledge Base</button>
       </div>
 
       <!-- ============================================================
@@ -1498,6 +1502,53 @@
 
       </div><!-- /tab-interactions -->
 
+      <!-- ============================================================
+           TAB 5 — KNOWLEDGE BASE (Global RAG)
+           Completely standalone — no interaction with claim session flow.
+           ============================================================ -->
+      <div id="tab-knowledgebase" class="tab-panel">
+
+        <!-- Header -->
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;flex-wrap:wrap;gap:.75rem;">
+          <div>
+            <div class="section-title">Knowledge Base</div>
+            <div class="section-caption" id="kb-stats-label">Search and browse the indexed regulatory rules — UAE &amp; KSA</div>
+          </div>
+          <div style="display:flex;gap:.5rem;align-items:center;">
+            <select id="kb-severity-filter" class="shap-activity-select" style="min-width:140px;">
+              <option value="">All Severities</option>
+              <option value="CRITICAL">Critical</option>
+              <option value="SEVERE">Severe</option>
+              <option value="WARNING">Warning</option>
+              <option value="INFO">Info</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Search box -->
+        <div style="position:relative;margin-bottom:1.25rem;">
+          <input id="kb-search-input" type="text"
+            style="width:100%;padding:.6rem 1rem .6rem 2.5rem;border:1px solid var(--color-border);border-radius:var(--radius-md);background:var(--color-surface-alt);color:var(--color-text-primary);font-family:var(--font);font-size:.9rem;"
+            placeholder="Search rules — e.g. 'medical necessity iron panel' or 'prior authorization'" />
+          <span style="position:absolute;left:.75rem;top:50%;transform:translateY(-50%);color:var(--color-text-muted);font-size:1rem;">🔍</span>
+        </div>
+
+        <!-- Results area -->
+        <div id="kb-results" style="display:flex;flex-direction:column;gap:.75rem;">
+          <div style="text-align:center;padding:3rem;color:var(--color-text-muted);font-size:.88rem;">
+            Type a query above to search, or browse all rules below.
+          </div>
+        </div>
+
+        <!-- Load more -->
+        <div style="text-align:center;margin-top:1.25rem;">
+          <button id="kb-load-more" class="btn-primary" style="width:auto;padding:.45rem 1.5rem;display:none;">
+            Load more rules
+          </button>
+        </div>
+
+      </div><!-- /tab-knowledgebase -->
+
     </div><!-- /content-area -->
   </main>
 </div><!-- /app-shell -->
@@ -1540,6 +1591,7 @@
 <script src="js/charts.js?v=10"></script>
 <script src="js/icd.js?v=7"></script>
 <script src="js/interactions.js?v=11"></script>
+<script src="js/knowledgebase.js?v=1"></script>
 <script src="js/chat.js?v=9"></script>
 <script src="js/app.js?v=15"></script>
 

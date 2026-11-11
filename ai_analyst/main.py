@@ -567,6 +567,140 @@ def ingest_rules(
 
 
 # ============================================================
+# GLOBAL RAG — SEARCH
+# ============================================================
+#
+# Standalone endpoint for the Knowledge Base tab.
+# Completely isolated from the AI analyst session flow.
+# Uses only the existing Retriever — no changes to anything.
+# ============================================================
+
+@app.post("/analyst/global-rag/search")
+def global_rag_search(
+    request: dict,
+    x_region: str = Header(default="uae", alias="X-Region"),
+):
+    """
+    Search the rule knowledge base directly.
+    Used by the Knowledge Base tab — independent of analyst sessions.
+
+    Body: { "query": "medical necessity iron panel", "top_k": 10 }
+    """
+    query  = (request.get("query") or "").strip()
+    top_k  = min(int(request.get("top_k", 10)), 20)
+    region = x_region.lower()
+    if region not in ("uae", "ksa"):
+        region = "uae"
+
+    if not query:
+        raise HTTPException(status_code=400, detail="query is required")
+
+    try:
+        from .rag.retriever import Retriever
+        from .rag.rule_store import count_rules
+
+        r = Retriever(region=region)
+
+        # Lower threshold for browse-style search
+        raw_results = r.query(query_text=query, top_k=top_k, min_similarity=0.25)
+
+        # Return structured results (not formatted string)
+        from .rag.embedder import Embedder
+        from .rag.rule_store import similarity_search
+
+        embedder  = Embedder()
+        query_vec = embedder.embed(query)
+        results   = similarity_search(query_vec, region=region, top_k=top_k)
+
+        return {
+            "query":        query,
+            "region":       region,
+            "total_indexed": count_rules(region=region),
+            "results": [
+                {
+                    "rule_id":       r["rule_id"],
+                    "package_name":  r["package_name"],
+                    "severity":      r["severity"],
+                    "object_type":   r["object_type"],
+                    "short_message": r["short_message"],
+                    "long_message":  r["long_message"],
+                    "similarity":    r["similarity"],
+                }
+                for r in results
+                if r["similarity"] >= 0.25
+            ],
+        }
+
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc))
+
+
+@app.get("/analyst/global-rag/rules")
+def global_rag_browse(
+    x_region:  str = Header(default="uae", alias="X-Region"),
+    severity:  str = "",
+    package:   str = "",
+    page:      int = 1,
+    limit:     int = 20,
+):
+    """
+    Browse all indexed rules with optional severity/package filter.
+    Used by the Knowledge Base tab — independent of analyst sessions.
+    """
+    region = x_region.lower()
+    if region not in ("uae", "ksa"):
+        region = "uae"
+
+    try:
+        from .rag.rule_store import _get_collection
+
+        col    = _get_collection(region)
+        total  = col.count()
+        offset = (page - 1) * limit
+
+        # Fetch all with filters via ChromaDB where clause
+        where = {}
+        if severity:
+            where["severity"] = severity.upper()
+        if package:
+            where["package_name"] = package
+
+        fetch_kwargs = {
+            "limit":   min(limit, 50),
+            "offset":  offset,
+            "include": ["metadatas", "documents"],
+        }
+        if where:
+            fetch_kwargs["where"] = where
+
+        results = col.get(**fetch_kwargs)
+
+        rules = []
+        for rule_id, meta, doc in zip(
+            results["ids"], results["metadatas"], results["documents"]
+        ):
+            rules.append({
+                "rule_id":       rule_id,
+                "package_name":  meta.get("package_name", ""),
+                "severity":      meta.get("severity", ""),
+                "object_type":   meta.get("object_type", ""),
+                "short_message": meta.get("short_message", ""),
+                "long_message":  meta.get("long_message", ""),
+            })
+
+        return {
+            "region":       region,
+            "total":        total,
+            "page":         page,
+            "limit":        limit,
+            "rules":        rules,
+        }
+
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc))
+
+
+# ============================================================
 # DELETE SESSION
 # ============================================================
 

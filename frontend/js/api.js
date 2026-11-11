@@ -368,5 +368,31 @@ const AnalystAPI = (() => {
     } catch (_) { return null; }
   }
 
-  return { createSession, chat, deleteSession, health, stats, BASE_URL };
+  // ── Global RAG — Knowledge Base tab only ────────────────────────────
+  // Completely separate from the analyst session flow.
+  const globalRag = {
+    async search(query, topK = 10, region = 'uae') {
+      try {
+        const r = await _fetchTimeout(`${BASE_URL}/analyst/global-rag/search`, {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json', 'X-Region': region },
+          body:    JSON.stringify({ query, top_k: topK }),
+        });
+        return r.ok ? r.json() : null;
+      } catch (_) { return null; }
+    },
+    async browse(region = 'uae', severity = '', page = 1, limit = 20) {
+      try {
+        const params = new URLSearchParams({ page, limit });
+        if (severity) params.set('severity', severity);
+        const r = await _fetchTimeout(
+          `${BASE_URL}/analyst/global-rag/rules?${params}`,
+          { headers: { 'X-Region': region } }
+        );
+        return r.ok ? r.json() : null;
+      } catch (_) { return null; }
+    },
+  };
+
+  return { createSession, chat, deleteSession, health, stats, globalRag, BASE_URL };
 })();

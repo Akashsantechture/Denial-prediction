@@ -96,6 +96,20 @@
         buttons.forEach(b => b.classList.remove('active'));
         panels.forEach(p => p.classList.remove('active'));
         btn.classList.add('active');
+
+        // Knowledge Base tab lives outside .tab-panel flow — handle separately
+        if (target === 'knowledgebase') {
+          document.getElementById('tab-knowledgebase')?.classList.add('active');
+          document.querySelectorAll('.top-nav-tab').forEach(b => {
+            b.classList.toggle('active', b.dataset.tab === 'knowledgebase');
+          });
+          if (typeof KnowledgeBase !== 'undefined') KnowledgeBase.maybeInit();
+          return;
+        }
+
+        // Hide KB tab if switching away
+        document.getElementById('tab-knowledgebase')?.classList.remove('active');
+
         document.getElementById(`tab-${target}`)?.classList.add('active');
         if (_lastResult && _lastPayload) {
           if (target === 'icd')          renderICDTab();
